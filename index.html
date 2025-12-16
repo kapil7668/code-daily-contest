@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeDaily - Roz Ka Coding Contest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 min-h-screen">
+    
+    <!-- Navbar -->
+    <nav class="bg-black/30 backdrop-blur-md fixed w-full z-50 px-6 py-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">CodeDaily</h1>
+            <div class="flex gap-4">
+                <a href="#contest" class="hover:text-cyan-300">आज का Contest</a>
+                <a href="#leaderboard" class="hover:text-cyan-300">Leaderboard</a>
+                <button onclick="login()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 rounded-lg font-semibold">Join Free</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-24 pb-20 px-6 max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl md:text-7xl font-black bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent mb-6">
+                Daily Coding Contest
+            </h1>
+            <p class="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
+                1 घंटे का FREE contest • Beginner friendly • Live Leaderboard • ₹1000 Prize Pool
+            </p>
+        </div>
+
+        <!-- Today's Contest Card -->
+        <div id="contest" class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 md:p-12 max-w-2xl mx-auto shadow-2xl">
+            <div class="text-center">
+                <h2 class="text-3xl font-bold text-white mb-4">🔥 आज का Contest</h2>
+                <div class="grid md:grid-cols-3 gap-6 mb-8 text-center">
+                    <div class="bg-gradient-to-b from-emerald-400/20 to-emerald-500/20 p-6 rounded-2xl border border-emerald-400/30">
+                        <p class="text-emerald-300 text-sm mb-2">1st Prize</p>
+                        <p class="text-2xl font-black text-emerald-400">₹1000</p>
+                    </div>
+                    <div class="bg-gradient-to-b from-blue-400/20 to-blue-500/20 p-6 rounded-2xl border border-blue-400/30">
+                        <p class="text-blue-300 text-sm mb-2">2nd Prize</p>
+                        <p class="text-xl font-bold text-blue-400">₹500</p>
+                    </div>
+                    <div class="bg-gradient-to-b from-orange-400/20 to-orange-500/20 p-6 rounded-2xl border border-orange-400/30">
+                        <p class="text-orange-300 text-sm mb-2">Seats Left</p>
+                        <p class="text-xl font-bold text-orange-400">127/200</p>
+                    </div>
+                </div>
+                <div class="space-y-3 mb-8">
+                    <p><span class="font-bold text-cyan-300">⏰ Start:</span> 8:00 PM</p>
+                    <p><span class="font-bold text-cyan-300">⏱️ Duration:</span> 1 Hour</p>
+                    <p><span class="font-bold text-cyan-300">📱 Languages:</span> C++ | Python | Java</p>
+                </div>
+                <button onclick="joinContest()" class="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-bold py-4 px-8 rounded-2xl text-lg shadow-xl transform hover:scale-105 transition-all duration-300">
+                    🚀 अभी Register करो - FREE
+                </button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Preview -->
+        <div id="leaderboard" class="mt-20 grid md:grid-cols-2 gap-8">
+            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                <h3 class="text-xl font-bold text-white mb-4">🏆 Top 5 This Week</h3>
+                <div class="space-y-2">
+                    <div class="flex justify-between text-white"><span>1. Ravi Sharma</span><span>245 pts</span></div>
+                    <div class="flex justify-between text-white"><span>2. Priya Singh</span><span>198 pts</span></div>
+                    <div class="flex justify-between text-white"><span>3. Amit Kumar</span><span>176 pts</span></div>
+                </div>
+            </div>
+            <div class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 border border-white/20">
+                <h3 class="text-xl font-bold text-white mb-4">📈 Total Users</h3>
+                <p class="text-4xl font-black text-cyan-400">2,847+</p>
+                <p class="text-white/80">Contests Completed</p>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function joinContest() {
+            alert("🎉 Registration Successful!\nContest 8:00 PM में start होगा।\nEmail: your-email@gmail.com");
+        }
+        function login() {
+            alert("Google से Login करें या Email use करें");
+        }
+    </script>
+</body>
+</html>
