@@ -110,7 +110,7 @@
         }
     </script>
 
-    <!-- Firebase Auth script with onAuthStateChanged -->
+    <!-- Firebase Auth script - FIXED -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
       import { 
@@ -134,27 +134,31 @@
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
 
-      const navMainBtn   = document.getElementById("nav-main-btn");
-      const navLogoutBtn = document.getElementById("nav-logout-btn");
+      // DOM fully load hone ka wait + UI update
+      document.addEventListener('DOMContentLoaded', function() {
+        const navMainBtn   = document.getElementById("nav-main-btn");
+        const navLogoutBtn = document.getElementById("nav-logout-btn");
 
-      // Login / logout ke hisaab se UI badlo
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          navMainBtn.textContent = "Go to Dashboard";
-          navMainBtn.onclick = () => {
-            alert("Dashboard jaldi banayenge 🙂 Filhaal aap logged in ho: " + user.email);
-          };
-          navLogoutBtn.classList.remove("hidden");
-        } else {
-          navMainBtn.textContent = "Join Free";
-          navMainBtn.onclick = () => {
-            document.getElementById("email")?.scrollIntoView({ behavior: "smooth" });
-          };
-          navLogoutBtn.classList.add("hidden");
-        }
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            // Logged in state
+            navMainBtn.textContent = "Go to Dashboard";
+            navMainBtn.onclick = () => {
+              alert("Dashboard jaldi banayenge 🙂 Filhaal aap logged in ho: " + user.email);
+            };
+            navLogoutBtn.classList.remove("hidden");
+          } else {
+            // Logged out state
+            navMainBtn.textContent = "Join Free";
+            navMainBtn.onclick = () => {
+              document.getElementById("email")?.scrollIntoView({ behavior: "smooth" });
+            };
+            navLogoutBtn.classList.add("hidden");
+          }
+        });
       });
 
-      // Signup
+      // Signup function
       window.signup = async function () {
         const email = document.getElementById("email").value;
         const pass  = document.getElementById("password").value;
@@ -166,7 +170,7 @@
         }
       };
 
-      // Login
+      // Login function
       window.login = async function () {
         const email = document.getElementById("email").value;
         const pass  = document.getElementById("password").value;
@@ -178,7 +182,7 @@
         }
       };
 
-      // Logout
+      // Logout function
       window.logout = async function () {
         try {
           await signOut(auth);
