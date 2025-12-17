@@ -101,20 +101,21 @@
         }
     </script>
 
-    <!-- Firebase Auth script -->
+    <!-- Firebase Auth script (new config) -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
       import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
         from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+      // NEW CONFIG from your web app
       const firebaseConfig = {
-        apiKey: "AIzaSyB-7gAHCCrwjXLE0eN3fFznL24of9z3yI8",
-        authDomain: "code-daily-contest-311c2.firebaseapp.com",
-        projectId: "code-daily-contest-311c2",
-        storageBucket: "code-daily-contest-311c2.firebasestorage.app",
-        messagingSenderId: "215363386530",
-        appId: "1:215363386530:web:f33f4f93426a4c106e2bfb",
-        measurementId: "G-NZF1192ZJZ"
+        apiKey: "AIzaSyDjVsrw5uJVcTVdM5KgoAEj_OhZn9bQ58k",
+        authDomain: "code-contest-app.firebaseapp.com",
+        projectId: "code-contest-app",
+        storageBucket: "code-contest-app.firebasestorage.app",
+        messagingSenderId: "484815640280",
+        appId: "1:484815640280:web:fb4f672b0cc6e7a9cb29ad",
+        measurementId: "G-H6RKEYT2W3"
       };
 
       const app = initializeApp(firebaseConfig);
