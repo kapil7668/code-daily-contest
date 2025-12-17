@@ -15,7 +15,16 @@
             <div class="flex gap-4">
                 <a href="#contest" class="hover:text-cyan-300">आज का Contest</a>
                 <a href="#leaderboard" class="hover:text-cyan-300">Leaderboard</a>
-                <button onclick="login()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 rounded-lg font-semibold">Join Free</button>
+
+                <!-- Main nav button (Join / Dashboard) -->
+                <button id="nav-main-btn" onclick="login()" class="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 rounded-lg font-semibold">
+                    Join Free
+                </button>
+
+                <!-- Logout button (hidden by default) -->
+                <button id="nav-logout-btn" onclick="logout()" class="px-4 py-2 bg-red-500 hover:bg-red-400 rounded-lg font-semibold hidden">
+                    Logout
+                </button>
             </div>
         </div>
     </nav>
@@ -101,13 +110,17 @@
         }
     </script>
 
-    <!-- Firebase Auth script (new config) -->
+    <!-- Firebase Auth script with onAuthStateChanged -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-      import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } 
-        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+      import { 
+        getAuth, 
+        createUserWithEmailAndPassword, 
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut
+      } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-      // NEW CONFIG from your web app
       const firebaseConfig = {
         apiKey: "AIzaSyDjVsrw5uJVcTVdM5KgoAEj_OhZn9bQ58k",
         authDomain: "code-contest-app.firebaseapp.com",
@@ -121,6 +134,27 @@
       const app = initializeApp(firebaseConfig);
       const auth = getAuth(app);
 
+      const navMainBtn   = document.getElementById("nav-main-btn");
+      const navLogoutBtn = document.getElementById("nav-logout-btn");
+
+      // Login / logout ke hisaab se UI badlo
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          navMainBtn.textContent = "Go to Dashboard";
+          navMainBtn.onclick = () => {
+            alert("Dashboard jaldi banayenge 🙂 Filhaal aap logged in ho: " + user.email);
+          };
+          navLogoutBtn.classList.remove("hidden");
+        } else {
+          navMainBtn.textContent = "Join Free";
+          navMainBtn.onclick = () => {
+            document.getElementById("email")?.scrollIntoView({ behavior: "smooth" });
+          };
+          navLogoutBtn.classList.add("hidden");
+        }
+      });[web:144][web:145]
+
+      // Signup
       window.signup = async function () {
         const email = document.getElementById("email").value;
         const pass  = document.getElementById("password").value;
@@ -130,8 +164,9 @@
         } catch (e) {
           alert(e.message);
         }
-      };
+      };[web:111]
 
+      // Login
       window.login = async function () {
         const email = document.getElementById("email").value;
         const pass  = document.getElementById("password").value;
@@ -141,8 +176,19 @@
         } catch (e) {
           alert(e.message);
         }
-      };
+      };[web:111]
+
+      // Logout
+      window.logout = async function () {
+        try {
+          await signOut(auth);
+          alert("Logged out!");
+        } catch (e) {
+          alert(e.message);
+        }
+      };[web:144]
     </script>
 
 </body>
 </html>
+
