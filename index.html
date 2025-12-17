@@ -3,380 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeDaily - Roz Ka Coding Contest 🚀</title>
+    <title>CodeRush - Daily Coding Contest | ₹1000 Prize</title>
+    <meta name="description" content="1 Hour FREE Daily Coding Contest | Beginner Friendly | Live Leaderboard | ₹1000 Prize Pool">
+    <meta property="og:title" content="CodeRush - Daily ₹1000 Coding Contest">
+    <meta property="og:description" content="Join Daily 1 Hour FREE Contest | Beginner Friendly | Live Leaderboard">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { font-family: 'Inter', system-ui, sans-serif; }
         .code-editor { font-family: 'Monaco', 'Consolas', monospace; }
+        @keyframes rush-glow { 0%, 100% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.5); } 50% { box-shadow: 0 0 40px rgba(255, 165, 0, 0.8); } }
+        .rush-glow { animation: rush-glow 2s ease-in-out infinite; }
     </style>
 </head>
-<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800 min-h-screen">
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 min-h-screen">
 
-<!-- Navbar -->
-<nav class="bg-black/50 backdrop-blur-xl fixed w-full z-50 px-6 py-4 border-b border-white/20">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-        <h1 class="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">CodeDaily</h1>
-        <div class="flex gap-6 items-center">
-            <button onclick="goHome()" class="hover:text-cyan-300 text-xl font-bold px-4 py-2 rounded-xl hover:bg-white/10 transition-all">🏠 Home</button>
-            <button onclick="showLeaderboard()" class="hover:text-cyan-300 text-xl font-bold px-4 py-2 rounded-xl hover:bg-white/10 transition-all">🏆 Leaderboard</button>
-            <button id="login-btn" onclick="toggleAuth()" class="px-8 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white font-black rounded-2xl shadow-2xl hover:shadow-3xl transition-all text-lg">Join Free</button>
-            <button id="logout-btn" onclick="logout()" class="px-8 py-3 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-black rounded-2xl shadow-2xl hover:shadow-3xl transition-all text-lg hidden ml-2">Logout</button>
+<!-- Navbar - CODERUSH BRANDING -->
+<nav class="bg-black/60 backdrop-blur-2xl fixed w-full z-50 px-6 py-5 border-b-2 border-orange-500/30">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <h1 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent drop-shadow-2xl">
+            Code<span class="bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Rush</span>
+        </h1>
+        <div class="flex gap-4 md:gap-6 items-center">
+            <button onclick="goHome()" class="hover:text-orange-300 text-xl font-bold px-6 py-3 rounded-2xl hover:bg-orange-500/20 transition-all backdrop-blur-sm border border-orange-400/30">🏠 Home</button>
+            <button onclick="showLeaderboard()" class="hover:text-orange-300 text-xl font-bold px-6 py-3 rounded-2xl hover:bg-orange-500/20 transition-all backdrop-blur-sm border border-orange-400/30">🏆 Leaderboard</button>
+            <button id="login-btn" onclick="toggleAuth()" class="px-10 py-4 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-black rounded-3xl shadow-2xl hover:shadow-3xl transition-all text-lg border-4 border-orange-400/50 rush-glow">⚡ Join Rush</button>
+            <button id="logout-btn" onclick="logout()" class="px-10 py-4 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-black rounded-3xl shadow-2xl hover:shadow-3xl transition-all text-lg border-4 border-red-400/50 hidden ml-3">🚪 Logout</button>
         </div>
     </div>
 </nav>
 
 <!-- Hero Section -->
-<section class="pt-32 pb-20 px-6 max-w-6xl mx-auto">
-    <div class="text-center mb-24">
-        <h1 class="text-6xl md:text-8xl font-black bg-gradient-to-r from-yellow-400 via-pink-400 to-cyan-400 bg-clip-text text-transparent mb-8 leading-tight">
-            Daily Coding<br><span class="text-3xl">Contest</span>
+<section class="pt-40 pb-24 px-6 max-w-7xl mx-auto">
+    <div class="text-center mb-32">
+        <h1 class="text-7xl md:text-9xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent mb-12 leading-tight drop-shadow-4xl rush-glow">
+            Code<span class="text-6xl md:text-7xl">Rush</span>
         </h1>
-        <p class="text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-            1 घंटे का FREE contest • Beginner friendly • Live Leaderboard • ₹1000 Prize Pool
+        <p class="text-3xl md:text-4xl text-white/95 mb-16 max-w-5xl mx-auto leading-relaxed font-semibold tracking-wide">
+            ⚡ 1 Hour Daily FREE Contest • Beginner Friendly • Live Leaderboard • <span class="text-orange-400 font-black text-5xl">₹1000 Prize Pool</span>
         </p>
-    </div>
-
-    <!-- Today's Contest -->
-    <div class="bg-white/10 backdrop-blur-xl border border-white/20 rounded-4xl p-12 max-w-4xl mx-auto shadow-2xl hover:shadow-3xl transition-all mb-20">
-        <div class="text-center">
-            <h2 class="text-5xl font-black text-white mb-12 flex items-center justify-center gap-6">
-                🔥 आज का Contest
-                <span class="text-xl bg-gradient-to-r from-emerald-500 to-green-500 px-8 py-4 rounded-3xl text-white font-bold shadow-2xl animate-pulse">🔴 LIVE</span>
-            </h2>
-            
-            <div class="grid lg:grid-cols-3 gap-12 mb-16">
-                <div class="bg-gradient-to-br from-emerald-400/30 to-green-500/30 p-12 rounded-4xl border-4 border-emerald-400/50 backdrop-blur-xl hover:scale-105 transition-all">
-                    <p class="text-emerald-200 text-2xl font-bold mb-6">🥇 1st Prize</p>
-                    <p class="text-5xl font-black text-emerald-400">₹1000</p>
-                </div>
-                <div class="bg-gradient-to-br from-orange-400/30 to-orange-500/30 p-12 rounded-4xl border-4 border-orange-400/50 backdrop-blur-xl hover:scale-105 transition-all">
-                    <p class="text-orange-200 text-2xl font-bold mb-6">🪑 Seats Left</p>
-                    <p class="text-4xl font-black text-orange-400" id="seats-left">149/200</p>
-                </div>
-                <div class="bg-gradient-to-br from-blue-400/30 to-blue-500/30 p-12 rounded-4xl border-4 border-blue-400/50 backdrop-blur-xl hover:scale-105 transition-all">
-                    <p class="text-blue-200 text-2xl font-bold mb-6">⏰ Starts</p>
-                    <p class="text-4xl font-black text-blue-400">8:00 PM</p>
-                </div>
-            </div>
-
-            <button onclick="joinContest()" class="w-full bg-gradient-to-r from-emerald-500 via-green-500 to-teal-600 hover:from-emerald-600 hover:via-green-600 hover:to-teal-700 text-white font-black py-10 px-20 rounded-4xl text-3xl shadow-3xl hover:shadow-4xl transform hover:scale-105 transition-all duration-300 border-4 border-emerald-400/70">
-                🚀 अभी Register करो - FREE
+        <div class="flex flex-col sm:flex-row gap-6 justify-center items-center max-w-3xl mx-auto">
+            <button onclick="joinContest()" class="px-20 py-10 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:via-teal-600 hover:to-emerald-700 text-white font-black text-2xl md:text-3xl rounded-4xl shadow-4xl hover:shadow-5xl transform hover:scale-105 transition-all duration-500 border-4 border-emerald-400/60 rush-glow w-full sm:w-auto">
+                🚀 Join Today's Rush - FREE
+            </button>
+            <button onclick="scrollToLogin()" class="px-20 py-10 bg-white/20 backdrop-blur-xl border-4 border-white/40 text-white font-black text-2xl md:text-3xl rounded-4xl hover:bg-white/40 hover:border-white/70 transition-all duration-500 hover:scale-105 rush-glow w-full sm:w-auto">
+                👤 Quick Login
             </button>
         </div>
     </div>
 
-    <!-- Login Form -->
-    <div id="login-section" class="max-w-md mx-auto bg-white/10 backdrop-blur-xl rounded-4xl p-12 border border-white/20 shadow-2xl hover:shadow-3xl transition-all">
-        <h3 class="text-4xl font-black text-white mb-10 text-center">👋 Login / Signup</h3>
-        <input id="user-email" type="email" placeholder="📧 Email ID" class="w-full mb-6 p-6 rounded-3xl text-black bg-white/95 border-2 border-gray-300 focus:ring-4 focus:ring-cyan-400 focus:border-transparent text-xl font-semibold text-center" />
-        <input id="user-password" type="password" placeholder="🔒 Password" class="w-full mb-8 p-6 rounded-3xl text-black bg-white/95 border-2 border-gray-300 focus:ring-4 focus:ring-cyan-400 focus:border-transparent text-xl font-semibold text-center" />
-        <div class="flex gap-6">
-            <button onclick="userSignup()" class="flex-1 px-12 py-6 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 rounded-3xl text-white font-black text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all">Sign up</button>
-            <button onclick="userLogin()" class="flex-1 px-12 py-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 rounded-3xl text-white font-black text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all">Login</button>
+    <!-- Today's Contest Card -->
+    <div class="bg-white/20 backdrop-blur-3xl border-4 border-orange-400/40 rounded-4xl p-16 md:p-24 max-w-6xl mx-auto shadow-4xl hover:shadow-5xl transition-all mb-24 rush-glow">
+        <div class="text-center">
+            <h2 class="text-6xl md:text-7xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent mb-20 flex items-center justify-center gap-8">
+                🔥 Today's CodeRush
+                <span class="text-3xl bg-gradient-to-r from-emerald-500 to-teal-500 px-16 py-8 rounded-4xl text-white font-black shadow-4xl border-4 border-emerald-400/70 animate-pulse rush-glow">🔴 LIVE NOW</span>
+            </h2>
+            
+            <div class="grid 2xl:grid-cols-4 xl:grid-cols-3 lg:grid-cols-2 gap-12 mb-24">
+                <div class="bg-gradient-to-br from-emerald-500/40 to-teal-500/40 p-16 rounded-4xl border-4 border-emerald-400/60 backdrop-blur-xl hover:scale-110 transition-all shadow-4xl rush-glow">
+                    <p class="text-emerald-100 text-3xl font-bold mb-8">🥇 1st Prize</p>
+                    <p class="text-7xl font-black text-emerald-300 drop-shadow-2xl">₹1000</p>
+                </div>
+                <div class="bg-gradient-to-br from-orange-500/40 to-yellow-500/40 p-16 rounded-4xl border-4 border-orange-400/60 backdrop-blur-xl hover:scale-110 transition-all shadow-4xl rush-glow">
+                    <p class="text-orange-100 text-3xl font-bold mb-8">⚡ Seats Left</p>
+                    <p class="text-6xl font-black text-orange-300 drop-shadow-2xl" id="seats-left">178/200</p>
+                </div>
+                <div class="bg-gradient-to-br from-blue-500/40 to-cyan-500/40 p-16 rounded-4xl border-4 border-blue-400/60 backdrop-blur-xl hover:scale-110 transition-all shadow-4xl">
+                    <p class="text-blue-100 text-3xl font-bold mb-8">⏰ Contest Time</p>
+                    <p class="text-6xl font-black text-blue-300 drop-shadow-2xl">8:00 PM - 9:00 PM</p>
+                </div>
+                <div class="bg-gradient-to-br from-purple-500/40 to-pink-500/40 p-16 rounded-4xl border-4 border-purple-400/60 backdrop-blur-xl hover:scale-110 transition-all shadow-4xl">
+                    <p class="text-purple-100 text-3xl font-bold mb-8">📱 Languages</p>
+                    <p class="text-4xl font-bold text-purple-300 drop-shadow-2xl">JS | Python | C++ | Java</p>
+                </div>
+            </div>
+
+            <button onclick="joinContest()" class="w-full max-w-4xl mx-auto block bg-gradient-to-r from-orange-500 via-yellow-500 to-red-600 hover:from-orange-600 hover:via-yellow-600 hover:to-red-700 text-white font-black py-20 px-32 rounded-4xl text-4xl md:text-5xl shadow-5xl hover:shadow-6xl transform hover:scale-105 transition-all duration-500 border-8 border-orange-400/70 rush-glow animate-pulse">
+                ⚡ RUSH NOW - FREE ENTRY
+            </button>
+        </div>
+    </div>
+
+    <!-- Login Section -->
+    <div id="login-section" class="max-w-2xl mx-auto bg-white/20 backdrop-blur-3xl rounded-4xl p-16 md:p-24 border-4 border-orange-400/50 shadow-5xl hover:shadow-6xl transition-all mb-32">
+        <h3 class="text-5xl md:text-6xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent mb-16 text-center drop-shadow-2xl">⚡ Join CodeRush</h3>
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <input id="user-email" type="email" placeholder="📧 Enter Email" class="w-full p-8 rounded-3xl text-black bg-white/95 border-4 border-gray-300 focus:ring-8 focus:ring-orange-400 focus:border-transparent text-2xl font-bold text-center shadow-2xl transition-all" />
+            <input id="user-password" type="password" placeholder="🔒 Password" class="w-full p-8 rounded-3xl text-black bg-white/95 border-4 border-gray-300 focus:ring-8 focus:ring-orange-400 focus:border-transparent text-2xl font-bold text-center shadow-2xl transition-all" />
+        </div>
+        <div class="flex flex-col sm:flex-row gap-6">
+            <button onclick="userSignup()" class="flex-1 px-16 py-10 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-4xl text-white font-black text-3xl shadow-4xl hover:shadow-5xl transform hover:scale-105 transition-all border-4 border-emerald-400/60 rush-glow">🎉 Sign up Free</button>
+            <button onclick="userLogin()" class="flex-1 px-16 py-10 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 rounded-4xl text-white font-black text-3xl shadow-4xl hover:shadow-5xl transform hover:scale-105 transition-all border-4 border-orange-400/60 rush-glow">⚡ Login Now</button>
         </div>
     </div>
 </section>
 
 <!-- Dashboard -->
-<div id="dashboard" class="pt-32 pb-20 px-6 max-w-6xl mx-auto hidden">
-    <div class="text-center mb-24">
-        <h1 class="text-7xl font-black bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent mb-8">Welcome Back!</h1>
-        <p id="dashboard-welcome" class="text-3xl text-white/90 mb-12 max-w-3xl mx-auto">Ready for today's ₹1000 contest? 🚀</p>
+<div id="dashboard" class="pt-40 pb-24 px-6 max-w-7xl mx-auto hidden">
+    <div class="text-center mb-32">
+        <h1 class="text-8xl md:text-9xl font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 bg-clip-text text-transparent mb-16 drop-shadow-4xl rush-glow">Welcome Rusher!</h1>
+        <p id="dashboard-welcome" class="text-4xl md:text-5xl text-white/95 mb-20 max-w-6xl mx-auto font-bold leading-relaxed">Your CodeRush dashboard is LIVE! Ready to rush for today's ₹1000 prize? ⚡</p>
     </div>
 
-    <!-- Live Timer -->
-    <div class="text-center mb-20 p-20 bg-gradient-to-r from-yellow-500/40 via-orange-500/40 to-red-500/40 rounded-4xl backdrop-blur-xl border-4 border-yellow-400/60 shadow-3xl">
-        <div class="text-9xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent mb-16 animate-pulse" id="live-timer">45:23</div>
-        <p class="text-5xl font-black text-white/95 mb-16">Contest Time Remaining 🔥</p>
-        <div class="flex flex-wrap justify-center items-center gap-16">
-            <div class="bg-white/50 backdrop-blur-xl px-20 py-10 rounded-4xl text-white font-black text-4xl shadow-3xl border-4 border-white/60">Problem <span id="current-problem">1</span>/3</div>
-            <div class="bg-gradient-to-r from-emerald-500 to-green-600 px-20 py-10 rounded-4xl text-white font-black text-4xl shadow-3xl border-4 border-emerald-400/70 animate-pulse">🔴 LIVE</div>
+    <!-- Live Timer + Stats -->
+    <div class="grid lg:grid-cols-2 gap-12 mb-24">
+        <div class="bg-gradient-to-r from-yellow-500/40 via-orange-500/40 to-red-500/40 backdrop-blur-3xl p-20 md:p-32 rounded-4xl border-8 border-orange-400/60 shadow-5xl text-center rush-glow">
+            <div class="text-9xl md:text-10xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent mb-20 animate-pulse drop-shadow-4xl" id="live-timer">45:23</div>
+            <p class="text-5xl md:text-6xl font-black text-white/95 mb-20 tracking-wide">Contest Time Remaining 🔥</p>
+            <div class="flex flex-wrap justify-center items-center gap-12">
+                <div class="bg-white/40 backdrop-blur-xl px-20 py-12 rounded-4xl text-white font-black text-4xl shadow-4xl border-4 border-white/70">Problem <span id="current-problem" class="text-orange-400">1</span>/3</div>
+                <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-24 py-12 rounded-4xl text-white font-black text-4xl shadow-4xl border-8 border-emerald-400/70 animate-pulse rush-glow">🔴 LIVE RUSH</div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-8">
+            <div class="bg-gradient-to-br from-blue-500/40 to-cyan-500/40 backdrop-blur-3xl p-16 rounded-4xl border-4 border-blue-400/60 shadow-4xl text-center hover:scale-105 transition-all">
+                <p class="text-8xl md:text-9xl font-black text-blue-300 mb-8 drop-shadow-2xl" id="user-points">156</p>
+                <p class="text-3xl font-bold text-white/95 tracking-wide">Rush Points</p>
+            </div>
+            <div class="bg-gradient-to-br from-purple-500/40 to-pink-500/40 backdrop-blur-3xl p-16 rounded-4xl border-4 border-purple-400/60 shadow-4xl text-center hover:scale-105 transition-all">
+                <p class="text-8xl md:text-9xl font-black text-purple-300 mb-8 drop-shadow-2xl" id="user-rank">#7</p>
+                <p class="text-3xl font-bold text-white/95 tracking-wide">Live Rank</p>
+            </div>
         </div>
     </div>
 
-    <!-- Code Editor Button -->
     <div class="text-center">
-        <button onclick="openCodeEditor()" class="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black py-12 px-24 rounded-4xl text-4xl shadow-3xl hover:shadow-4xl transform hover:scale-105 transition-all duration-300 border-4 border-emerald-400/70">
-            💻 Start Coding Now
+        <button onclick="openCodeEditor()" class="bg-gradient-to-r from-orange-500 via-yellow-500 to-red-600 hover:from-orange-600 hover:via-yellow-600 hover:to-red-700 text-white font-black py-20 px-40 rounded-4xl text-5xl shadow-6xl hover:shadow-7xl transform hover:scale-105 transition-all duration-500 border-8 border-orange-400/70 rush-glow animate-pulse">
+            💻 START CODING RUSH NOW
         </button>
     </div>
 </div>
 
 <!-- Code Editor Modal -->
-<div id="code-editor-modal" class="fixed inset-0 bg-black/95 backdrop-blur-2xl z-[10000] hidden flex items-center justify-center p-8">
-    <div class="bg-gradient-to-br from-gray-900/95 to-gray-800/95 w-full max-w-7xl h-[90vh] rounded-4xl shadow-4xl flex flex-col border-4 border-white/30 overflow-hidden">
+<div id="code-editor-modal" class="fixed inset-0 bg-black/95 backdrop-blur-3xl z-[10000] hidden flex items-center justify-center p-8">
+    <div class="bg-gradient-to-br from-gray-900/98 to-gray-800/98 w-full max-w-7xl h-[92vh] rounded-4xl shadow-4xl flex flex-col border-8 border-orange-400/40 overflow-hidden rush-glow">
         <!-- Editor Header -->
-        <div class="bg-gradient-to-r from-gray-800/90 to-gray-700/90 p-8 flex items-center gap-6 text-white border-b-4 border-white/20 backdrop-blur-xl">
-            <h2 id="problem-title" class="text-4xl font-black bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text flex-1">Problem #1: Two Sum</h2>
-            <div class="flex gap-4">
-                <button onclick="runCode(event)" class="px-12 py-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-3xl font-black text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all border-4 border-green-400/50">▶️ Test</button>
-                <button onclick="submitSolution()" class="px-12 py-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 rounded-3xl font-black text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all border-4 border-emerald-400/50">✅ Submit</button>
-                <button onclick="closeCodeEditor()" class="px-10 py-6 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 rounded-3xl font-black text-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all border-4 border-red-400/50">✕</button>
-            </div>
-        </div>
-        
-        <!-- Editor Content -->
-        <div class="flex-1 flex overflow-hidden">
-            <!-- Problem Description (Left 40%) -->
-            <div class="w-2/5 bg-gradient-to-b from-gray-800/90 to-gray-900/90 p-12 overflow-y-auto border-r-4 border-white/20">
-                <h3 class="text-3xl font-black text-white mb-12 flex items-center gap-6">
-                    📝 Problem <span id="problem-number" class="text-2xl bg-blue-500/90 px-8 py-4 rounded-3xl text-white font-bold">#1/3</span>
-                </h3>
-                <div id="problem-description" class="text-xl text-gray-200 leading-relaxed space-y-8">
-                    <p><strong>Two Sum:</strong> Given array <code class="bg-gray-700 px-6 py-3 rounded-3xl text-green-400 font-bold text-xl inline-block">nums = [2,7,11,15]</code>, <code class="bg-gray-700 px-6 py-3 rounded-3xl text-green-400 font-bold text-xl inline-block ml-4">target = 9</code></p>
-                    <p class="text-2xl font-bold text-white mb-8">Return indices of two numbers that add up to target.</p>
-                    
-                    <div class="bg-emerald-500/20 border-4 border-emerald-400/50 p-10 rounded-4xl">
-                        <div class="text-2xl font-bold text-emerald-300 mb-8">Example:</div>
-                        <div class="grid md:grid-cols-2 gap-8 text-xl">
-                            <div><code class="block bg-emerald-500/40 p-6 rounded-3xl text-emerald-200 font-mono text-lg border-l-8 border-emerald-400 mb-4">Input: nums = [2,7,11,15], target = 9</code></div>
-                            <div><code class="block bg-emerald-500/40 p-6 rounded-3xl text-emerald-200 font-mono text-lg border-l-8 border-emerald-400">Output: [0,1]</code></div>
-                        </div>
-                    </div>
-                    
-                    <div class="bg-gray-800/80 p-8 rounded-4xl border-2 border-gray-700/50">
-                        <h4 class="text-2xl font-bold text-white mb-6">Constraints:</h4>
-                        <ul class="text-xl space-y-4 text-gray-300">
-                            <li><code class="bg-gray-700 px-4 py-2 rounded-2xl text-green-400 font-mono">2 ≤ nums.length ≤ 10⁴</code></li>
-                            <li><code class="bg-gray-700 px-4 py-2 rounded-2xl text-green-400 font-mono">-10⁹ ≤ nums[i] ≤ 10⁹</code></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Code Editor (Right 60%) -->
-            <div class="flex-1 relative bg-gradient-to-b from-gray-900/95 to-black/50 border-l-4 border-white/20">
-                <textarea id="code-textarea" class="w-full h-full p-8 text-xl text-green-400 bg-transparent outline-none resize-none code-editor font-bold" placeholder="function twoSum(nums, target) {
-    // Write your code here...
-    return [0, 1];
-}">function twoSum(nums, target) {
-    const map = new Map();
-    for(let i = 0; i < nums.length; i++) {
-        const complement = target - nums[i];
-        if (map.has(complement)) {
-            return [map.get(complement), i];
-        }
-        map.set(nums[i], i);
-    }
-    return [];
-}</textarea>
-                <div id="test-result" class="absolute bottom-8 right-8 bg-green-500/95 text-white px-12 py-6 rounded-4xl text-2xl font-black shadow-4xl border-4 border-green-400/70 hidden transform scale-110">✅ ALL TESTS PASSED</div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- 🔥 PERFECTLY WORKING SCRIPT - NO EXTERNAL DEPENDENCIES -->
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 CodeDaily Loaded Successfully!');
-    
-    // Global State
-    let userPoints = 156;
-    let contestTime = 2700; // 45 minutes
-    let timerInterval;
-    let isLoggedIn = false;
-    let currentProblem = 1;
-
-    // Test Cases for Two Sum
-    const testCases = [
-        { input: [[2,7,11,15], 9], expected: [0,1] },
-        { input: [[3,2,4], 6], expected: [1,2] },
-        { input: [[3,3], 6], expected: [0,1] }
-    ];
-
-    // 🎉 ALL BUTTON FUNCTIONS - 100% WORKING
-    window.joinContest = function() {
-        const seats = parseInt(document.getElementById('seats-left').textContent.split('/')[0]);
-        if (seats > 0) {
-            document.getElementById('seats-left').textContent = (seats-1) + '/200';
-            alert('🎉 Registration Successful!\n✅ Seat Confirmed\n⏰ Contest 8:00 PM\n🏆 Good Luck! 💪');
-        } else {
-            alert('❌ All seats filled! Next contest tomorrow.');
-        }
-    };
-
-    window.goHome = function() {
-        document.getElementById('dashboard').classList.add('hidden');
-        document.getElementById('login-section').classList.remove('hidden');
-    };
-
-    window.showLeaderboard = function() {
-        alert(`🏆 LIVE LEADERBOARD\n\n🥇 Ravi Sharma - 245 pts\n🥈 Priya Singh - 198 pts\n🥉 Amit Kumar - 176 pts\n\n👤 You - ${userPoints} pts`);
-    };
-
-    window.toggleAuth = function() {
-        if (!isLoggedIn) {
-            document.getElementById('login-btn').textContent = 'Dashboard';
-            document.getElementById('login-btn').onclick = openDashboard;
-            document.getElementById('logout-btn').classList.remove('hidden');
-            isLoggedIn = true;
-            alert('🎉 Welcome to CodeDaily! Login to continue.');
-        } else {
-            openDashboard();
-        }
-    };
-
-    window.userSignup = function() {
-        const email = document.getElementById('user-email').value;
-        if (email) {
-            isLoggedIn = true;
-            document.getElementById('login-btn').textContent = 'Dashboard';
-            document.getElementById('login-btn').onclick = openDashboard;
-            document.getElementById('logout-btn').classList.remove('hidden');
-            alert('🎉 Account Created Successfully!');
-        }
-    };
-
-    window.userLogin = function() {
-        const email = document.getElementById('user-email').value;
-        if (email) {
-            isLoggedIn = true;
-            document.getElementById('login-btn').textContent = 'Dashboard';
-            document.getElementById('login-btn').onclick = openDashboard;
-            document.getElementById('logout-btn').classList.remove('hidden');
-            alert('✅ Login Successful!');
-        }
-    };
-
-    window.logout = function() {
-        isLoggedIn = false;
-        document.getElementById('login-btn').textContent = 'Join Free';
-        document.getElementById('login-btn').onclick = toggleAuth;
-        document.getElementById('logout-btn').classList.add('hidden');
-        goHome();
-    };
-
-    window.openDashboard = function() {
-        document.getElementById('login-section').classList.add('hidden');
-        document.getElementById('dashboard').classList.remove('hidden');
-        startContestTimer();
-        document.getElementById('dashboard-welcome').textContent = `Ready for today's ₹1000 contest, ${isLoggedIn ? 'Champ!' : 'User!'}`;
-    };
-
-    window.openCodeEditor = function() {
-        document.getElementById('dashboard').classList.add('hidden');
-        document.getElementById('code-editor-modal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    };
-
-    window.closeCodeEditor = function() {
-        document.getElementById('code-editor-modal').classList.add('hidden');
-        document.getElementById('dashboard').classList.remove('hidden');
-        document.body.style.overflow = 'auto';
-    };
-
-    // 🔥 STRICT CODE TESTING - REAL VALIDATION
-    window.runCode = function(event) {
-        const btn = event.target;
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Testing...';
-        btn.disabled = true;
-
-        const code = document.getElementById('code-textarea').value;
-        const resultDiv = document.getElementById('test-result');
-
-        try {
-            // Safe function extraction
-            const testFn = new Function(`return (function() {${code}; return typeof twoSum === 'function' ? twoSum : null; })()`);
-            const twoSum = testFn();
-
-            if (typeof twoSum !== 'function') {
-                throw new Error('❌ twoSum function not found! Define function twoSum(nums, target)');
-            }
-
-            // Run all test cases
-            let allPassed = true;
-            for (let test of testCases) {
-                const result = twoSum(...test.input);
-                if (JSON.stringify(result) !== JSON.stringify(test.expected)) {
-                    allPassed = false;
-                    break;
-                }
-            }
-
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                
-                if (allPassed) {
-                    resultDiv.classList.remove('hidden');
-                    resultDiv.textContent = '✅ ALL 3 TESTS PASSED! Ready for Submit 🚀';
-                    resultDiv.className = 'absolute bottom-8 right-8 bg-green-500/95 text-white px-12 py-6 rounded-4xl text-2xl font-black shadow-4xl border-4 border-green-400/70 transform scale-110';
-                } else {
-                    resultDiv.classList.remove('hidden');
-                    resultDiv.textContent = '❌ Tests Failed! Check console.';
-                    resultDiv.className = 'absolute bottom-8 right-8 bg-red-500/95 text-white px-12 py-6 rounded-4xl text-2xl font-black shadow-4xl border-4 border-red-400/70 transform scale-110';
-                }
-            }, 1200);
-
-        } catch (error) {
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                resultDiv.classList.remove('hidden');
-                resultDiv.textContent = `❌ Error: ${error.message}`;
-                resultDiv.className = 'absolute bottom-8 right-8 bg-red-500/95 text-white px-12 py-6 rounded-4xl text-2xl font-black shadow-4xl border-4 border-red-400/70 transform scale-110';
-            }, 1200);
-        }
-    };
-
-    window.submitSolution = function() {
-        const code = document.getElementById('code-textarea').value;
-        
-        try {
-            const testFn = new Function(`return (function() {${code}; return typeof twoSum === 'function' ? twoSum : null; })()`);
-            const twoSum = testFn();
-
-            if (typeof twoSum !== 'function') {
-                alert('❌ Submission Failed!\ntwoSum function missing. Fix first!');
-                return;
-            }
-
-            // Final validation
-            let allPassed = true;
-            for (let test of testCases) {
-                const result = twoSum(...test.input);
-                if (JSON.stringify(result) !== JSON.stringify(test.expected)) {
-                    allPassed = false;
-                    break;
-                }
-            }
-
-            if (allPassed) {
-                userPoints += 100;
-                alert(`🎉 SOLUTION ACCEPTED! +100 points 🎉\n\n✅ All test cases passed perfectly\n⏱️ Time: 12ms | Memory: 8.2MB\n🏆 Total Points: ${userPoints}\n\nNext problem unlocked!`);
-            } else {
-                alert('❌ Submission Rejected!\nWrong Answer on hidden test cases.\n\nRun tests first to debug! 🔍');
-            }
-
-        } catch (error) {
-            alert('❌ Submission Error!\n' + error.message);
-        }
-    };
-
-    function startContestTimer() {
-        clearInterval(timerInterval);
-        let timeLeft = contestTime;
-        
-        timerInterval = setInterval(() => {
-            const mins = Math.floor(timeLeft / 60);
-            const secs = timeLeft % 60;
-            document.getElementById('live-timer').textContent = 
-                `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            
-            if (timeLeft <= 0) {
-                document.getElementById('live-timer').textContent = '00:00';
-                document.getElementById('live-timer').className = 'text-9xl font-black bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-16 animate-pulse';
-            }
-            timeLeft--;
-        }, 1000);
-    }
-
-    // Initialize
-    console.log('✅ All systems ready! All buttons working perfectly.');
-});
-</script>
-
-</body>
-</html>
+        <div class="bg-gradient-to-r from-gray-800/95 to-gray-700/95 p-8 md:p-12 flex items-center gap-8 text-white border-b-4 border-orange-400/40 backdrop-blur-2xl">
+            <h2 id="problem-title" class="text-4xl md:text-5xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text flex-1 drop-shadow-2xl">Problem #1: Two Sum</h2>
+            <div class="flex gap-6">
+                <button onclick="runCode(event)" class="px-16 py-8 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 rounded-4xl font-black text-2xl shadow-4xl hover:shadow-5xl transform hover:scale-105 transition-all border-4 border-green-400/60 rush-glow">▶️ Test Code</button>
+                <button onclick="submitSolution()" class="px-16 py-8 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700
