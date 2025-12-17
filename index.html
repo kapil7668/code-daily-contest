@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CodeRush - Daily Coding Contest | ₹1000 Prize</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { font-family: 'Inter', sans-serif; }
         .code-editor { font-family: 'Consolas', monospace; }
         .rush-glow { animation: rush-glow 2s infinite; }
-        @keyframes rush-glow { 0%,100%{box-shadow:0 0 20px rgba(255,165,0,0.5);}50%{box-shadow:0 0 40px rgba(255,165,0,0.8);}}
+        @keyframes rush-glow { 0%,100%{box-shadow:0 0 20px rgba(255,165,0,0.5);}50%{box-shadow:0 0 40px rgba(255,165,0,0.8);} }
         .text-constrain { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     </style>
 </head>
@@ -18,33 +20,54 @@
 <!-- Navbar -->
 <nav class="fixed bg-black/70 backdrop-blur-2xl w-full z-50 px-4 py-4 border-b border-orange-500/30 pt-4">
     <div class="max-w-6xl mx-auto flex justify-between items-center">
-        <h1 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent drop-shadow-2xl">Code<span class="bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Rush</span></h1>
+        <h1 class="text-3xl md:text-4xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent drop-shadow-2xl">
+            Code<span class="bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">Rush</span>
+        </h1>
         <div class="flex gap-3 md:gap-4">
-            <button id="home-btn" onclick="goHome()" class="px-4 py-2 md:px-6 md:py-3 text-lg md:text-xl font-bold hover:text-orange-300 rounded-xl hover:bg-orange-500/20 transition-all text-constrain">🏠 Home</button>
-            <button id="leaderboard-btn" onclick="showLeaderboard()" class="px-4 py-2 md:px-6 md:py-3 text-lg md:text-xl font-bold hover:text-orange-300 rounded-xl hover:bg-orange-500/20 transition-all text-constrain">🏆 Leaderboard</button>
-            <button id="login-btn" class="px-8 py-3 md:px-10 md:py-4 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-black rounded-2xl md:rounded-3xl shadow-2xl rush-glow hover:scale-105 text-sm md:text-lg transition-all">⚡ Join Rush</button>
-            <button id="logout-btn" onclick="logout()" class="px-8 py-3 md:px-10 md:py-4 bg-gradient-to-r from-red-500 to-rose-500 text-white font-black rounded-2xl md:rounded-3xl shadow-2xl hidden hover:scale-105 text-sm md:text-lg transition-all">Logout</button>
+            <button id="home-btn" onclick="goHome()" class="px-4 py-2 md:px-6 md:py-3 text-lg md:text-xl font-bold hover:text-orange-300 rounded-xl hover:bg-orange-500/20 transition-all text-constrain hidden">
+                🏠 Home
+            </button>
+            <button id="leaderboard-btn" onclick="showLeaderboardPage()" class="px-4 py-2 md:px-6 md:py-3 text-lg md:text-xl font-bold hover:text-orange-300 rounded-xl hover:bg-orange-500/20 transition-all text-constrain hidden">
+                🏆 Leaderboard
+            </button>
+            <button id="login-btn" class="px-8 py-3 md:px-10 md:py-4 bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-black rounded-2xl md:rounded-3xl shadow-2xl rush-glow hover:scale-105 text-sm md:text-lg transition-all">
+                ⚡ Join Rush
+            </button>
+            <button id="logout-btn" onclick="logout()" class="px-8 py-3 md:px-10 md:py-4 bg-gradient-to-r from-red-500 to-rose-500 text-white font-black rounded-2xl md:rounded-3xl shadow-2xl hidden hover:scale-105 text-sm md:text-lg transition-all">
+                Logout
+            </button>
         </div>
     </div>
 </nav>
 
 <div class="pt-20 md:pt-24">
 
-<!-- HOME PAGE (Default - Login/Signup) -->
+<!-- HOME PAGE -->
 <div id="home-page" class="min-h-screen">
     <!-- Hero -->
     <section class="px-4 md:px-6 max-w-6xl mx-auto text-center mb-20 md:mb-32">
-        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent mb-8 md:mb-12 leading-tight drop-shadow-4xl rush-glow">Code<span class="text-4xl md:text-6xl">Rush</span></h1>
-        <p class="text-2xl md:text-3xl lg:text-4xl text-white/95 mb-12 md:mb-16 max-w-4xl mx-auto font-bold leading-relaxed">⚡ 1 Hour Daily FREE Contest • <span class="text-orange-400 font-black text-3xl md:text-4xl lg:text-5xl">₹1000 Prize Pool</span></p>
+        <h1 class="text-5xl md:text-7xl lg:text-8xl font-black bg-gradient-to-r from-orange-400 via-yellow-400 to-red-500 bg-clip-text text-transparent mb-8 md:mb-12 leading-tight drop-shadow-4xl rush-glow">
+            Code<span class="text-4xl md:text-6xl">Rush</span>
+        </h1>
+        <p class="text-2xl md:text-3xl lg:text-4xl text-white/95 mb-12 md:mb-16 max-w-4xl mx-auto font-bold leading-relaxed">
+            ⚡ 1 Hour Daily FREE Contest •
+            <span class="text-orange-400 font-black text-3xl md:text-4xl lg:text-5xl">₹1000 Prize Pool</span>
+        </p>
         <div class="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center max-w-2xl mx-auto">
-            <button onclick="scrollToLogin()" class="px-12 py-6 md:px-20 md:py-10 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xl md:text-2xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all w-full sm:w-auto">🚀 Join Today's Rush</button>
-            <button onclick="scrollToLogin()" class="px-12 py-6 md:px-20 md:py-10 bg-white/20 backdrop-blur-xl border-4 border-white/40 text-white font-black text-xl md:text-2xl rounded-3xl md:rounded-4xl hover:bg-white/40 hover:border-white/60 transition-all hover:scale-105 w-full sm:w-auto">👤 Login / Signup</button>
+            <button onclick="scrollToLogin()" class="px-12 py-6 md:px-20 md:py-10 bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-black text-xl md:text-2xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all w-full sm:w-auto">
+                🚀 Join Today's Rush
+            </button>
+            <button onclick="scrollToLogin()" class="px-12 py-6 md:px-20 md:py-10 bg-white/20 backdrop-blur-xl border-4 border-white/40 text-white font-black text-xl md:text-2xl rounded-3xl md:rounded-4xl hover:bg-white/40 hover:border-white/60 transition-all hover:scale-105 w-full sm:w-auto">
+                👤 Login / Signup
+            </button>
         </div>
     </section>
 
     <!-- Contest Card -->
     <div class="bg-white/20 backdrop-blur-3xl border-4 border-orange-400/40 rounded-3xl md:rounded-4xl p-8 md:p-12 lg:p-16 mx-4 md:mx-6 max-w-5xl mx-auto mb-20 shadow-4xl rush-glow">
-        <h2 class="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent mb-12 md:mb-16 text-center">🔥 Today's CodeRush</h2>
+        <h2 class="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent mb-12 md:mb-16 text-center">
+            🔥 Today's CodeRush
+        </h2>
         <div class="grid md:grid-cols-3 gap-6 md:gap-12 mb-12 md:mb-16 text-center">
             <div class="p-8 md:p-12 lg:p-16 bg-emerald-500/40 rounded-3xl md:rounded-4xl border-4 border-emerald-400/60 hover:scale-105 transition-all">
                 <p class="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-100 mb-4 md:mb-8 text-constrain">🥇 1st Prize</p>
@@ -59,40 +82,60 @@
                 <p class="text-4xl md:text-5xl lg:text-6xl font-black text-blue-300 drop-shadow-2xl">8:00 PM</p>
             </div>
         </div>
-        <button onclick="scrollToLogin()" class="w-full max-w-2xl mx-auto block bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-black py-10 md:py-12 px-16 md:px-24 text-2xl md:text-3xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all">⚡ RUSH NOW - FREE ENTRY</button>
+        <button onclick="scrollToLogin()" class="w-full max-w-2xl mx-auto block bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-black py-10 md:py-12 px-16 md:px-24 text-2xl md:text-3xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all">
+            ⚡ RUSH NOW - FREE ENTRY
+        </button>
     </div>
 
     <!-- Login Section -->
     <div id="login-section" class="max-w-lg md:max-w-2xl mx-auto bg-white/20 backdrop-blur-3xl rounded-3xl md:rounded-4xl p-8 md:p-12 lg:p-16 border-4 border-orange-400/50 shadow-4xl mx-4 md:mx-6 mb-24">
-        <h3 class="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent mb-10 md:mb-12 text-center drop-shadow-2xl">⚡ Join CodeRush</h3>
+        <h3 class="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent mb-10 md:mb-12 text-center drop-shadow-2xl">
+            ⚡ Join CodeRush
+        </h3>
         <div class="grid md:grid-cols-2 gap-6 md:gap-8 mb-10 md:mb-12">
             <input id="user-email" type="email" placeholder="📧 Enter Email" class="w-full p-6 md:p-8 rounded-2xl md:rounded-3xl text-black bg-white/95 border-4 border-gray-300 focus:ring-4 focus:ring-orange-400 focus:border-transparent text-lg md:text-xl font-bold text-center shadow-2xl transition-all">
             <input id="user-password" type="password" placeholder="🔒 Password" class="w-full p-6 md:p-8 rounded-2xl md:rounded-3xl text-black bg-white/95 border-4 border-gray-300 focus:ring-4 focus:ring-orange-400 focus:border-transparent text-lg md:text-xl font-bold text-center shadow-2xl transition-all">
         </div>
         <div class="flex flex-col sm:flex-row gap-4 md:gap-6">
-            <button onclick="userSignup()" class="flex-1 py-6 md:py-8 px-12 md:px-16 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-lg md:text-2xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all">🎉 Sign up Free</button>
-            <button onclick="userLogin()" class="flex-1 py-6 md:py-8 px-12 md:px-16 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-black text-lg md:text-2xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all">⚡ Login Now</button>
+            <button onclick="userSignup()" class="flex-1 py-6 md:py-8 px-12 md:px-16 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-lg md:text-2xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all">
+                🎉 Sign up Free
+            </button>
+            <button onclick="userLogin()" class="flex-1 py-6 md:py-8 px-12 md:px-16 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-black text-lg md:text-2xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all">
+                ⚡ Login Now
+            </button>
         </div>
     </div>
 </div>
 
-<!-- DASHBOARD PAGE (Hidden by default) -->
+<!-- DASHBOARD PAGE -->
 <div id="dashboard-page" class="min-h-screen hidden">
     <div class="px-4 md:px-6 max-w-6xl mx-auto pt-24 pb-20">
         <!-- Welcome -->
         <div class="text-center mb-20 md:mb-32">
-            <h1 class="text-6xl md:text-8xl font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 bg-clip-text text-transparent mb-12 md:mb-16 drop-shadow-4xl rush-glow">Welcome Rusher!</h1>
-            <p class="text-3xl md:text-4xl text-white/95 mb-16 max-w-4xl mx-auto font-bold leading-relaxed">Your CodeRush dashboard is LIVE! Ready to rush for today's ₹1000 prize? ⚡</p>
+            <h1 class="text-6xl md:text-8xl font-black bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 bg-clip-text text-transparent mb-12 md:mb-16 drop-shadow-4xl rush-glow">
+                Welcome Rusher!
+            </h1>
+            <p class="text-3xl md:text-4xl text-white/95 mb-16 max-w-4xl mx-auto font-bold leading-relaxed">
+                Your CodeRush dashboard is LIVE! Ready to rush for today's ₹1000 prize? ⚡
+            </p>
         </div>
 
         <!-- Live Timer + Stats -->
         <div class="grid lg:grid-cols-2 gap-12 mb-24">
             <div class="bg-gradient-to-r from-yellow-500/40 via-orange-500/40 to-red-500/40 backdrop-blur-3xl p-12 md:p-20 lg:p-32 rounded-3xl md:rounded-4xl border-8 border-orange-400/60 shadow-5xl text-center rush-glow">
-                <div class="text-7xl md:text-9xl lg:text-10xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent mb-12 md:mb-20 animate-pulse drop-shadow-4xl" id="live-timer">45:23</div>
-                <p class="text-3xl md:text-5xl lg:text-6xl font-black text-white/95 mb-12 md:mb-20 tracking-wide text-constrain">Contest Time Remaining 🔥</p>
+                <div class="text-7xl md:text-9xl lg:text-10xl font-black bg-gradient-to-r from-yellow-400 via-orange-400 to-red-500 bg-clip-text text-transparent mb-12 md:mb-20 animate-pulse drop-shadow-4xl" id="live-timer">
+                    45:23
+                </div>
+                <p class="text-3xl md:text-5xl lg:text-6xl font-black text-white/95 mb-12 md:mb-20 tracking-wide text-constrain">
+                    Contest Time Remaining 🔥
+                </p>
                 <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
-                    <div class="bg-white/40 backdrop-blur-xl px-12 md:px-20 py-8 md:py-12 rounded-3xl md:rounded-4xl text-white font-black text-2xl md:text-4xl shadow-4xl border-4 border-white/70 text-constrain">Problem <span id="current-problem" class="text-orange-400">1</span>/3</div>
-                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-16 md:px-24 py-8 md:py-12 rounded-3xl md:rounded-4xl text-white font-black text-2xl md:text-4xl shadow-4xl border-8 border-emerald-400/70 animate-pulse rush-glow text-constrain">🔴 LIVE RUSH</div>
+                    <div class="bg-white/40 backdrop-blur-xl px-12 md:px-20 py-8 md:py-12 rounded-3xl md:rounded-4xl text-white font-black text-2xl md:text-4xl shadow-4xl border-4 border-white/70 text-constrain">
+                        Problem <span id="current-problem" class="text-orange-400">1</span>/3
+                    </div>
+                    <div class="bg-gradient-to-r from-emerald-500 to-teal-600 px-16 md:px-24 py-8 md:py-12 rounded-3xl md:rounded-4xl text-white font-black text-2xl md:text-4xl shadow-4xl border-8 border-emerald-400/70 animate-pulse rush-glow text-constrain">
+                        🔴 LIVE RUSH
+                    </div>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-8 md:gap-12">
@@ -107,8 +150,33 @@
             </div>
         </div>
 
-        <div class="text-center">
-            <button onclick="openCodeEditor()" class="bg-gradient-to-r from-orange-500 via-yellow-500 to-red-600 hover:from-orange-600 hover:via-yellow-600 hover:to-red-700 text-white font-black py-14 md:py-20 px-24 md:px-40 rounded-4xl text-3xl md:text-5xl shadow-6xl hover:shadow-7xl transform hover:scale-105 transition-all duration-500 border-8 border-orange-400/70 rush-glow animate-pulse max-w-4xl mx-auto">💻 START CODING RUSH NOW</button>
+        <!-- Leaderboard + Profile -->
+        <div class="grid lg:grid-cols-2 gap-8 mt-16" id="leaderboard-section">
+            <!-- Leaderboard -->
+            <div class="bg-white/10 backdrop-blur-3xl rounded-3xl border-4 border-white/20 p-6 md:p-8 shadow-4xl">
+                <h2 class="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
+                    🏆 Top Coders Today
+                </h2>
+                <div id="leaderboard-list" class="space-y-3">
+                    <p class="text-slate-200 text-sm">Loading leaderboard...</p>
+                </div>
+            </div>
+
+            <!-- Profile -->
+            <div class="bg-white/10 backdrop-blur-3xl rounded-3xl border-4 border-white/20 p-6 md:p-8 shadow-4xl">
+                <h2 class="text-2xl md:text-3xl font-black text-white mb-4">👤 Your Profile</h2>
+                <p id="profile-email" class="text-slate-200 text-sm mb-2">Not logged in</p>
+                <p id="profile-points" class="text-4xl md:text-5xl font-black text-emerald-400">0 pts</p>
+                <p class="text-slate-400 text-xs mt-2">
+                    Points update after each accepted solution.
+                </p>
+            </div>
+        </div>
+
+        <div class="text-center mt-16">
+            <button onclick="openCodeEditor()" class="bg-gradient-to-r from-orange-500 via-yellow-500 to-red-600 hover:from-orange-600 hover:via-yellow-600 hover:to-red-700 text-white font-black py-14 md:py-20 px-24 md:px-40 rounded-4xl text-3xl md:text-5xl shadow-6xl hover:shadow-7xl transform hover:scale-105 transition-all duration-500 border-8 border-orange-400/70 rush-glow animate-pulse max-w-4xl mx-auto">
+                💻 START CODING RUSH NOW
+            </button>
         </div>
     </div>
 </div>
@@ -117,15 +185,23 @@
 <div id="code-editor-modal" class="fixed inset-0 bg-black/95 backdrop-blur-3xl z-[100] hidden flex items-center justify-center p-4">
     <div class="bg-gradient-to-br from-gray-900/98 to-gray-800/98 w-full max-w-6xl h-[90vh] rounded-3xl md:rounded-4xl p-6 md:p-8 flex flex-col border-8 border-orange-400/40 shadow-4xl rush-glow overflow-hidden">
         <div class="flex flex-col lg:flex-row items-center justify-between mb-8 text-white gap-6 lg:gap-8">
-            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text flex-1 text-center lg:text-left drop-shadow-2xl text-constrain">Problem #1: Two Sum</h2>
+            <h2 class="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text flex-1 text-center lg:text-left drop-shadow-2xl text-constrain">
+                Problem #1: Two Sum
+            </h2>
             <div class="flex flex-wrap gap-4 justify-center lg:justify-end w-full lg:w-auto">
-                <button onclick="runCode(event)" class="px-10 py-5 md:px-12 md:py-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-lg md:text-2xl rounded-2xl md:rounded-3xl shadow-4xl hover:shadow-5xl rush-glow hover:scale-105 transition-all flex-1 lg:flex-none min-w-[120px]">▶️ Test Code</button>
-                <button onclick="submitSolution()" class="px-10 py-5 md:px-12 md:py-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-lg md:text-2xl rounded-2xl md:rounded-3xl shadow-4xl hover:shadow-5xl rush-glow hover:scale-105 transition-all flex-1 lg:flex-none min-w-[120px]">✅ Submit</button>
-                <button onclick="closeEditor()" class="px-8 py-5 md:px-10 md:py-6 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold text-lg md:text-2xl rounded-2xl md:rounded-3xl shadow-4xl hover:shadow-5xl hover:scale-105 transition-all flex-1 lg:flex-none min-w-[100px]">✕ Close</button>
+                <button onclick="runCode(event)" class="px-10 py-5 md:px-12 md:py-6 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-lg md:text-2xl rounded-2xl md:rounded-3xl shadow-4xl hover:shadow-5xl rush-glow hover:scale-105 transition-all flex-1 lg:flex-none min-w-[120px]">
+                    ▶️ Test Code
+                </button>
+                <button onclick="submitSolution()" class="px-10 py-5 md:px-12 md:py-6 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold text-lg md:text-2xl rounded-2xl md:rounded-3xl shadow-4xl hover:shadow-5xl rush-glow hover:scale-105 transition-all flex-1 lg:flex-none min-w-[120px]">
+                    ✅ Submit
+                </button>
+                <button onclick="closeEditor()" class="px-8 py-5 md:px-10 md:py-6 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white font-bold text-lg md:text-2xl rounded-2xl md:rounded-3xl shadow-4xl hover:shadow-5xl hover:scale-105 transition-all flex-1 lg:flex-none min-w-[100px]">
+                    ✕ Close
+                </button>
             </div>
         </div>
         <div class="flex-1 bg-gray-800/95 rounded-2xl md:rounded-3xl p-4 md:p-6 overflow-hidden border-4 border-gray-700/50">
-            <textarea id="code-editor" class="w-full h-full p-4 md:p-6 text-lg md:text-xl text-green-400 bg-transparent outline-none resize-none code-editor rounded-xl font-bold border border-gray-600/50" placeholder="function twoSum(nums, target) {
+<textarea id="code-editor" class="w-full h-full p-4 md:p-6 text-lg md:text-xl text-green-400 bg-transparent outline-none resize-none code-editor rounded-xl font-bold border border-gray-600/50" placeholder="function twoSum(nums, target) {
     // Write your optimal solution here
     return [0, 1];
 }">function twoSum(nums, target) {
@@ -140,22 +216,23 @@
     return [];
 }</textarea>
         </div>
-        <div id="test-result" class="mt-6 p-6 md:p-8 bg-emerald-500/95 backdrop-blur-xl text-white text-xl md:text-2xl font-black rounded-3xl md:rounded-4xl text-center hidden rush-glow shadow-4xl border-4 border-emerald-400/70 transform scale-105">✅ ALL TESTS PASSED! Ready for Submit 🚀</div>
+        <div id="test-result" class="mt-6 p-6 md:p-8 bg-emerald-500/95 backdrop-blur-xl text-white text-xl md:text-2xl font-black rounded-3xl md:rounded-4xl text-center hidden rush-glow shadow-4xl border-4 border-emerald-400/70 transform scale-105">
+            ✅ ALL TESTS PASSED! Ready for Submit 🚀
+        </div>
     </div>
 </div>
 
 </div>
 
 <script>
-// 🔥 ALL FUNCTIONS - PERFECT LOGIN FLOW
 let userPoints = 156, seatsLeft = 178, contestTime = 2700, isLoggedIn = false;
+let currentUserEmail = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Initial setup - Show home page only
     document.getElementById('home-page').style.display = 'block';
     document.getElementById('dashboard-page').style.display = 'none';
     document.getElementById('login-btn').onclick = toggleAuth;
-    console.log('✅ CodeRush Loaded - Perfect Flow Ready!');
+    loadLeaderboard(); // Supabase se data
 });
 
 function scrollToLogin() {
@@ -173,18 +250,20 @@ function goHome() {
     if(!isLoggedIn) {
         document.getElementById('home-page').style.display = 'block';
         document.getElementById('dashboard-page').style.display = 'none';
-        document.getElementById('home-btn').style.display = 'none';
-        document.getElementById('leaderboard-btn').style.display = 'none';
+        document.getElementById('home-btn').classList.add('hidden');
+        document.getElementById('leaderboard-btn').classList.add('hidden');
     }
 }
 
-function showLeaderboard() {
-    if(isLoggedIn) {
-        alert('🏆 LIVE LEADERBOARD\n🥇 Ravi Sharma - 245 pts\n🥈 Priya Singh - 198 pts\n🥉 Amit Kumar - 176 pts\n\n👤 You - ' + userPoints + ' pts (Rank #7)');
-    } else {
-        alert('👤 Login first to see your rank!');
+function showLeaderboardPage() {
+    if(!isLoggedIn) {
+        alert('👤 Login first to see leaderboard!');
         scrollToLogin();
+        return;
     }
+    document.getElementById('home-page').style.display = 'none';
+    document.getElementById('dashboard-page').style.display = 'block';
+    loadLeaderboard();
 }
 
 function toggleAuth() {
@@ -199,13 +278,17 @@ function userLogin() {
     const email = document.getElementById('user-email').value;
     if(email) {
         isLoggedIn = true;
+        currentUserEmail = email;
         document.getElementById('login-btn').innerHTML = 'Dashboard ⚡';
         document.getElementById('login-btn').onclick = openDashboard;
         document.getElementById('logout-btn').classList.remove('hidden');
-        document.getElementById('home-btn').style.display = 'block';
-        document.getElementById('leaderboard-btn').style.display = 'block';
-        
-        // PERFECT FLOW: Hide login, show dashboard
+        document.getElementById('home-btn').classList.remove('hidden');
+        document.getElementById('leaderboard-btn').classList.remove('hidden');
+
+        document.getElementById('user-points').textContent = userPoints;
+        const profileEmail = document.getElementById('profile-email');
+        if (profileEmail) profileEmail.textContent = email;
+
         openDashboard();
         alert('✅ Welcome back Rusher! Dashboard loaded ⚡');
     } else {
@@ -225,11 +308,14 @@ function userSignup() {
 
 function logout() {
     isLoggedIn = false;
-    document.getElementById('login-btn').innerHTML = 'Join Rush';
+    currentUserEmail = null;
+    document.getElementById('login-btn').innerHTML = '⚡ Join Rush';
     document.getElementById('login-btn').onclick = toggleAuth;
     document.getElementById('logout-btn').classList.add('hidden');
     document.getElementById('home-page').style.display = 'block';
     document.getElementById('dashboard-page').style.display = 'none';
+    const profileEmail = document.getElementById('profile-email');
+    if (profileEmail) profileEmail.textContent = "Not logged in";
     alert('👋 Logged out successfully!');
 }
 
@@ -238,6 +324,7 @@ function openDashboard() {
     document.getElementById('dashboard-page').style.display = 'block';
     document.getElementById('user-points').textContent = userPoints;
     startTimer();
+    loadLeaderboard();
 }
 
 function openCodeEditor() {
@@ -257,35 +344,34 @@ function runCode(event) {
     const original = btn.innerHTML;
     btn.innerHTML = '⏳ Testing...';
     btn.disabled = true;
-    
+
     const code = document.getElementById('code-editor').value;
     const result = document.getElementById('test-result');
-    
+
     try {
         const fn = new Function(`return (function(){${code}; return typeof twoSum === 'function' ? twoSum : null; })()`);
         const twoSum = fn();
-        
+
         if(typeof twoSum !== 'function') throw new Error('twoSum function missing!');
-        
+
         const test1 = twoSum([2,7,11,15], 9);
         const test2 = twoSum([3,2,4], 6);
-        
+
         const passed = JSON.stringify(test1) === '[0,1]' && JSON.stringify(test2) === '[1,2]';
-        
+
         setTimeout(() => {
             btn.innerHTML = original;
             btn.disabled = false;
+            result.style.display = 'block';
             if(passed) {
-                result.style.display = 'block';
                 result.innerHTML = '✅ ALL TESTS PASSED! Ready for Submit 🚀';
                 alert('✅ Perfect! Both test cases passed successfully!');
             } else {
-                result.style.display = 'block';
                 result.innerHTML = '❌ Tests Failed! Check your code.';
                 alert('❌ Failed!\nExpected: [0,1] & [1,2]');
             }
         }, 1500);
-        
+
     } catch(e) {
         setTimeout(() => {
             btn.innerHTML = original;
@@ -301,10 +387,16 @@ function submitSolution() {
     try {
         const fn = new Function(`return (function(){${code}; return typeof twoSum === 'function' ? twoSum : null; })()`);
         const twoSum = fn();
-        
+
         if(JSON.stringify(twoSum([2,7,11,15], 9)) === '[0,1]') {
             userPoints += 100;
             document.getElementById('user-points').textContent = userPoints;
+            addPoints(100); // Supabase leaderboard update
+            const profPts = document.getElementById('profile-points');
+            if (profPts) {
+                const cur = parseInt(profPts.textContent) || 0;
+                profPts.textContent = (cur + 100) + " pts";
+            }
             alert(`🎉 SOLUTION ACCEPTED! +100 Points 🎉\n🏆 Total Points: ${userPoints}\n\nPerfect solution submitted! 🚀`);
             closeEditor();
         } else {
@@ -322,14 +414,107 @@ function startTimer() {
             time--;
             const m = Math.floor(time/60);
             const s = time % 60;
-            document.getElementById('live-timer').textContent = 
+            document.getElementById('live-timer').textContent =
                 `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         } else {
             clearInterval(timer);
-            document.getElementById('live-timer').textContent = '00:00';
-            document.getElementById('live-timer').className = 'text-7xl md:text-9xl lg:text-10xl font-black bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-12 md:mb-20 animate-pulse drop-shadow-4xl';
+            const el = document.getElementById('live-timer');
+            el.textContent = '00:00';
+            el.className = 'text-7xl md:text-9xl lg:text-10xl font-black bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent mb-12 md:mb-20 animate-pulse drop-shadow-4xl';
         }
     }, 1000);
+}
+
+// ================= Supabase Leaderboard =================
+const SUPABASE_URL = "YAHAN_APNA_PROJECT_URL";
+const SUPABASE_ANON_KEY = "YAHAN_APNI_ANON_KEY";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+async function loadLeaderboard() {
+    const listRoot = document.getElementById("leaderboard-list");
+    if (!listRoot) return;
+
+    listRoot.innerHTML = '<p class="text-slate-200 text-sm">Loading leaderboard...</p>';
+
+    const { data, error } = await supabaseClient
+        .from("leaderboard")
+        .select("*")
+        .order("points", { ascending: false })
+        .limit(10);
+
+    if (error) {
+        console.error(error);
+        listRoot.innerHTML = '<p class="text-red-300 text-sm">Error loading leaderboard.</p>';
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        listRoot.innerHTML = '<p class="text-slate-200 text-sm">No entries yet. Be the first to solve!</p>';
+        return;
+    }
+
+    listRoot.innerHTML = "";
+    data.forEach((row, idx) => {
+        const div = document.createElement("div");
+        div.className = "flex items-center justify-between bg-white/5 rounded-2xl px-4 py-3";
+        div.innerHTML = `
+          <div class="flex items-center gap-3">
+            <span class="w-7 text-lg font-bold text-slate-300">#${idx + 1}</span>
+            <div>
+              <p class="text-sm font-semibold text-white">${row.username || "Anonymous"}</p>
+              <p class="text-[11px] text-slate-400">${new Date(row.created_at).toLocaleDateString()}</p>
+            </div>
+          </div>
+          <p class="text-emerald-400 font-bold text-sm">${row.points || 0} pts</p>
+        `;
+        listRoot.appendChild(div);
+    });
+}
+
+async function addPoints(pointsToAdd = 100) {
+    if (!currentUserEmail) {
+        alert("Please login to earn leaderboard points.");
+        return;
+    }
+
+    const username = currentUserEmail.split("@")[0];
+
+    const { data: existing, error: selErr } = await supabaseClient
+        .from("leaderboard")
+        .select("*")
+        .eq("username", username)
+        .maybeSingle();
+
+    if (selErr) {
+        console.error(selErr);
+        alert("Error reading leaderboard.");
+        return;
+    }
+
+    if (!existing) {
+        const { error: insErr } = await supabaseClient.from("leaderboard").insert({
+            username,
+            points: pointsToAdd
+        });
+        if (insErr) {
+            console.error(insErr);
+            alert("Error adding points.");
+            return;
+        }
+    } else {
+        const newPoints = (existing.points || 0) + pointsToAdd;
+        const { error: updErr } = await supabaseClient
+            .from("leaderboard")
+            .update({ points: newPoints })
+            .eq("id", existing.id);
+        if (updErr) {
+            console.error(updErr);
+            alert("Error updating points.");
+            return;
+        }
+    }
+
+    await loadLeaderboard();
 }
 </script>
 
