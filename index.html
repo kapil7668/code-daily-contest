@@ -167,7 +167,16 @@
   </div>
 </div>
 
+<!-- Supabase client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+
 <script>
+// Supabase config (tumhare project ke hisaab se)
+const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // open / close modal helpers
 const modal = document.getElementById('auth-modal');
 const authTitle = document.getElementById('auth-title');
@@ -205,15 +214,36 @@ document.getElementById('close-auth').onclick = () => {
 tabLogin.onclick = () => openModal('login');
 tabSignup.onclick = () => openModal('signup');
 
-// Fake auth: save email & redirect to dashboard.html
-form.addEventListener('submit', (e) => {
+// Auth form submit: sign up ya login
+form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const email = emailInput.value.trim();
-  const pwd = passInput.value.trim();
-  if (!email || !pwd) return;
-  // Save simple user info (later replace by real auth)
-  localStorage.setItem('coderush_user_email', email);
-  window.location.href = 'dashboard.html';
+  const password = passInput.value.trim();
+  if (!email || !password) return;
+
+  const isSignup = authTitle.textContent.startsWith('Create');
+  let result;
+
+  try {
+    if (isSignup) {
+      // Signup
+      result = await supabaseClient.auth.signUp({ email, password });
+    } else {
+      // Login
+      result = await supabaseClient.auth.signInWithPassword({ email, password });
+    }
+
+    if (result.error) {
+      alert(result.error.message);
+      return;
+    }
+
+    // Success: redirect to dashboard
+    window.location.href = 'dashboard.html';
+  } catch (err) {
+    alert('Something went wrong. Please try again.');
+    console.error(err);
+  }
 });
 </script>
 
