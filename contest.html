@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeRush Contest – Details</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-100 bg-slate-950
+             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.20),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.20),_transparent_55%)]">
+
+<header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-30">
+  <nav class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3 text-xs">
+    <div class="flex items-center gap-2">
+      <a href="dashboard.html" class="flex items-center gap-2">
+        <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
+          C
+        </div>
+        <span class="font-semibold text-sm tracking-tight">CodeRush</span>
+      </a>
+      <span class="mx-2 text-slate-600">/</span>
+      <span id="contest-short" class="text-slate-300"></span>
+    </div>
+    <button onclick="history.back()"
+            class="hidden sm:inline px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-500 text-[11px]">
+      ← Back
+    </button>
+  </nav>
+</header>
+
+<main class="max-w-5xl mx-auto px-4 py-5 md:py-7 text-xs md:text-sm
+             bg-slate-900/80 border border-slate-800/70 rounded-2xl shadow-[0_0_32px_rgba(15,23,42,0.95)] mt-4 mb-8">
+
+  <section class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
+    <div>
+      <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
+      <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
+      <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
+    </div>
+
+    <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-3 min-w-[220px]">
+      <h2 class="text-[11px] font-semibold mb-2 text-slate-200">When & duration</h2>
+      <p id="contest-time" class="text-slate-300 text-[11px] mb-1"></p>
+      <p id="contest-duration" class="text-slate-400 text-[11px] mb-3"></p>
+
+      <div class="flex items-center justify-between text-[11px] mb-3">
+        <span id="contest-level" class="px-2 py-0.5 rounded-full border border-slate-600 text-slate-200"></span>
+        <span id="contest-prize" class="text-amber-300"></span>
+      </div>
+
+      <button id="primary-btn"
+              class="w-full mb-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-[11px] font-semibold">
+        Register for free
+      </button>
+      <button id="secondary-btn"
+              class="w-full px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px]">
+        Add to calendar
+      </button>
+
+      <p id="note" class="text-[10px] text-slate-500 mt-2">
+        Payment / Razorpay integration will be added soon on this page.
+      </p>
+    </div>
+  </section>
+
+  <section class="grid md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+      <h3 class="font-semibold mb-1 text-xs">Format</h3>
+      <p id="contest-format" class="text-[11px] text-slate-300"></p>
+    </div>
+    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+      <h3 class="font-semibold mb-1 text-xs">Scoring</h3>
+      <p id="contest-scoring" class="text-[11px] text-slate-300"></p>
+    </div>
+    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+      <h3 class="font-semibold mb-1 text-xs">Eligibility</h3>
+      <p id="contest-eligibility" class="text-[11px] text-slate-300"></p>
+    </div>
+  </section>
+
+  <section class="grid md:grid-cols-2 gap-4 text-[11px] md:text-xs">
+    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+      <h3 class="font-semibold mb-2 text-xs">Rules</h3>
+      <ul id="contest-rules" class="list-disc list-inside space-y-1 text-slate-300"></ul>
+    </div>
+    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+      <h3 class="font-semibold mb-2 text-xs">Languages & platform</h3>
+      <ul id="contest-langs" class="list-disc list-inside space-y-1 text-slate-300"></ul>
+    </div>
+  </section>
+</main>
+
+<script>
+// contest "database"
+const contests = {
+  free: {
+    short: "Free Daily Rush",
+    badge: "Featured • Free",
+    title: "Free Daily Rush – 3 Problems in 60 Minutes",
+    subtitle: "Best daily habit builder. Solve 3 hand‑picked DSA problems with live leaderboard and CodeRush rating update.",
+    time: "Everyday • 8:00 PM IST (India time)",
+    duration: "Duration: 60 minutes • 3 problems • Mixed difficulty",
+    level: "Level: Beginner to Intermediate",
+    prize: "No entry fee • virtual rewards & badges",
+    format: "3 problems: 1 Easy, 1 Medium, 1 slightly tricky Medium. All problems are from CodeRush curated sets.",
+    scoring: "Score = sum of problem scores – penalties for wrong submissions. Faster correct submissions get slightly higher weight.",
+    eligibility: "Open for all registered CodeRush users. Ideal for college students and working professionals.",
+    rules: [
+      "Multiple submissions allowed; last correct submission counts.",
+      "Cheating, code sharing or using multiple accounts can lead to disqualification.",
+      "Ties are broken by total time and then by earliest correct submissions."
+    ],
+    langs: [
+      "Supported languages: C++, Java, Python (more coming soon).",
+      "You must write and submit code on CodeRush problem page.",
+      "Internet connection and modern browser required."
+    ],
+    primaryText: "Register for today’s Daily Rush",
+    secondaryText: "View instructions"
+  },
+  paid: {
+    short: "Paid Mega Contest",
+    badge: "Pro • Paid",
+    title: "Paid Mega Contest – High Rated DSA Challenge",
+    subtitle: "Serious 2‑hour contest with tough DSA questions and cash prizes for the top leaderboard positions.",
+    time: "Every Sunday • 7:00 PM IST (India time)",
+    duration: "Duration: 120 minutes • 4 problems • Medium–Hard",
+    level: "Level: Intermediate to Advanced",
+    prize: "Entry fee via Razorpay • cash prizes + goodies",
+    format: "4 problems focusing on core DSA: DP, graphs, greedy, advanced arrays. Problems are unique to this contest.",
+    scoring: "Each problem has fixed score. Wrong submissions may incur small penalty. Final rank based on total score, then total time.",
+    eligibility: "Open for Indian users (18+) with valid payment method. Students & working professionals both can participate.",
+    rules: [
+      "One account per participant; sharing solutions during contest is strictly prohibited.",
+      "Refunds only if contest is cancelled due to technical reasons.",
+      "Winners may need to complete basic KYC for prize distribution."
+    ],
+    langs: [
+      "Supported languages: C++, Java, Python.",
+      "Submissions and judging happen on CodeRush online judge.",
+      "Stable internet and latest Chrome/Edge recommended."
+    ],
+    primaryText: "Pay & register (coming soon)",
+    secondaryText: "View prize structure"
+  }
+};
+
+// read type from URL
+const params = new URLSearchParams(window.location.search);
+const type = params.get("type") === "paid" ? "paid" : "free";
+const c = contests[type];
+
+// fill content
+document.getElementById("contest-short").textContent = c.short;
+document.getElementById("badge").textContent = c.badge;
+document.getElementById("contest-title").textContent = c.title;
+document.getElementById("contest-subtitle").textContent = c.subtitle;
+document.getElementById("contest-time").textContent = c.time;
+document.getElementById("contest-duration").textContent = c.duration;
+document.getElementById("contest-level").textContent = c.level;
+document.getElementById("contest-prize").textContent = c.prize;
+document.getElementById("contest-format").textContent = c.format;
+document.getElementById("contest-scoring").textContent = c.scoring;
+document.getElementById("contest-eligibility").textContent = c.eligibility;
+
+const rulesUl = document.getElementById("contest-rules");
+c.rules.forEach(r => {
+  const li = document.createElement("li");
+  li.textContent = r;
+  rulesUl.appendChild(li);
+});
+
+const langsUl = document.getElementById("contest-langs");
+c.langs.forEach(r => {
+  const li = document.createElement("li");
+  li.textContent = r;
+  langsUl.appendChild(li);
+});
+
+// update buttons
+document.getElementById("primary-btn").textContent = c.primaryText;
+document.getElementById("secondary-btn").textContent = c.secondaryText;
+
+// basic auth check
+const email = localStorage.getItem("coderush_user_email");
+if (!email) {
+  window.location.href = "index.html";
+}
+</script>
+
+</body>
+</html>
