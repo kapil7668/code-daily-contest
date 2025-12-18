@@ -46,7 +46,8 @@
       Start with a quick path: explore topics, solve problems, or join contests. This is your LeetCode‑style home for DSA practice.
     </p>
 
-    <div class="grid md:grid-cols-3 gap-4 mb-6">
+    <!-- Top 3 cards -->
+    <div class="grid md:grid-cols-3 gap-4 mb-2 md:mb-4">
       <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
         <h2 class="font-semibold mb-1 text-sm">Today’s target</h2>
         <p class="text-slate-300 text-xs mb-2">
@@ -79,6 +80,74 @@
         </ul>
       </div>
     </div>
+
+    <!-- Active contests section (NEW) -->
+    <section class="mt-4 md:mt-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base md:text-lg font-semibold">Active contests</h2>
+        <button class="text-[11px] text-emerald-400 hover:text-emerald-300">
+          View all contests
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 text-xs">
+
+        <!-- Free Daily Rush -->
+        <div class="bg-slate-800/80 border border-emerald-500/40 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] uppercase tracking-wide text-emerald-400 mb-1">Featured</p>
+            <h3 class="font-semibold text-sm mb-1">Free Daily Rush</h3>
+            <p class="text-slate-300 text-[11px] mb-2">
+              3 problems • 60 mins • Live leaderboard.
+            </p>
+            <p class="text-slate-400 text-[11px]">
+              Today • 8:00 PM IST
+            </p>
+          </div>
+          <button
+            class="mt-3 self-start px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
+            Register now
+          </button>
+        </div>
+
+        <!-- Paid Mega Contest -->
+        <div class="bg-slate-800/70 border border-amber-500/40 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] uppercase tracking-wide text-amber-400 mb-1">Pro</p>
+            <h3 class="font-semibold text-sm mb-1">Paid Mega Contest</h3>
+            <p class="text-slate-300 text-[11px] mb-2">
+              Tough DSA set with cash prizes for top performers.
+            </p>
+            <p class="text-slate-400 text-[11px]">
+              Sunday • 7:00 PM IST
+            </p>
+          </div>
+          <button
+            class="mt-3 self-start px-3 py-1.5 rounded-lg border border-amber-400 text-amber-300 text-[11px] font-semibold">
+            Coming soon
+          </button>
+        </div>
+
+        <!-- Campus / community contest -->
+        <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] uppercase tracking-wide text-cyan-400 mb-1">Community</p>
+            <h3 class="font-semibold text-sm mb-1">College / Community contest</h3>
+            <p class="text-slate-300 text-[11px] mb-2">
+              Host contests for your college, coaching or community on CodeRush.
+            </p>
+            <p class="text-slate-400 text-[11px]">
+              Slots open next week
+            </p>
+          </div>
+          <button
+            class="mt-3 self-start px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px] font-semibold">
+            Request a slot
+          </button>
+        </div>
+
+      </div>
+    </section>
   </section>
 
   <!-- Problems Tab -->
