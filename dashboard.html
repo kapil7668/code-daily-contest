@@ -9,10 +9,12 @@
     * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100">
+
+<body class="min-h-screen text-slate-100 bg-slate-950
+             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.18),_transparent_55%),radial-gradient(circle_at_bottom,_rgba(59,130,246,0.16),_transparent_55%)]">
 
 <!-- Top Navbar (inside app) -->
-<header class="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-30">
+<header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
   <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
     <div class="flex items-center gap-2">
       <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
@@ -37,7 +39,8 @@
   </nav>
 </header>
 
-<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 text-sm">
+<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 text-sm
+             bg-slate-900/70 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.9)] mt-4 mb-6">
 
   <!-- Explore Tab -->
   <section id="tab-explore" class="tab-page">
@@ -81,7 +84,7 @@
       </div>
     </div>
 
-    <!-- Active contests section (NEW) -->
+    <!-- Active contests section -->
     <section class="mt-4 md:mt-6">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-base md:text-lg font-semibold">Active contests</h2>
@@ -319,13 +322,11 @@ const tabPages = {
 tabButtons.forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.getAttribute('data-tab');
-    // active button styling
     tabButtons.forEach(b => {
       b.classList.remove('text-emerald-400','border-b','border-emerald-400');
       b.classList.add('text-slate-300');
     });
     btn.classList.add('text-emerald-400','border-b','border-emerald-400');
-    // show / hide pages
     Object.keys(tabPages).forEach(key => {
       if (key === tab) tabPages[key].classList.remove('hidden');
       else tabPages[key].classList.add('hidden');
