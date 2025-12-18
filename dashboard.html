@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeRush Dashboard – Practice & Contests</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100">
+
+<!-- Top Navbar (inside app) -->
+<header class="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-30">
+  <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+    <div class="flex items-center gap-2">
+      <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
+        C
+      </div>
+      <span class="font-semibold text-lg tracking-tight">CodeRush</span>
+    </div>
+
+    <div class="hidden md:flex items-center gap-5 text-sm">
+      <button data-tab="explore" class="tab-btn text-emerald-400 border-b border-emerald-400 pb-1">Explore</button>
+      <button data-tab="problems" class="tab-btn text-slate-300 hover:text-emerald-300">Problems</button>
+      <button data-tab="contests" class="tab-btn text-slate-300 hover:text-emerald-300">Contests</button>
+      <button data-tab="premium" class="tab-btn text-slate-300 hover:text-emerald-300">Premium</button>
+    </div>
+
+    <div class="flex items-center gap-3 text-xs">
+      <span id="user-email" class="hidden sm:inline text-slate-300"></span>
+      <button id="logout-btn" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-red-400 hover:text-red-300">
+        Logout
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 text-sm">
+
+  <!-- Explore Tab -->
+  <section id="tab-explore" class="tab-page">
+    <h1 class="text-xl md:text-2xl font-bold mb-1">Welcome to CodeRush</h1>
+    <p class="text-slate-300 mb-4 text-xs md:text-sm">
+      Start with a quick path: explore topics, solve problems, or join contests. This is your LeetCode‑style home for DSA practice.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h2 class="font-semibold mb-1 text-sm">Today’s target</h2>
+        <p class="text-slate-300 text-xs mb-2">
+          Solve 3 problems: 1 Easy, 1 Medium, 1 Hard.
+        </p>
+        <ul class="text-[11px] text-slate-400 space-y-1">
+          <li>• Arrays & Hashing</li>
+          <li>• Two Pointers</li>
+          <li>• Binary Search</li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h2 class="font-semibold mb-1 text-sm">Practice sets</h2>
+        <p class="text-slate-300 text-xs mb-2">Hand‑picked sets similar to LeetCode sheets (later yaha se real sets link karenge).</p>
+        <ul class="text-[11px] text-slate-400 space-y-1">
+          <li>• Beginner 50 DSA</li>
+          <li>• 75 Must‑Do Questions</li>
+          <li>• Company‑wise sheets</li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h2 class="font-semibold mb-1 text-sm">Quick stats</h2>
+        <p class="text-slate-300 text-xs mb-2">Abhi dummy data hai, baad me Supabase se aayega.</p>
+        <ul class="text-[11px] text-slate-400 space-y-1">
+          <li>Total solved: 0</li>
+          <li>Current streak: 0 days</li>
+          <li>Rating: 1200 (unrated)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problems Tab -->
+  <section id="tab-problems" class="tab-page hidden">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold">Problems</h2>
+      <div class="flex gap-2 text-xs">
+        <select class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1">
+          <option>All difficulty</option>
+          <option>Easy</option>
+          <option>Medium</option>
+          <option>Hard</option>
+        </select>
+        <select class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1">
+          <option>All topics</option>
+          <option>Arrays</option>
+          <option>Strings</option>
+          <option>DP</option>
+          <option>Graphs</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="border border-slate-800 rounded-xl overflow-hidden">
+      <div class="grid grid-cols-12 bg-slate-800/80 text-[11px] text-slate-300 px-3 py-2">
+        <div class="col-span-5">Title</div>
+        <div class="col-span-2">Difficulty</div>
+        <div class="col-span-2">Topic</div>
+        <div class="col-span-2">Status</div>
+        <div class="col-span-1 text-right pr-1">Solve</div>
+      </div>
+
+      <!-- Dummy problem rows -->
+      <div class="divide-y divide-slate-800 text-[11px]">
+        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
+          <div class="col-span-5 text-slate-100">Two Sum</div>
+          <div class="col-span-2 text-emerald-400">Easy</div>
+          <div class="col-span-2 text-slate-300">Arrays</div>
+          <div class="col-span-2 text-slate-500">Unsolved</div>
+          <div class="col-span-1 text-right">
+            <button class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px]">Open</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
+          <div class="col-span-5 text-slate-100">Longest Substring Without Repeat</div>
+          <div class="col-span-2 text-amber-400">Medium</div>
+          <div class="col-span-2 text-slate-300">Strings</div>
+          <div class="col-span-2 text-slate-500">Unsolved</div>
+          <div class="col-span-1 text-right">
+            <button class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px]">Open</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
+          <div class="col-span-5 text-slate-100">Word Ladder</div>
+          <div class="col-span-2 text-red-400">Hard</div>
+          <div class="col-span-2 text-slate-300">Graphs</div>
+          <div class="col-span-2 text-slate-500">Unsolved</div>
+          <div class="col-span-1 text-right">
+            <button class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px]">Open</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contests Tab -->
+  <section id="tab-contests" class="tab-page hidden">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold">Contests</h2>
+      <button class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 font-semibold">
+        View rules
+      </button>
+    </div>
+
+    <div class="space-y-3 text-xs">
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="font-semibold text-sm">Free Daily Rush</p>
+          <p class="text-slate-300 text-xs">Everyday • 8:00 PM IST • 3 problems • 60 mins</p>
+          <p class="text-slate-500 text-[11px] mt-1">Best for regular consistency and rating growth.</p>
+        </div>
+        <button class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-xs font-semibold">
+          Register
+        </button>
+      </div>
+
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="font-semibold text-sm">Paid Mega Contest</p>
+          <p class="text-slate-300 text-xs">Every Sunday • 7:00 PM IST • cash prizes</p>
+          <p class="text-slate-500 text-[11px] mt-1">Compete with serious coders and climb the leaderboard.</p>
+        </div>
+        <button class="px-3 py-1.5 rounded-lg border border-amber-400 text-amber-300 text-xs font-semibold">
+          Coming soon
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Premium Tab -->
+  <section id="tab-premium" class="tab-page hidden">
+    <h2 class="text-lg font-semibold mb-2">Premium (coming soon)</h2>
+    <p class="text-slate-300 text-xs mb-3">
+      Unlock advanced sheets, company‑wise problems, detailed editorials, and certificates. Similar to LeetCode Premium but focused on Indian students and contests.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4 text-xs">
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold mb-1">Interview packs</h3>
+        <p class="text-slate-300 text-[11px]">
+          Curated lists for product companies, service‑based companies, and startups.
+        </p>
+      </div>
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold mb-1">Contest analysis</h3>
+        <p class="text-slate-300 text-[11px]">
+          Post‑contest editorials, test cases and code walk‑through videos.
+        </p>
+      </div>
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold mb-1">Certificates & rewards</h3>
+        <p class="text-slate-300 text-[11px]">
+          Performance‑based certificates and goodies for top coders.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+// Redirect back to landing if not "logged in"
+const email = localStorage.getItem('coderush_user_email');
+const emailSpan = document.getElementById('user-email');
+if (!email) {
+  window.location.href = 'index.html';
+} else {
+  emailSpan.textContent = email;
+}
+
+// Logout
+document.getElementById('logout-btn').onclick = () => {
+  localStorage.removeItem('coderush_user_email');
+  window.location.href = 'index.html';
+};
+
+// Tabs handling
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabPages = {
+  explore: document.getElementById('tab-explore'),
+  problems: document.getElementById('tab-problems'),
+  contests: document.getElementById('tab-contests'),
+  premium: document.getElementById('tab-premium')
+};
+
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.getAttribute('data-tab');
+    // active button styling
+    tabButtons.forEach(b => {
+      b.classList.remove('text-emerald-400','border-b','border-emerald-400');
+      b.classList.add('text-slate-300');
+    });
+    btn.classList.add('text-emerald-400','border-b','border-emerald-400');
+    // show / hide pages
+    Object.keys(tabPages).forEach(key => {
+      if (key === tab) tabPages[key].classList.remove('hidden');
+      else tabPages[key].classList.add('hidden');
+    });
+  });
+});
+</script>
+
+</body>
+</html>
