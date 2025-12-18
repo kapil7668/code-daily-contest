@@ -265,15 +265,33 @@ document.getElementById('clear-input').onclick = () => {
   document.getElementById('custom-input').value = '';
 };
 
-// fake run / submit behaviour
+// fake run / submit behaviour (improved)
 const outputArea = document.getElementById('output-area');
 const outputStatus = document.getElementById('output-status');
 
 document.getElementById('run-code').onclick = () => {
+  const userInput = document.getElementById('custom-input').value.trim();
+  const lang = langSelect.value;
+
   outputStatus.textContent = 'Running (dummy)...';
+
   setTimeout(() => {
     outputStatus.textContent = 'Finished';
-    outputArea.textContent = 'This is a dummy run. Later this will call your backend / judge.';
+
+    const snippet = codeEditor.value
+      .split('\n')
+      .slice(0, 6)
+      .join('\n');
+
+    outputArea.textContent =
+      `Language: ${lang.toUpperCase()}\n` +
+      `Problem: ${problem.title}\n\n` +
+      (userInput
+        ? `Input received:\n${userInput}\n\n`
+        : 'No custom input provided.\n\n') +
+      '--- Code preview ---\n' +
+      snippet +
+      '\n\n(Note: This is a dummy run. Later this will call your backend / judge.)';
   }, 400);
 };
 
@@ -281,7 +299,9 @@ document.getElementById('submit-code').onclick = () => {
   outputStatus.textContent = 'Judging (dummy)...';
   setTimeout(() => {
     outputStatus.textContent = 'Submitted';
-    outputArea.textContent = 'Submission stored locally. Later this will show real test case results.';
+    outputArea.textContent =
+      'Your solution has been saved locally.\n' +
+      'In the real version, this will run against hidden test cases and update your contest stats.';
   }, 500);
 };
 
