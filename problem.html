@@ -17,10 +17,12 @@
     }
   </style>
 </head>
-<body class="bg-slate-900 text-slate-100">
+
+<body class="min-h-screen text-slate-100 bg-slate-950
+             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.20),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.20),_transparent_55%)]">
 
 <!-- Top bar -->
-<header class="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-30">
+<header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-30">
   <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-2.5 text-xs">
     <div class="flex items-center gap-2">
       <a href="dashboard.html" class="flex items-center gap-2">
@@ -48,15 +50,16 @@
   </nav>
 </header>
 
-<main class="max-w-6xl mx-auto px-4 py-4 text-xs md:text-sm">
+<main class="max-w-6xl mx-auto px-4 py-4 md:py-6 text-xs md:text-sm
+             bg-slate-900/80 border border-slate-800/70 rounded-2xl shadow-[0_0_32px_rgba(15,23,42,0.95)] mt-4 mb-8">
   <div class="grid md:grid-cols-2 gap-4 md:gap-5">
 
     <!-- Left: problem description -->
-    <section class="bg-slate-900 rounded-xl border border-slate-800 p-4 overflow-y-auto max-h-[80vh]">
+    <section class="bg-slate-900 rounded-xl border border-slate-800 p-4 overflow-y-auto max-h-[78vh]">
       <div class="flex items-center justify-between mb-2">
         <div>
           <h1 id="problem-title" class="text-sm md:text-base font-semibold mb-1"></h1>
-          <div class="flex items-center gap-2 text-[11px]">
+          <div class="flex flex-wrap items-center gap-2 text-[11px]">
             <span id="problem-difficulty" class="px-2 py-0.5 rounded-full border border-slate-700"></span>
             <span id="problem-topic" class="text-slate-400"></span>
           </div>
@@ -159,8 +162,8 @@ public:
     difficulty: "Medium",
     topic: "Strings",
     description: "Given a string s, find the length of the longest substring without repeating characters.",
-    example1: "Input: s = \"abcabcbb\"\nOutput: 3\nExplanation: The answer is \"abc\", with the length of 3.",
-    example2: "Input: s = \"bbbbb\"\nOutput: 1\nExplanation: The answer is \"b\", with the length of 1.",
+    example1: "Input: s = "abcabcbb"\nOutput: 3\nExplanation: The answer is "abc", with the length of 3.",
+    example2: "Input: s = "bbbbb"\nOutput: 1\nExplanation: The answer is "b", with the length of 1.",
     constraints: [
       "0 ≤ s.length ≤ 5 * 10^4",
       "s consists of English letters, digits, symbols and spaces."
@@ -187,8 +190,8 @@ public:
     difficulty: "Hard",
     topic: "Graphs",
     description: "Given two words beginWord and endWord, and a dictionary wordList, return the length of the shortest transformation sequence from beginWord to endWord.",
-    example1: "Input: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]\nOutput: 5",
-    example2: "Input: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\"]\nOutput: 0",
+    example1: "Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]\nOutput: 5",
+    example2: "Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log"]\nOutput: 0",
     constraints: [
       "1 ≤ beginWord.length ≤ 10",
       "endWord.length == beginWord.length",
