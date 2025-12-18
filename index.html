@@ -63,29 +63,113 @@
         </div>
     </section>
 
-    <!-- Contest Card -->
-    <div class="bg-white/20 backdrop-blur-3xl border-4 border-orange-400/40 rounded-3xl md:rounded-4xl p-8 md:p-12 lg:p-16 mx-4 md:mx-6 max-w-5xl mx-auto mb-20 shadow-4xl rush-glow">
-        <h2 class="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-orange-400 to-yellow-400 bg-clip-text text-transparent mb-12 md:mb-16 text-center">
-            🔥 Today's CodeRush
-        </h2>
-        <div class="grid md:grid-cols-3 gap-6 md:gap-12 mb-12 md:mb-16 text-center">
-            <div class="p-8 md:p-12 lg:p-16 bg-emerald-500/40 rounded-3xl md:rounded-4xl border-4 border-emerald-400/60 hover:scale-105 transition-all">
-                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-emerald-100 mb-4 md:mb-8 text-constrain">🥇 1st Prize</p>
-                <p class="text-4xl md:text-5xl lg:text-6xl font-black text-emerald-300 drop-shadow-2xl">₹1000</p>
-            </div>
-            <div class="p-8 md:p-12 lg:p-16 bg-orange-500/40 rounded-3xl md:rounded-4xl border-4 border-orange-400/60 hover:scale-105 transition-all">
-                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-orange-100 mb-4 md:mb-8 text-constrain">⚡ Seats Left</p>
-                <p class="text-4xl md:text-5xl lg:text-6xl font-black text-orange-300 drop-shadow-2xl" id="seats-left">178/200</p>
-            </div>
-            <div class="p-8 md:p-12 lg:p-16 bg-blue-500/40 rounded-3xl md:rounded-4xl border-4 border-blue-400/60 hover:scale-105 transition-all">
-                <p class="text-xl md:text-2xl lg:text-3xl font-bold text-blue-100 mb-4 md:mb-8 text-constrain">⏰ Starts</p>
-                <p class="text-4xl md:text-5xl lg:text-6xl font-black text-blue-300 drop-shadow-2xl">8:00 PM</p>
-            </div>
+    <!-- MULTIPLE PAID CONTESTS -->
+    <section class="px-4 md:px-6 max-w-6xl mx-auto mb-20">
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-orange-400 to-yellow-300 bg-clip-text text-transparent mb-10 text-center">
+        💰 Choose Your CodeRush Contest
+      </h2>
+
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <!-- ₹9 Daily Rush -->
+        <div class="bg-white/15 backdrop-blur-2xl border-4 border-emerald-400/50 rounded-3xl p-6 shadow-4xl">
+          <p class="text-sm font-bold text-emerald-200 mb-1">Beginner • Daily</p>
+          <h3 class="text-2xl md:text-3xl font-black text-white mb-2">₹9 Daily Rush</h3>
+          <p class="text-3xl md:text-4xl font-black text-emerald-300 mb-3">Entry ₹9</p>
+          <ul class="text-slate-200 text-sm mb-4 space-y-1">
+            <li>🥇 1st: ₹200</li>
+            <li>🥈 2nd: ₹120</li>
+            <li>🥉 3rd: ₹80</li>
+          </ul>
+          <p class="text-[11px] text-slate-300 mb-3">Perfect for practice. Low entry, quick contests.</p>
+          <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js"
+              data-payment_button_id="pl_Rt0YF2KK1nRmrO" async>
+            </script>
+          </form>
         </div>
-        <button onclick="scrollToLogin()" class="w-full max-w-2xl mx-auto block bg-gradient-to-r from-orange-500 to-yellow-500 text-white font-black py-10 md:py-12 px-16 md:px-24 text-2xl md:text-3xl rounded-3xl md:rounded-4xl shadow-4xl rush-glow hover:scale-105 transition-all">
-            ⚡ RUSH NOW - FREE ENTRY
-        </button>
-    </div>
+
+        <!-- ₹49 Rush Contest -->
+        <div class="bg-white/15 backdrop-blur-2xl border-4 border-blue-400/50 rounded-3xl p-6 shadow-4xl">
+          <p class="text-sm font-bold text-blue-200 mb-1">Intermediate</p>
+          <h3 class="text-2xl md:text-3xl font-black text-white mb-2">₹49 Rush Contest</h3>
+          <p class="text-3xl md:text-4xl font-black text-blue-300 mb-3">Entry ₹49</p>
+          <ul class="text-slate-200 text-sm mb-4 space-y-1">
+            <li>🥇 1st: ₹1,000</li>
+            <li>🥈 2nd: ₹600</li>
+            <li>🥉 3rd: ₹400</li>
+            <li>🏅 4th–5th: ₹250</li>
+          </ul>
+          <p class="text-[11px] text-slate-300 mb-3">Top 5 win cash. Great for regular players.</p>
+          <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js"
+              data-payment_button_id="pl_Rt0aENCzk6VBW6" async>
+            </script>
+          </form>
+        </div>
+
+        <!-- ₹99 Mega Rush -->
+        <div class="bg-white/20 backdrop-blur-2xl border-4 border-yellow-400/70 rounded-3xl p-6 shadow-4xl rush-glow">
+          <p class="text-sm font-bold text-yellow-200 mb-1">Popular • Top 10 Win</p>
+          <h3 class="text-2xl md:text-3xl font-black text-white mb-2">₹99 Mega Rush</h3>
+          <p class="text-3xl md:text-4xl font-black text-yellow-300 mb-3">Entry ₹99</p>
+          <ul class="text-slate-200 text-sm mb-4 space-y-1">
+            <li>🥇 1st: ₹2,000</li>
+            <li>🥈 2nd: ₹1,000</li>
+            <li>🥉 3rd: ₹700</li>
+            <li>🏅 4th–5th: ₹400</li>
+            <li>🔥 6th–10th: ₹300</li>
+          </ul>
+          <p class="text-[11px] text-slate-300 mb-3">Best value. Top 10 all win guaranteed cash.</p>
+          <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js"
+              data-payment_button_id="pl_Rt0ToHijWYJDr6" async>
+            </script>
+          </form>
+        </div>
+
+        <!-- ₹149 Pro Rush -->
+        <div class="bg-white/15 backdrop-blur-2xl border-4 border-purple-400/60 rounded-3xl p-6 shadow-4xl">
+          <p class="text-sm font-bold text-purple-200 mb-1">Advanced • Top 15 Win</p>
+          <h3 class="text-2xl md:text-3xl font-black text-white mb-2">₹149 Pro Rush</h3>
+          <p class="text-3xl md:text-4xl font-black text-purple-300 mb-3">Entry ₹149</p>
+          <ul class="text-slate-200 text-sm mb-4 space-y-1">
+            <li>🥇 1st: ₹3,000</li>
+            <li>🥈 2nd: ₹1,500</li>
+            <li>🥉 3rd: ₹1,000</li>
+            <li>🏅 4th–5th: ₹700</li>
+            <li>🔥 6th–10th: ₹500</li>
+            <li>💠 11th–15th: ₹300</li>
+          </ul>
+          <p class="text-[11px] text-slate-300 mb-3">For serious coders. Wide payout till rank 15.</p>
+          <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js"
+              data-payment_button_id="pl_Rt0bZgbs4Ry3Io" async>
+            </script>
+          </form>
+        </div>
+
+        <!-- ₹199 Elite Rush -->
+        <div class="bg-white/15 backdrop-blur-2xl border-4 border-red-400/70 rounded-3xl p-6 shadow-4xl">
+          <p class="text-sm font-bold text-red-200 mb-1">Elite • Top 20 Win</p>
+          <h3 class="text-2xl md:text-3xl font-black text-white mb-2">₹199 Elite Rush</h3>
+          <p class="text-3xl md:text-4xl font-black text-red-300 mb-3">Entry ₹199</p>
+          <ul class="text-slate-200 text-sm mb-4 space-y-1">
+            <li>🥇 1st: ₹4,000</li>
+            <li>🥈 2nd: ₹2,000</li>
+            <li>🥉 3rd: ₹1,200</li>
+            <li>🏅 4th–5th: ₹1,000</li>
+            <li>🔥 6th–10th: ₹700</li>
+            <li>💠 11th–20th: ₹400</li>
+          </ul>
+          <p class="text-[11px] text-slate-300 mb-3">High stakes. Top 20 all get rewarded.</p>
+          <form>
+            <script src="https://checkout.razorpay.com/v1/payment-button.js"
+              data-payment_button_id="pl_Rt0dtv8GdORMh6" async>
+            </script>
+          </form>
+        </div>
+      </div>
+    </section>
 
     <!-- Login Section -->
     <div id="login-section" class="max-w-lg md:max-w-2xl mx-auto bg-white/20 backdrop-blur-3xl rounded-3xl md:rounded-4xl p-8 md:p-12 lg:p-16 border-4 border-orange-400/50 shadow-4xl mx-4 md:mx-6 mb-24">
@@ -152,7 +236,6 @@
 
         <!-- Leaderboard + Profile -->
         <div class="grid lg:grid-cols-2 gap-8 mt-16" id="leaderboard-section">
-            <!-- Leaderboard -->
             <div class="bg-white/10 backdrop-blur-3xl rounded-3xl border-4 border-white/20 p-6 md:p-8 shadow-4xl">
                 <h2 class="text-2xl md:text-3xl font-black text-white mb-4 flex items-center gap-3">
                     🏆 Top Coders Today
@@ -162,7 +245,6 @@
                 </div>
             </div>
 
-            <!-- Profile -->
             <div class="bg-white/10 backdrop-blur-3xl rounded-3xl border-4 border-white/20 p-6 md:p-8 shadow-4xl">
                 <h2 class="text-2xl md:text-3xl font-black text-white mb-4">👤 Your Profile</h2>
                 <p id="profile-email" class="text-slate-200 text-sm mb-2">Not logged in</p>
@@ -232,18 +314,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('home-page').style.display = 'block';
     document.getElementById('dashboard-page').style.display = 'none';
     document.getElementById('login-btn').onclick = toggleAuth;
-    loadLeaderboard(); // Supabase se data
+    loadLeaderboard();
 });
 
 function scrollToLogin() {
     document.getElementById('login-section').scrollIntoView({ behavior: 'smooth' });
-}
-
-function joinContest() {
-    seatsLeft--;
-    document.getElementById('seats-left').textContent = `${seatsLeft}/200`;
-    alert('🎉 CodeRush Registration Successful! ⚡\n✅ Seat Confirmed | Contest 8:00 PM\nLogin to start coding!');
-    scrollToLogin();
 }
 
 function goHome() {
@@ -391,7 +466,7 @@ function submitSolution() {
         if(JSON.stringify(twoSum([2,7,11,15], 9)) === '[0,1]') {
             userPoints += 100;
             document.getElementById('user-points').textContent = userPoints;
-            addPoints(100); // Supabase leaderboard update
+            addPoints(100);
             const profPts = document.getElementById('profile-points');
             if (profPts) {
                 const cur = parseInt(profPts.textContent) || 0;
@@ -425,9 +500,9 @@ function startTimer() {
     }, 1000);
 }
 
-// ================= Supabase Leaderboard =================
-const SUPABASE_URL = "YAHAN_APNA_PROJECT_URL";
-const SUPABASE_ANON_KEY = "YAHAN_APNI_ANON_KEY";
+// ============== Supabase Leaderboard ==============
+const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 async function loadLeaderboard() {
