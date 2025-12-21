@@ -32,4 +32,319 @@
 
     <div class="flex items-center gap-3 text-xs">
       <span id="user-email" class="hidden sm:inline text-slate-300"></span>
-      <button id="
+      <button id="logout-btn" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-red-400 hover:text-red-300">
+        Logout
+      </button>
+    </div>
+  </nav>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 text-sm
+             bg-slate-900/75 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)] mt-6 mb-10">
+
+  <!-- Explore Tab -->
+  <section id="tab-explore" class="tab-page">
+    <h1 class="text-xl md:text-2xl font-bold mb-1">Welcome to CodeRush</h1>
+    <p class="text-slate-300 mb-4 text-xs md:text-sm">
+      Start with a quick path: explore topics, solve problems, or join contests. This is your LeetCode‑style home for DSA practice.
+    </p>
+
+    <!-- Top 3 cards -->
+    <div class="grid md:grid-cols-3 gap-4 mb-2 md:mb-4">
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h2 class="font-semibold mb-1 text-sm">Today’s target</h2>
+        <p class="text-slate-300 text-xs mb-2">
+          Solve 3 problems: 1 Easy, 1 Medium, 1 Hard.
+        </p>
+        <ul class="text-[11px] text-slate-400 space-y-1">
+          <li>• Arrays & Hashing</li>
+          <li>• Two Pointers</li>
+          <li>• Binary Search</li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h2 class="font-semibold mb-1 text-sm">Practice sets</h2>
+        <p class="text-slate-300 text-xs mb-2">Hand‑picked sets similar to LeetCode sheets (later yaha se real sets link karenge).</p>
+        <ul class="text-[11px] text-slate-400 space-y-1">
+          <li>• Beginner 50 DSA</li>
+          <li>• 75 Must‑Do Questions</li>
+          <li>• Company‑wise sheets</li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h2 class="font-semibold mb-1 text-sm">Quick stats</h2>
+        <p class="text-slate-300 text-xs mb-2">Abhi dummy data hai, baad me Supabase se aayega.</p>
+        <ul class="text-[11px] text-slate-400 space-y-1">
+          <li>Total solved: 0</li>
+          <li>Current streak: 0 days</li>
+          <li>Rating: 1200 (unrated)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Active contests section -->
+    <section class="mt-4 md:mt-6">
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-base md:text-lg font-semibold">Active contests</h2>
+        <button class="text-[11px] text-emerald-400 hover:text-emerald-300">
+          View all contests
+        </button>
+      </div>
+
+      <div class="grid md:grid-cols-3 gap-4 text-xs">
+
+        <!-- Free Daily Rush -->
+        <div class="bg-slate-800/80 border border-emerald-500/40 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] uppercase tracking-wide text-emerald-400 mb-1">Featured</p>
+            <h3 class="font-semibold text-sm mb-1">Free Daily Rush</h3>
+            <p class="text-slate-300 text-[11px] mb-2">
+              3 problems • 60 mins • Live leaderboard.
+            </p>
+            <p class="text-slate-400 text-[11px]">
+              Today • 8:00 PM IST
+            </p>
+          </div>
+          <a href="contest.html?type=free"
+             class="mt-3 self-start px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold inline-block">
+            Register now
+          </a>
+        </div>
+
+        <!-- Paid Mega Contest -->
+        <div class="bg-slate-800/70 border border-amber-500/40 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] uppercase tracking-wide text-amber-400 mb-1">Pro</p>
+            <h3 class="font-semibold text-sm mb-1">Paid Mega Contest</h3>
+            <p class="text-slate-300 text-[11px] mb-2">
+              Tough DSA set with cash prizes for top performers.
+            </p>
+            <p class="text-slate-400 text-[11px]">
+              Sunday • 7:00 PM IST
+            </p>
+          </div>
+          <a href="contest.html?type=paid"
+             class="mt-3 self-start px-3 py-1.5 rounded-lg border border-amber-400 text-amber-300 text-[11px] font-semibold inline-block">
+            View details
+          </a>
+        </div>
+
+        <!-- Campus / community contest -->
+        <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex flex-col justify-between">
+          <div>
+            <p class="text-[11px] uppercase tracking-wide text-cyan-400 mb-1">Community</p>
+            <h3 class="font-semibold text-sm mb-1">College / Community contest</h3>
+            <p class="text-slate-300 text-[11px] mb-2">
+              Host contests for your college, coaching or community on CodeRush.
+            </p>
+            <p class="text-slate-400 text-[11px]">
+              Slots open next week
+            </p>
+          </div>
+          <button
+            class="mt-3 self-start px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px] font-semibold">
+            Request a slot
+          </button>
+        </div>
+
+      </div>
+    </section>
+  </section>
+
+  <!-- Problems Tab -->
+  <section id="tab-problems" class="tab-page hidden">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold">Problems</h2>
+      <div class="flex gap-2 text-xs">
+        <select class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1">
+          <option>All difficulty</option>
+          <option>Easy</option>
+          <option>Medium</option>
+          <option>Hard</option>
+        </select>
+        <select class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1">
+          <option>All topics</option>
+          <option>Arrays</option>
+          <option>Strings</option>
+          <option>DP</option>
+          <option>Graphs</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="border border-slate-800 rounded-xl overflow-hidden">
+      <div class="grid grid-cols-12 bg-slate-800/80 text-[11px] text-slate-300 px-3 py-2">
+        <div class="col-span-5">Title</div>
+        <div class="col-span-2">Difficulty</div>
+        <div class="col-span-2">Topic</div>
+        <div class="col-span-2">Status</div>
+        <div class="col-span-1 text-right pr-1">Solve</div>
+      </div>
+
+      <!-- Two Sum -->
+      <div class="divide-y divide-slate-800 text-[11px]">
+        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
+          <div class="col-span-5 text-slate-100">Two Sum</div>
+          <div class="col-span-2 text-emerald-400">Easy</div>
+          <div class="col-span-2 text-slate-300">Arrays</div>
+          <div class="col-span-2 text-slate-500">Unsolved</div>
+          <div class="col-span-1 text-right">
+            <a href="problem.html?p=two-sum"
+               class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px] inline-block text-center">
+              Open
+            </a>
+          </div>
+        </div>
+
+        <!-- Longest Substring -->
+        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
+          <div class="col-span-5 text-slate-100">Longest Substring Without Repeat</div>
+          <div class="col-span-2 text-amber-400">Medium</div>
+          <div class="col-span-2 text-slate-300">Strings</div>
+          <div class="col-span-2 text-slate-500">Unsolved</div>
+          <div class="col-span-1 text-right">
+            <a href="problem.html?p=longest-substring"
+               class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px] inline-block text-center">
+              Open
+            </a>
+          </div>
+        </div>
+
+        <!-- Word Ladder -->
+        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
+          <div class="col-span-5 text-slate-100">Word Ladder</div>
+          <div class="col-span-2 text-red-400">Hard</div>
+          <div class="col-span-2 text-slate-300">Graphs</div>
+          <div class="col-span-2 text-slate-500">Unsolved</div>
+          <div class="col-span-1 text-right">
+            <a href="problem.html?p=word-ladder"
+               class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px] inline-block text-center">
+              Open
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contests Tab -->
+  <section id="tab-contests" class="tab-page hidden">
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold">Contests</h2>
+      <button class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 font-semibold">
+        View rules
+      </button>
+    </div>
+
+    <div class="space-y-3 text-xs">
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="font-semibold text-sm">Free Daily Rush</p>
+          <p class="text-slate-300 text-xs">Everyday • 8:00 PM IST • 3 problems • 60 mins</p>
+          <p class="text-slate-500 text-[11px] mt-1">Best for regular consistency and rating growth.</p>
+        </div>
+        <a href="contest.html?type=free"
+           class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-xs font-semibold inline-block">
+          Register
+        </a>
+      </div>
+
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="font-semibold text-sm">Paid Mega Contest</p>
+          <p class="text-slate-300 text-xs">Every Sunday • 7:00 PM IST • cash prizes</p>
+          <p class="text-slate-500 text-[11px] mt-1">Compete with serious coders and climb the leaderboard.</p>
+        </div>
+        <a href="contest.html?type=paid"
+           class="px-3 py-1.5 rounded-lg border border-amber-400 text-amber-300 text-xs font-semibold inline-block">
+          Details
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Premium Tab -->
+  <section id="tab-premium" class="tab-page hidden">
+    <h2 class="text-lg font-semibold mb-2">Premium (coming soon)</h2>
+    <p class="text-slate-300 text-xs mb-3">
+      Unlock advanced sheets, company‑wise problems, detailed editorials, and certificates. Similar to LeetCode Premium but focused on Indian students and contests.
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4 text-xs">
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold mb-1">Interview packs</h3>
+        <p class="text-slate-300 text-[11px]">
+          Curated lists for product companies, service‑based companies, and startups.
+        </p>
+      </div>
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold mb-1">Contest analysis</h3>
+        <p class="text-slate-300 text-[11px]">
+          Post‑contest editorials, test cases and code walk‑through videos.
+        </p>
+      </div>
+      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold mb-1">Certificates & rewards</h3>
+        <p class="text-slate-300 text-[11px]">
+          Performance‑based certificates and goodies for top coders.
+        </p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- Supabase + dashboard logic -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const emailSpan = document.getElementById('user-email');
+
+// Page load par current user check
+(async () => {
+  const { data, error } = await supabaseClient.auth.getUser();  // [web:236]
+  if (error || !data.user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  emailSpan.textContent = data.user.email || '';
+})();
+
+// Logout
+document.getElementById('logout-btn').onclick = async () => {
+  await supabaseClient.auth.signOut();  // [web:253]
+  window.location.href = 'index.html';
+};
+
+// Tabs handling
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabPages = {
+  explore: document.getElementById('tab-explore'),
+  problems: document.getElementById('tab-problems'),
+  contests: document.getElementById('tab-contests'),
+  premium: document.getElementById('tab-premium')
+};
+
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.getAttribute('data-tab');
+    tabButtons.forEach(b => {
+      b.classList.remove('text-emerald-400','border-b','border-emerald-400');
+      b.classList.add('text-slate-300');
+    });
+    btn.classList.add('text-emerald-400','border-b','border-emerald-400');
+    Object.keys(tabPages).forEach(key => {
+      if (key === tab) tabPages[key].classList.remove('hidden');
+      else tabPages[key].classList.add('hidden');
+    });
+  });
+});
+</script>
+
+</body>
+</html>
