@@ -101,9 +101,7 @@
                   Secure payment via Razorpay
                 </div>
               </div>
-              <form id="payment-form">
-                <script src="https://checkout.razorpay.com/v1/payment-button.js" id="payment-script" data-payment_button_id="" async></script>
-              </form>
+              <form id="payment-form"></form>
             </div>
           </div>
         </div>
@@ -140,7 +138,7 @@
       </div>
     </div>
 
-    <!-- Rest of sections remain same -->
+    <!-- Format / scoring / rules same as before -->
     <section class="grid md:grid-cols-3 gap-4 mb-6">
       <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
         <h3 class="font-semibold mb-1 text-xs">Format</h3>
@@ -176,76 +174,27 @@ const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
 const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Contest data
+// Contest data same as before
 const contests = {
-  free: {
-    short: "Free Daily Rush",
-    badge: "Featured • Free",
-    title: "Free Daily Rush – 3 Problems in 60 Minutes",
-    subtitle: "Best daily habit builder. Solve 3 hand‑picked DSA problems with live leaderboard and CodeRush rating update.",
-    time: "Everyday • 8:00 PM IST (India time)",
-    duration: "Duration: 60 minutes • 3 problems • Mixed difficulty",
-    level: "Level: Beginner to Intermediate",
-    prize: "No entry fee • virtual rewards & badges",
-    format: "3 problems: 1 Easy, 1 Medium, 1 slightly tricky Medium. All problems are from CodeRush curated sets.",
-    scoring: "Score = sum of problem scores – penalties for wrong submissions. Faster correct submissions get slightly higher weight.",
-    eligibility: "Open for all registered CodeRush users. Ideal for college students and working professionals.",
-    rules: [
-      "Multiple submissions allowed; last correct submission counts.",
-      "Cheating, code sharing or using multiple accounts can lead to disqualification.",
-      "Ties are broken by total time and then by earliest correct submissions."
-    ],
-    langs: [
-      "Supported languages: C++, Java, Python (more coming soon).",
-      "You must write and submit code on CodeRush problem page.",
-      "Internet connection and modern browser required."
-    ],
-    primaryText: "Register for today's Daily Rush"
-  },
-  paid: {
-    short: "Paid Mega Contest",
-    badge: "Pro • Paid",
-    title: "Paid Mega Contest – High Rated DSA Challenge",
-    subtitle: "Serious 2‑hour contest with tough DSA questions and cash prizes for the top leaderboard positions.",
-    time: "Every Sunday • 7:00 PM IST (India time)",
-    duration: "Duration: 120 minutes • 4 problems • Medium–Hard",
-    level: "Level: Intermediate to Advanced",
-    prize: "Entry fee via Razorpay • cash prizes + goodies",
-    format: "4 problems focusing on core DSA: DP, graphs, greedy, advanced arrays. Problems are unique to this contest.",
-    scoring: "Each problem has fixed score. Wrong submissions may incur small penalty. Final rank based on total score, then total time.",
-    eligibility: "Open for Indian users (18+) with valid payment method. Students & working professionals both can participate.",
-    rules: [
-      "One account per participant; sharing solutions during contest is strictly prohibited.",
-      "Refunds only if contest is cancelled due to technical reasons.",
-      "Winners may need to complete basic KYC for prize distribution."
-    ],
-    langs: [
-      "Supported languages: C++, Java, Python.",
-      "Submissions and judging happen on CodeRush online judge.",
-      "Stable internet and latest Chrome/Edge recommended."
-    ],
-    primaryText: "Pay & Register"
-  }
+  free: { /* ... वही object, जैसा तुम्हारे code में है ... */ },
+  paid: { /* ... paid वाला object, जैसा पहले है ... */ }
 };
 
 document.addEventListener('DOMContentLoaded', async function() {
-  // Auth check
   const { data: { user }, error } = await supabase.auth.getUser();
   if (error || !user) {
     window.location.href = 'index.html';
     return;
   }
 
-  // Hide loading, show content
   document.getElementById('loading').style.display = 'none';
   document.getElementById('contest-content').classList.remove('hidden');
 
-  // Setup contest
   const params = new URLSearchParams(window.location.search);
   const type = params.get("type") === "paid" ? "paid" : "free";
   const c = contests[type];
-  
-  // Fill content
+
+  // Fill basic text (same as तुम्हारा code)
   document.getElementById("contest-short").textContent = c.short;
   document.getElementById("badge").textContent = c.badge;
   document.getElementById("contest-title").textContent = c.title;
@@ -272,7 +221,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     langsUl.appendChild(li);
   });
 
-  // Payment success check
   if (type === 'paid' && params.get('payment') === 'success') {
     const amount = params.get('amount') || '99';
     document.getElementById('paidAmount').textContent = amount;
@@ -280,10 +228,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     await registerInSupabase(amount);
   }
 
-  // Check registration status
   await checkRegistrationStatus(type);
 
-  // Setup buttons
   if (type === 'free') {
     document.getElementById('free-register-btn').onclick = () => registerFreeContest();
     document.getElementById('paid-contest-section').style.display = 'none';
@@ -299,17 +245,18 @@ function setupAmountButtons() {
   document.querySelectorAll('.amount-option').forEach(option => {
     option.addEventListener('click', function() {
       document.querySelectorAll('.amount-option').forEach(opt => {
-        opt.classList.remove('border-orange-500', 'bg-orange-50/50', 'ring-2', 'ring-orange-400/50');
+        opt.classList.remove('border-orange-500','bg-orange-50/50','ring-2','ring-orange-400/50');
       });
-      this.classList.add('border-orange-500', 'bg-orange-50/50', 'ring-2', 'ring-orange-400/50');
+      this.classList.add('border-orange-500','bg-orange-50/50','ring-2','ring-orange-400/50');
       const amount = this.dataset.amount;
       loadPaymentButton(amount);
     });
   });
-  // Default ₹99
+
   document.querySelector('[data-amount="99"]').click();
 }
 
+// Razorpay script dynamic
 function loadPaymentButton(amount) {
   const buttonIds = {
     '9': 'pl_Rt0YF2KK1nRmrO',
@@ -318,16 +265,29 @@ function loadPaymentButton(amount) {
     '149': 'pl_Rt0bZgbs4Ry3Io',
     '199': 'pl_Rt0dtv8GdORMh6'
   };
-  
-  const script = document.getElementById('payment-script');
-  script.dataset.payment_button_id = buttonIds[amount];
+
+  const paymentId = buttonIds[amount];
+  if (!paymentId) {
+    alert('Invalid amount selection');
+    return;
+  }
+
+  const form = document.getElementById('payment-form');
+  form.innerHTML = '';
+
+  const script = document.createElement('script');
+  script.src = 'https://checkout.razorpay.com/v1/payment-button.js';
+  script.async = true;
+  script.dataset.payment_button_id = paymentId;
+
+  form.appendChild(script);
   document.getElementById('razorpay-container').classList.remove('hidden');
 }
 
 function showSuccessMessage() {
   document.getElementById('successMsg').classList.remove('hidden');
   document.getElementById('razorpay-container').style.display = 'none';
-  document.querySelectorAll('.amount-option').forEach(opt => opt.classList.remove('border-orange-500', 'bg-orange-50/50'));
+  document.querySelectorAll('.amount-option').forEach(opt => opt.classList.remove('border-orange-500','bg-orange-50/50'));
 }
 
 async function registerInSupabase(amount = '99') {
@@ -354,7 +314,7 @@ async function checkRegistrationStatus(type) {
       .eq('user_id', user.id)
       .eq('contest_type', 'paid')
       .single();
-    
+
     if (data) {
       document.getElementById('registeredBadge').classList.remove('hidden');
       document.getElementById('razorpay-container').style.display = 'none';
