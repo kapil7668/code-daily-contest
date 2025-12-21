@@ -35,67 +35,148 @@
 <main class="max-w-5xl mx-auto px-4 py-5 md:py-7 text-xs md:text-sm
              bg-slate-900/80 border border-slate-800/70 rounded-2xl shadow-[0_0_32px_rgba(15,23,42,0.95)] mt-4 mb-8">
 
-  <section class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
-    <div>
-      <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
-      <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
-      <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
-    </div>
+  <!-- Supabase Auth Check Loading -->
+  <div id="loading" class="flex items-center justify-center py-12">
+    <div class="animate-spin h-8 w-8 border-4 border-emerald-400 border-t-transparent rounded-full"></div>
+  </div>
 
-    <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-3 min-w-[220px]">
-      <h2 class="text-[11px] font-semibold mb-2 text-slate-200">When & duration</h2>
-      <p id="contest-time" class="text-slate-300 text-[11px] mb-1"></p>
-      <p id="contest-duration" class="text-slate-400 text-[11px] mb-3"></p>
-
-      <div class="flex items-center justify-between text-[11px] mb-3">
-        <span id="contest-level" class="px-2 py-0.5 rounded-full border border-slate-600 text-slate-200"></span>
-        <span id="contest-prize" class="text-amber-300"></span>
+  <section id="contest-content" class="hidden">
+    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
+      <div>
+        <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
+        <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
+        <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
       </div>
 
-      <button id="primary-btn"
-              class="w-full mb-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-[11px] font-semibold">
-        Register for free
-      </button>
-      <button id="secondary-btn"
-              class="w-full px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px]">
-        Add to calendar
-      </button>
+      <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-3 min-w-[220px]">
+        <h2 class="text-[11px] font-semibold mb-2 text-slate-200">When & duration</h2>
+        <p id="contest-time" class="text-slate-300 text-[11px] mb-1"></p>
+        <p id="contest-duration" class="text-slate-400 text-[11px] mb-3"></p>
 
-      <p id="note" class="text-[10px] text-slate-500 mt-2">
-        Payment / Razorpay integration will be added soon on this page.
-      </p>
-    </div>
-  </section>
+        <div class="flex items-center justify-between text-[11px] mb-3">
+          <span id="contest-level" class="px-2 py-0.5 rounded-full border border-slate-600 text-slate-200"></span>
+          <span id="contest-prize" class="text-amber-300"></span>
+        </div>
 
-  <section class="grid md:grid-cols-3 gap-4 mb-6">
-    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-      <h3 class="font-semibold mb-1 text-xs">Format</h3>
-      <p id="contest-format" class="text-[11px] text-slate-300"></p>
-    </div>
-    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-      <h3 class="font-semibold mb-1 text-xs">Scoring</h3>
-      <p id="contest-scoring" class="text-[11px] text-slate-300"></p>
-    </div>
-    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-      <h3 class="font-semibold mb-1 text-xs">Eligibility</h3>
-      <p id="contest-eligibility" class="text-[11px] text-slate-300"></p>
-    </div>
-  </section>
+        <!-- FREE CONTEST BUTTON -->
+        <button id="free-register-btn"
+                class="w-full mb-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-[11px] font-semibold">
+          Register for free
+        </button>
 
-  <section class="grid md:grid-cols-2 gap-4 text-[11px] md:text-xs">
-    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-      <h3 class="font-semibold mb-2 text-xs">Rules</h3>
-      <ul id="contest-rules" class="list-disc list-inside space-y-1 text-slate-300"></ul>
+        <!-- PAID CONTEST - Amount Selection + Payment -->
+        <div id="paid-contest-section" class="hidden">
+          <div class="mb-6 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-400/30 rounded-xl">
+            <h3 class="font-bold mb-4 text-orange-300">Choose Entry Amount</h3>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
+              <label class="amount-option p-3 border-2 rounded-lg cursor-pointer hover:border-orange-400 flex items-center justify-center transition-all" data-amount="9">
+                <input type="radio" name="contest_amount" value="9" class="sr-only">
+                <span class="font-bold text-lg">₹9</span>
+              </label>
+              <label class="amount-option p-3 border-2 rounded-lg cursor-pointer hover:border-orange-400 flex items-center justify-center transition-all" data-amount="49">
+                <input type="radio" name="contest_amount" value="49" class="sr-only">
+                <span class="font-bold text-lg">₹49</span>
+              </label>
+              <label class="amount-option p-3 border-2 rounded-lg cursor-pointer hover:border-orange-400 flex items-center justify-center transition-all" data-amount="99">
+                <input type="radio" name="contest_amount" value="99" class="sr-only">
+                <span class="font-bold text-lg">₹99</span>
+              </label>
+              <label class="amount-option p-3 border-2 rounded-lg cursor-pointer hover:border-orange-400 flex items-center justify-center transition-all" data-amount="149">
+                <input type="radio" name="contest_amount" value="149" class="sr-only">
+                <span class="font-bold text-lg">₹149</span>
+              </label>
+              <label class="amount-option p-3 border-2 rounded-lg cursor-pointer hover:border-orange-400 flex items-center justify-center transition-all" data-amount="199">
+                <input type="radio" name="contest_amount" value="199" class="sr-only">
+                <span class="font-bold text-lg">₹199</span>
+              </label>
+            </div>
+            
+            <!-- Dynamic Razorpay Button -->
+            <div id="razorpay-container" class="hidden bg-gradient-to-r from-emerald-500/20 to-green-500/20 p-4 rounded-xl border-2 border-emerald-400/50">
+              <div class="text-center mb-3">
+                <div class="inline-flex items-center gap-2 bg-emerald-500/20 px-3 py-1 rounded-full text-emerald-300 text-sm font-medium">
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+                  </svg>
+                  Secure payment via Razorpay
+                </div>
+              </div>
+              <form id="payment-form">
+                <script src="https://checkout.razorpay.com/v1/payment-button.js" id="payment-script" data-payment_button_id="" async></script>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Success Messages -->
+        <div id="successMsg" class="hidden bg-green-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-green-400/50">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="flex-shrink-0 p-2 bg-green-500/20 rounded-xl">
+              <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path>
+              </svg>
+            </div>
+            <h3 class="font-bold text-lg text-green-800">Payment Successful!</h3>
+          </div>
+          <p class="text-green-700 mb-1">₹<span id="paidAmount">99</span> का payment successful।</p>
+          <p class="text-green-600 font-medium">Mega Contest में register हो गए! Dashboard > Contests check करें।</p>
+        </div>
+
+        <div id="registeredBadge" class="hidden bg-blue-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-blue-400/50">
+          <div class="flex items-center gap-3">
+            <div class="flex-shrink-0 p-2 bg-blue-500/20 rounded-xl">
+              <svg class="w-6 h-6 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path>
+              </svg>
+            </div>
+            <span class="font-bold text-blue-800 text-lg">✓ पहले से Registered for Mega Contest</span>
+          </div>
+        </div>
+
+        <button id="secondary-btn"
+                class="w-full px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px]">
+          Add to calendar
+        </button>
+      </div>
     </div>
-    <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-      <h3 class="font-semibold mb-2 text-xs">Languages & platform</h3>
-      <ul id="contest-langs" class="list-disc list-inside space-y-1 text-slate-300"></ul>
-    </div>
+
+    <!-- Rest of sections remain same -->
+    <section class="grid md:grid-cols-3 gap-4 mb-6">
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+        <h3 class="font-semibold mb-1 text-xs">Format</h3>
+        <p id="contest-format" class="text-[11px] text-slate-300"></p>
+      </div>
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+        <h3 class="font-semibold mb-1 text-xs">Scoring</h3>
+        <p id="contest-scoring" class="text-[11px] text-slate-300"></p>
+      </div>
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+        <h3 class="font-semibold mb-1 text-xs">Eligibility</h3>
+        <p id="contest-eligibility" class="text-[11px] text-slate-300"></p>
+      </div>
+    </section>
+
+    <section class="grid md:grid-cols-2 gap-4 text-[11px] md:text-xs">
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+        <h3 class="font-semibold mb-2 text-xs">Rules</h3>
+        <ul id="contest-rules" class="list-disc list-inside space-y-1 text-slate-300"></ul>
+      </div>
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
+        <h3 class="font-semibold mb-2 text-xs">Languages & platform</h3>
+        <ul id="contest-langs" class="list-disc list-inside space-y-1 text-slate-300"></ul>
+      </div>
+    </section>
   </section>
 </main>
 
+<!-- Supabase CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// contest "database"
+const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
+const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Contest data
 const contests = {
   free: {
     short: "Free Daily Rush",
@@ -119,8 +200,7 @@ const contests = {
       "You must write and submit code on CodeRush problem page.",
       "Internet connection and modern browser required."
     ],
-    primaryText: "Register for today’s Daily Rush",
-    secondaryText: "View instructions"
+    primaryText: "Register for today's Daily Rush"
   },
   paid: {
     short: "Paid Mega Contest",
@@ -144,51 +224,156 @@ const contests = {
       "Submissions and judging happen on CodeRush online judge.",
       "Stable internet and latest Chrome/Edge recommended."
     ],
-    primaryText: "Pay & register (coming soon)",
-    secondaryText: "View prize structure"
+    primaryText: "Pay & Register"
   }
 };
 
-// read type from URL
-const params = new URLSearchParams(window.location.search);
-const type = params.get("type") === "paid" ? "paid" : "free";
-const c = contests[type];
+document.addEventListener('DOMContentLoaded', async function() {
+  // Auth check
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error || !user) {
+    window.location.href = 'index.html';
+    return;
+  }
 
-// fill content
-document.getElementById("contest-short").textContent = c.short;
-document.getElementById("badge").textContent = c.badge;
-document.getElementById("contest-title").textContent = c.title;
-document.getElementById("contest-subtitle").textContent = c.subtitle;
-document.getElementById("contest-time").textContent = c.time;
-document.getElementById("contest-duration").textContent = c.duration;
-document.getElementById("contest-level").textContent = c.level;
-document.getElementById("contest-prize").textContent = c.prize;
-document.getElementById("contest-format").textContent = c.format;
-document.getElementById("contest-scoring").textContent = c.scoring;
-document.getElementById("contest-eligibility").textContent = c.eligibility;
+  // Hide loading, show content
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('contest-content').classList.remove('hidden');
 
-const rulesUl = document.getElementById("contest-rules");
-c.rules.forEach(r => {
-  const li = document.createElement("li");
-  li.textContent = r;
-  rulesUl.appendChild(li);
+  // Setup contest
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get("type") === "paid" ? "paid" : "free";
+  const c = contests[type];
+  
+  // Fill content
+  document.getElementById("contest-short").textContent = c.short;
+  document.getElementById("badge").textContent = c.badge;
+  document.getElementById("contest-title").textContent = c.title;
+  document.getElementById("contest-subtitle").textContent = c.subtitle;
+  document.getElementById("contest-time").textContent = c.time;
+  document.getElementById("contest-duration").textContent = c.duration;
+  document.getElementById("contest-level").textContent = c.level;
+  document.getElementById("contest-prize").textContent = c.prize;
+  document.getElementById("contest-format").textContent = c.format;
+  document.getElementById("contest-scoring").textContent = c.scoring;
+  document.getElementById("contest-eligibility").textContent = c.eligibility;
+
+  const rulesUl = document.getElementById("contest-rules");
+  c.rules.forEach(r => {
+    const li = document.createElement("li");
+    li.textContent = r;
+    rulesUl.appendChild(li);
+  });
+
+  const langsUl = document.getElementById("contest-langs");
+  c.langs.forEach(r => {
+    const li = document.createElement("li");
+    li.textContent = r;
+    langsUl.appendChild(li);
+  });
+
+  // Payment success check
+  if (type === 'paid' && params.get('payment') === 'success') {
+    const amount = params.get('amount') || '99';
+    document.getElementById('paidAmount').textContent = amount;
+    showSuccessMessage();
+    await registerInSupabase(amount);
+  }
+
+  // Check registration status
+  await checkRegistrationStatus(type);
+
+  // Setup buttons
+  if (type === 'free') {
+    document.getElementById('free-register-btn').onclick = () => registerFreeContest();
+    document.getElementById('paid-contest-section').style.display = 'none';
+  } else {
+    document.getElementById('paid-contest-section').classList.remove('hidden');
+    setupAmountButtons();
+    document.getElementById('free-register-btn').style.display = 'none';
+  }
 });
 
-const langsUl = document.getElementById("contest-langs");
-c.langs.forEach(r => {
-  const li = document.createElement("li");
-  li.textContent = r;
-  langsUl.appendChild(li);
-});
+// Amount buttons
+function setupAmountButtons() {
+  document.querySelectorAll('.amount-option').forEach(option => {
+    option.addEventListener('click', function() {
+      document.querySelectorAll('.amount-option').forEach(opt => {
+        opt.classList.remove('border-orange-500', 'bg-orange-50/50', 'ring-2', 'ring-orange-400/50');
+      });
+      this.classList.add('border-orange-500', 'bg-orange-50/50', 'ring-2', 'ring-orange-400/50');
+      const amount = this.dataset.amount;
+      loadPaymentButton(amount);
+    });
+  });
+  // Default ₹99
+  document.querySelector('[data-amount="99"]').click();
+}
 
-// update buttons
-document.getElementById("primary-btn").textContent = c.primaryText;
-document.getElementById("secondary-btn").textContent = c.secondaryText;
+function loadPaymentButton(amount) {
+  const buttonIds = {
+    '9': 'pl_Rt0YF2KK1nRmrO',
+    '49': 'pl_Rt0aENCzk6VBW6', 
+    '99': 'pl_Rt0ToHijWYJDr6',
+    '149': 'pl_Rt0bZgbs4Ry3Io',
+    '199': 'pl_Rt0dtv8GdORMh6'
+  };
+  
+  const script = document.getElementById('payment-script');
+  script.dataset.payment_button_id = buttonIds[amount];
+  document.getElementById('razorpay-container').classList.remove('hidden');
+}
 
-// basic auth check
-const email = localStorage.getItem("coderush_user_email");
-if (!email) {
-  window.location.href = "index.html";
+function showSuccessMessage() {
+  document.getElementById('successMsg').classList.remove('hidden');
+  document.getElementById('razorpay-container').style.display = 'none';
+  document.querySelectorAll('.amount-option').forEach(opt => opt.classList.remove('border-orange-500', 'bg-orange-50/50'));
+}
+
+async function registerInSupabase(amount = '99') {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { error } = await supabase
+      .from('contest_registrations')
+      .insert({
+        user_id: user.id,
+        contest_type: 'paid',
+        amount_paid: parseInt(amount),
+        payment_status: 'success'
+      });
+    console.log('Registration:', error ? 'Error: ' + error.message : 'Success');
+  }
+}
+
+async function checkRegistrationStatus(type) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user && type === 'paid') {
+    const { data } = await supabase
+      .from('contest_registrations')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('contest_type', 'paid')
+      .single();
+    
+    if (data) {
+      document.getElementById('registeredBadge').classList.remove('hidden');
+      document.getElementById('razorpay-container').style.display = 'none';
+      document.getElementById('paid-contest-section').innerHTML += 
+        '<p class="text-xs text-emerald-400 mt-3 font-medium">Already paid ₹' + data.amount_paid + '</p>';
+    }
+  }
+}
+
+async function registerFreeContest() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    await supabase.from('contest_registrations').insert({
+      user_id: user.id,
+      contest_type: 'free',
+      payment_status: 'free'
+    });
+    alert('Free Daily Rush के लिए register हो गए!');
+  }
 }
 </script>
 
