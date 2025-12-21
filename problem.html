@@ -124,6 +124,9 @@
   </div>
 </main>
 
+<!-- Supabase client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+
 <script>
 // simple "database" of problems (hardcoded for now)
 const problems = {
@@ -162,8 +165,8 @@ public:
     difficulty: "Medium",
     topic: "Strings",
     description: "Given a string s, find the length of the longest substring without repeating characters.",
-    example1: "Input: s = "abcabcbb"\nOutput: 3\nExplanation: The answer is "abc", with the length of 3.",
-    example2: "Input: s = "bbbbb"\nOutput: 1\nExplanation: The answer is "b", with the length of 1.",
+    example1: "Input: s = \"abcabcbb\"\nOutput: 3\nExplanation: The answer is \"abc\", with the length of 3.",
+    example2: "Input: s = \"bbbbb\"\nOutput: 1\nExplanation: The answer is \"b\", with the length of 1.",
     constraints: [
       "0 ≤ s.length ≤ 5 * 10^4",
       "s consists of English letters, digits, symbols and spaces."
@@ -190,8 +193,8 @@ public:
     difficulty: "Hard",
     topic: "Graphs",
     description: "Given two words beginWord and endWord, and a dictionary wordList, return the length of the shortest transformation sequence from beginWord to endWord.",
-    example1: "Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]\nOutput: 5",
-    example2: "Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log"]\nOutput: 0",
+    example1: "Input: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]\nOutput: 5",
+    example2: "Input: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\"]\nOutput: 0",
     constraints: [
       "1 ≤ beginWord.length ≤ 10",
       "endWord.length == beginWord.length",
@@ -308,11 +311,17 @@ document.getElementById('submit-code').onclick = () => {
   }, 500);
 };
 
-// basic "auth" check
-const email = localStorage.getItem('coderush_user_email');
-if (!email) {
-  window.location.href = 'index.html';
-}
+// Supabase auth check
+(async () => {
+  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const { data, error } = await supabaseClient.auth.getUser();  // [web:236]
+  if (error || !data.user) {
+    window.location.href = 'index.html';
+  }
+})();
 </script>
 
 </body>
