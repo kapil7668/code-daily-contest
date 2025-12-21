@@ -1,3 +1,5 @@
+// contests-list.js
+
 function renderContestCards() {
   const container = document.getElementById("contests-container");
   if (!container || !Array.isArray(CONTESTS)) return;
@@ -14,7 +16,6 @@ function renderContestCards() {
   ordered.forEach(c => {
     const card = document.createElement("div");
 
-    // Attractive card styling
     card.className =
       "bg-slate-800/80 border rounded-xl px-5 py-4 flex items-center justify-between " +
       "shadow-[0_0_25px_rgba(15,23,42,0.85)] " +
@@ -65,11 +66,12 @@ function renderContestCards() {
     container.appendChild(card);
   });
 
+  // Join button -> exam page
   container.addEventListener("click", (e) => {
     const btn = e.target.closest("button[data-id]");
     if (!btn) return;
     const id = btn.getAttribute("data-id");
-    alert("Contest flow coming soon: " + id);
+    window.location.href = `exam.html?contestId=${encodeURIComponent(id)}`;
   });
 }
 
