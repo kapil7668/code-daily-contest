@@ -13,9 +13,16 @@ function renderContestCards() {
 
   ordered.forEach(c => {
     const card = document.createElement("div");
-    card.className = "contest-card";
 
-    const entryText = c.entryFee === 0 ? "Free entry" : `Entry ₹${c.entryFee}`;
+    // Attractive card styling
+    card.className =
+      "bg-slate-800/80 border rounded-xl px-5 py-4 flex items-center justify-between " +
+      "shadow-[0_0_25px_rgba(15,23,42,0.85)] " +
+      "transition hover:border-emerald-400/70 hover:shadow-[0_0_35px_rgba(16,185,129,0.35)] " +
+      "text-sm " +
+      (c.type === "free" ? "border-emerald-400/40" : "border-amber-400/40");
+
+    const entryText = c.entryFee === 0 ? "Free test" : `Entry ₹${c.entryFee}`;
     const prizeLine = `Total prize ₹${c.totalPrize} • Top ${c.maxWinners}`;
     let payoutLine = "";
 
@@ -26,13 +33,32 @@ function renderContestCards() {
     }
 
     card.innerHTML = `
-      <h3>${c.title}</h3>
-      <p>${entryText}</p>
-      <p>Min ${c.minParticipants} players</p>
-      <p>${prizeLine}</p>
-      <p>${payoutLine}</p>
-      <button class="btn-cta" data-id="${c.id}">
-        Join (coming soon)
+      <div>
+        <p class="text-[11px] uppercase tracking-wide ${
+          c.type === "free" ? "text-emerald-400" : "text-amber-400"
+        } mb-1">
+          ${c.type === "free" ? "Free contest" : "Paid contest"}
+        </p>
+
+        <p class="font-semibold text-base mb-1">${c.title}</p>
+
+        <p class="text-slate-300 text-xs mb-1">
+          ${entryText} • Min ${c.minParticipants} students
+        </p>
+
+        <p class="text-slate-400 text-[11px]">
+          ${prizeLine}
+        </p>
+
+        <p class="text-slate-500 text-[11px]">
+          ${payoutLine}
+        </p>
+      </div>
+
+      <button
+        class="px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-xs font-semibold"
+        data-id="${c.id}">
+        Join test
       </button>
     `;
 
