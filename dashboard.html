@@ -155,78 +155,7 @@
 
   <!-- Problems Tab -->
   <section id="tab-problems" class="tab-page hidden">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-lg font-semibold">Problems</h2>
-      <div class="flex gap-2 text-xs">
-        <select class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1">
-          <option>All difficulty</option>
-          <option>Easy</option>
-          <option>Medium</option>
-          <option>Hard</option>
-        </select>
-        <select class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1">
-          <option>All topics</option>
-          <option>Arrays</option>
-          <option>Strings</option>
-          <option>DP</option>
-          <option>Graphs</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="border border-slate-800 rounded-xl overflow-hidden">
-      <div class="grid grid-cols-12 bg-slate-800/80 text-[11px] text-slate-300 px-3 py-2">
-        <div class="col-span-5">Title</div>
-        <div class="col-span-2">Difficulty</div>
-        <div class="col-span-2">Topic</div>
-        <div class="col-span-2">Status</div>
-        <div class="col-span-1 text-right pr-1">Solve</div>
-      </div>
-
-      <!-- Two Sum -->
-      <div class="divide-y divide-slate-800 text-[11px]">
-        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
-          <div class="col-span-5 text-slate-100">Two Sum</div>
-          <div class="col-span-2 text-emerald-400">Easy</div>
-          <div class="col-span-2 text-slate-300">Arrays</div>
-          <div class="col-span-2 text-slate-500">Unsolved</div>
-          <div class="col-span-1 text-right">
-            <a href="problem.html?p=two-sum"
-               class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px] inline-block text-center">
-              Open
-            </a>
-          </div>
-        </div>
-
-        <!-- Longest Substring -->
-        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
-          <div class="col-span-5 text-slate-100">Longest Substring Without Repeat</div>
-          <div class="col-span-2 text-amber-400">Medium</div>
-          <div class="col-span-2 text-slate-300">Strings</div>
-          <div class="col-span-2 text-slate-500">Unsolved</div>
-          <div class="col-span-1 text-right">
-            <a href="problem.html?p=longest-substring"
-               class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px] inline-block text-center">
-              Open
-            </a>
-          </div>
-        </div>
-
-        <!-- Word Ladder -->
-        <div class="grid grid-cols-12 items-center px-3 py-2 hover:bg-slate-800/60">
-          <div class="col-span-5 text-slate-100">Word Ladder</div>
-          <div class="col-span-2 text-red-400">Hard</div>
-          <div class="col-span-2 text-slate-300">Graphs</div>
-          <div class="col-span-2 text-slate-500">Unsolved</div>
-          <div class="col-span-1 text-right">
-            <a href="problem.html?p=word-ladder"
-               class="px-2 py-1 rounded bg-emerald-500 text-slate-900 text-[10px] inline-block text-center">
-              Open
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- ... (yahan tumhara problems wala pura section same ka same rehne do) ... -->
   </section>
 
   <!-- Contests Tab -->
@@ -238,60 +167,13 @@
       </button>
     </div>
 
-    <div class="space-y-3 text-xs">
-      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
-        <div>
-          <p class="font-semibold text-sm">Free Daily Rush</p>
-          <p class="text-slate-300 text-xs">Everyday • 8:00 PM IST • 3 problems • 60 mins</p>
-          <p class="text-slate-500 text-[11px] mt-1">Best for regular consistency and rating growth.</p>
-        </div>
-        <a href="contest.html?type=free"
-           class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-xs font-semibold inline-block">
-          Register
-        </a>
-      </div>
-
-      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4 flex items-center justify-between">
-        <div>
-          <p class="font-semibold text-sm">Paid Mega Contest</p>
-          <p class="text-slate-300 text-xs">Every Sunday • 7:00 PM IST • cash prizes</p>
-          <p class="text-slate-500 text-[11px] mt-1">Compete with serious coders and climb the leaderboard.</p>
-        </div>
-        <a href="contest.html?type=paid"
-           class="px-3 py-1.5 rounded-lg border border-amber-400 text-amber-300 text-xs font-semibold inline-block">
-          Details
-        </a>
-      </div>
-    </div>
+    <!-- Naya dynamic container -->
+    <div id="contests-container" class="space-y-3 text-xs"></div>
   </section>
 
   <!-- Premium Tab -->
   <section id="tab-premium" class="tab-page hidden">
-    <h2 class="text-lg font-semibold mb-2">Premium (coming soon)</h2>
-    <p class="text-slate-300 text-xs mb-3">
-      Unlock advanced sheets, company‑wise problems, detailed editorials, and certificates. Similar to LeetCode Premium but focused on Indian students and contests.
-    </p>
-
-    <div class="grid md:grid-cols-3 gap-4 text-xs">
-      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
-        <h3 class="font-semibold mb-1">Interview packs</h3>
-        <p class="text-slate-300 text-[11px]">
-          Curated lists for product companies, service‑based companies, and startups.
-        </p>
-      </div>
-      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
-        <h3 class="font-semibold mb-1">Contest analysis</h3>
-        <p class="text-slate-300 text-[11px]">
-          Post‑contest editorials, test cases and code walk‑through videos.
-        </p>
-      </div>
-      <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
-        <h3 class="font-semibold mb-1">Certificates & rewards</h3>
-        <p class="text-slate-300 text-[11px]">
-          Performance‑based certificates and goodies for top coders.
-        </p>
-      </div>
-    </div>
+    <!-- ... tumhara original premium section ... -->
   </section>
 
 </main>
@@ -307,7 +189,7 @@ const emailSpan = document.getElementById('user-email');
 
 // Page load par current user check
 (async () => {
-  const { data, error } = await supabaseClient.auth.getUser();  // [web:236]
+  const { data, error } = await supabaseClient.auth.getUser();
   if (error || !data.user) {
     window.location.href = 'index.html';
     return;
@@ -317,7 +199,7 @@ const emailSpan = document.getElementById('user-email');
 
 // Logout
 document.getElementById('logout-btn').onclick = async () => {
-  await supabaseClient.auth.signOut();  // [web:253]
+  await supabaseClient.auth.signOut();
   window.location.href = 'index.html';
 };
 
@@ -346,5 +228,8 @@ tabButtons.forEach(btn => {
 });
 </script>
 
+<!-- Yahan NEW scripts add kiye -->
+<script src="contests-config.js"></script>
+<script src="contests-list.js"></script>
 </body>
 </html>
