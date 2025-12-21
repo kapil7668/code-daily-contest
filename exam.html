@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contest Exam – CodeRush</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  </style>
+</head>
+
+<body class="min-h-screen text-slate-100 bg-slate-950
+             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
+
+<main class="max-w-3xl mx-auto px-4 py-6 mt-6 bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
+
+  <div id="contest-info" class="mb-5">
+    <!-- JS se fill hoga -->
+  </div>
+
+  <div class="border-t border-slate-800 pt-4 mt-4 text-xs text-slate-400">
+    <p>Abhi sirf contest ka overview hai. Next step me yahin par questions aur timer ka system add karenge.</p>
+  </div>
+
+</main>
+
+<!-- Existing config reuse -->
+<script src="contests-config.js"></script>
+<script>
+  function getContestIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("contestId");
+  }
+
+  function renderContestInfo() {
+    const container = document.getElementById("contest-info");
+    if (!container) return;
+
+    const contestId = getContestIdFromUrl();
+    const contest = Array.isArray(CONTESTS)
+      ? CONTESTS.find(c => c.id === contestId)
+      : null;
+
+    if (!contest) {
+      container.innerHTML = `
+        <p class="text-red-400 text-sm font-semibold">
+          Invalid or missing contest. Please go back to dashboard.
+        </p>
+      `;
+      return;
+    }
+
+    const entryText = contest.entryFee === 0
+      ? "Free test"
+      : \`Entry ₹\${contest.entryFee}\`;
+
+    const prizeLine = \`Total prize ₹\${contest.totalPrize} • Top \${contest.maxWinners}\`;
+
+    container.innerHTML = `
+      <p class="text-[11px] uppercase tracking-wide ${
+        contest.type === "free" ? "text-emerald-400" : "text-amber-400"
+      } mb-1">
+        ${contest.type === "free" ? "Free contest" : "Paid contest"}
+      </p>
+
+      <h1 class="text-xl font-semibold mb-2">${contest.title}</h1>
+
+      <p class="text-slate-300 text-sm mb-1">
+        ${entryText} • Min ${contest.minParticipants} students
+      </p>
+
+      <p class="text-slate-300 text-sm mb-1">
+        ${prizeLine}
+      </p>
+
+      <div class="mt-3 mb-4 text-xs text-slate-400">
+        <p class="font-semibold mb-1">Prize breakdown:</p>
+        <ul class="list-disc list-inside space-y-0.5">
+          ${contest.payouts
+            .map(p => {
+              const range =
+                p.fromRank === p.toRank
+                  ? \`Rank \${p.fromRank}\`
+                  : \`Rank \${p.fromRank}–\${p.toRank}\`;
+              return \`<li>\${range}: ₹\${p.amount}</li>\`;
+            })
+            .join("")}
+        </ul>
+      </div>
+
+      <button id="start-exam-btn"
+        class="mt-2 px-4 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-xs font-semibold">
+        Start exam (coming soon)
+      </button>
+      <a href="dashboard.html"
+        class="ml-2 text-xs text-slate-400 hover:text-slate-200 underline">
+        Back to dashboard
+      </a>
+    `;
+  }
+
+  document.addEventListener("DOMContentLoaded", renderContestInfo);
+</script>
+
+</body>
+</html>
