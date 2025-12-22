@@ -30,25 +30,40 @@
     return params.get("contestId");
   }
 
+  function getScoreFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return Number(params.get("score") || 0);
+  }
+
   function findContestById(id) {
     return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
   }
 
   // Abhi ke liye dummy leaderboard data (baad me Supabase se aayega)
-  function getDummyLeaderboard(contestId) {
-    // Example fixed data
-    return [
-      { rank: 1, name: "You", score: 300, time: "25:32" },
-      { rank: 2, name: "Student B", score: 280, time: "27:10" },
-      { rank: 3, name: "Student C", score: 260, time: "29:45" },
-      { rank: 4, name: "Student D", score: 240, time: "32:05" },
-      { rank: 5, name: "Student E", score: 220, time: "35:12" }
+  function getDummyLeaderboard(contestId, yourScore) {
+    // Your score ko leaderboard me include karo
+    const leaderboard = [
+      { rank: 1, name: "Rahul Sharma", score: 300, time: "25:32" },
+      { rank: 2, name: "Priya K.", score: 280, time: "27:10" },
+      { rank: 3, name: "Amit V", score: 260, time: "29:45" },
+      { rank: 4, name: "Neha R", score: 240, time: "32:05" },
+      { rank: 5, name: "You", score: yourScore, time: "35:12" }
     ];
+    
+    // Score ke basis par rank adjust karo (simple logic)
+    leaderboard.sort((a, b) => b.score - a.score);
+    leaderboard.forEach((row, index) => {
+      row.rank = index + 1;
+    });
+    
+    return leaderboard;
   }
 
   function renderHeader(contest) {
     const header = document.getElementById("result-header");
     if (!header) return;
+
+    const yourScore = getScoreFromUrl();
 
     header.innerHTML = `
       <div>
@@ -58,10 +73,13 @@
           ${contest.type === "free" ? "Free contest" : "Paid contest"}
         </p>
         <h1 class="text-xl font-semibold mb-1">${contest.title} – Result</h1>
-        <p class="text-slate-300 text-xs">
+        <p class="text-slate-300 text-xs mb-1">
           Entry ${contest.entryFee === 0 ? "Free" : "₹" + contest.entryFee}
           • Total prize ₹${contest.totalPrize}
           • Top ${contest.maxWinners} students get rewards
+        </p>
+        <p class="text-emerald-400 text-sm font-semibold">
+          Your score: <span id="your-score">${yourScore}</span> / 300
         </p>
       </div>
 
@@ -76,19 +94,23 @@
     const lb = document.getElementById("leaderboard");
     if (!lb) return;
 
-    const rows = getDummyLeaderboard(contest.id)
-      .map(row => `
-        <tr class="border-t border-slate-800 hover:bg-slate-800/60">
-          <td class="px-3 py-2 text-center">${row.rank}</td>
-          <td class="px-3 py-2">${row.name}</td>
-          <td class="px-3 py-2 text-center">${row.score}</td>
-          <td class="px-3 py-2 text-center">${row.time}</td>
-        </tr>
-      `)
+    const yourScore = getScoreFromUrl();
+    const rows = getDummyLeaderboard(contest.id, yourScore)
+      .map(row => {
+        const isYou = row.name === "You";
+        return `
+          <tr class="border-t border-slate-800 hover:bg-slate-800/60 ${isYou ? 'bg-emerald-500/20 border-emerald-400/50' : ''}">
+            <td class="px-3 py-2 text-center font-semibold ${isYou ? 'text-emerald-400' : ''}">${row.rank}</td>
+            <td class="px-3 py-2 font-semibold ${isYou ? 'text-emerald-400' : ''}">${row.name}</td>
+            <td class="px-3 py-2 text-center font-semibold ${isYou ? 'text-emerald-400' : ''}">${row.score}</td>
+            <td class="px-3 py-2 text-center">${row.time}</td>
+          </tr>
+        `;
+      })
       .join("");
 
     lb.innerHTML = `
-      <h2 class="text-sm font-semibold mb-2">Leaderboard (demo)</h2>
+      <h2 class="text-sm font-semibold mb-2">Leaderboard (Top 50)</h2>
       <div class="border border-slate-800 rounded-xl overflow-hidden">
         <table class="w-full text-[11px]">
           <thead class="bg-slate-800/80 text-slate-300">
