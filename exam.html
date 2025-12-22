@@ -103,7 +103,6 @@
         topic: "Math"
       }
     ]
-
     // baaki contests ke liye aage aur question arrays add kar sakte ho
   };
 
@@ -123,6 +122,22 @@
   let selectedQuestions = [];
   let remainingSeconds = 60 * 60; // 60 mins default
   let timerInterval = null;
+  let currentContestId = null;
+
+  // ---------- Answer save helpers (localStorage) ----------
+  function makeAnswerKey(contestId, questionId) {
+    return `answer_${contestId}_${questionId}`;
+  }
+
+  function loadSavedAnswer(contestId, questionId) {
+    const key = makeAnswerKey(contestId, questionId);
+    return localStorage.getItem(key) || "";
+  }
+
+  function saveAnswer(contestId, questionId, value) {
+    const key = makeAnswerKey(contestId, questionId);
+    localStorage.setItem(key, value);
+  }
 
   // ---------- Render header ----------
   function renderHeader(contest) {
@@ -223,6 +238,8 @@
       return;
     }
 
+    const saved = loadSavedAnswer(currentContestId, q.id);
+
     area.innerHTML = `
       <div class="flex items-center justify-between mb-2">
         <div>
@@ -243,13 +260,15 @@
       </div>
 
       <textarea
+        id="answer-box"
         class="w-full h-52 bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-emerald-400"
-        placeholder="Write logic / code here (language of your choice)..."></textarea>
+        placeholder="Write logic / code here (language of your choice)...">${saved}</textarea>
 
       <div class="flex items-center justify-between mt-3 text-xs">
         <div class="space-x-2">
-          <button class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 text-slate-200">
-            Save answer (dummy)
+          <button id="save-answer-btn"
+            class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 text-slate-200">
+            Save answer
           </button>
           <button class="px-3 py-1.5 rounded-lg bg-slate-800 border border-slate-600 text-slate-200">
             Run test (dummy)
@@ -270,6 +289,8 @@
 
     const prevBtn = document.getElementById("prev-q");
     const nextBtn = document.getElementById("next-q");
+    const saveBtn = document.getElementById("save-answer-btn");
+    const answerBox = document.getElementById("answer-box");
 
     prevBtn.onclick = () => {
       if (currentQuestionIndex > 0) {
@@ -284,6 +305,11 @@
         renderQuestionList();
         renderCurrentQuestion();
       }
+    };
+    saveBtn.onclick = () => {
+      saveAnswer(currentContestId, q.id, answerBox.value);
+      saveBtn.textContent = "Saved!";
+      setTimeout(() => (saveBtn.textContent = "Save answer"), 1200);
     };
   }
 
@@ -304,7 +330,7 @@
       return;
     }
 
-    // 60 mins default; later contest-wise duration laa sakte hain
+    currentContestId = contestId;
     remainingSeconds = 60 * 60;
 
     selectedQuestions = pickRandomQuestionsForContest(contestId, 3);
