@@ -139,6 +139,12 @@
     localStorage.setItem(key, value);
   }
 
+  // ---------- Finish exam -> results page ----------
+  function finishExam() {
+    const contestId = currentContestId || getContestIdFromUrl();
+    window.location.href = `results.html?contestId=${encodeURIComponent(contestId)}`;
+  }
+
   // ---------- Render header ----------
   function renderHeader(contest) {
     const header = document.getElementById("exam-header");
@@ -168,6 +174,10 @@
           class="mt-2 px-3 py-1.5 rounded-lg border border-slate-600 text-[11px] text-slate-200">
           Exit exam
         </button>
+        <button onclick="finishExam()"
+          class="mt-2 ml-2 px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
+          Finish &amp; view result
+        </button>
       </div>
     `;
   }
@@ -194,6 +204,7 @@
         timerText.textContent = formatTime(remainingSeconds);
         clearInterval(timerInterval);
         alert("Time is over! Submitting exam (future feature).");
+        finishExam();
         return;
       }
       timerText.textContent = formatTime(remainingSeconds);
