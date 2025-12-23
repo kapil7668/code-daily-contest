@@ -12,8 +12,8 @@
   <!-- Supabase client -->
   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
   <script>
-    const supabaseUrl = "https://tghtgygjawhrcgtwhrej.supabase.co"; // tumhara URL
-    const supabaseKey = "YAHAN_APNA_ANON_KEY_DALO";                 // tumhara anon key
+    const supabaseUrl = "https://tghtgygjawhrcgtwhrej.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
   </script>
 </head>
@@ -25,20 +25,12 @@
 
   <!-- Header: contest name + timer -->
   <div id="exam-header" class="flex items-center justify-between mb-4">
-    <!-- JS se fill hoga -->
   </div>
 
   <!-- Layout: left question list, right question detail -->
   <div class="grid grid-cols-12 gap-4">
-    <!-- Left: questions list -->
-    <aside class="col-span-12 md:col-span-3 bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs" id="question-list">
-      <!-- JS se fill hoga -->
-    </aside>
-
-    <!-- Right: current question -->
-    <section class="col-span-12 md:col-span-9 bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm" id="question-area">
-      <!-- JS se fill hoga -->
-    </section>
+    <aside class="col-span-12 md:col-span-3 bg-slate-900 border border-slate-800 rounded-xl p-3 text-xs" id="question-list"></aside>
+    <section class="col-span-12 md:col-span-9 bg-slate-900 border border-slate-800 rounded-xl p-4 text-sm" id="question-area"></section>
   </div>
 
 </main>
@@ -55,7 +47,7 @@
     return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
   }
 
-  // ---------- QUESTION BANK (contest-wise) ----------
+  // ---------- QUESTION BANK ----------
   const QUESTION_BANK = {
     "paid-9": [
       { id: "p9-q1", title: "Two Sum", statement: "Given an array and a target, return indices of the two numbers such that they add up to target.", level: "Easy", topic: "Arrays" },
@@ -114,7 +106,7 @@
   // ---------- Exam state ----------
   let currentQuestionIndex = 0;
   let selectedQuestions = [];
-  let remainingSeconds = 60 * 60; // 60 mins default
+  let remainingSeconds = 60 * 60;
   let timerInterval = null;
   let currentContestId = null;
 
@@ -130,8 +122,12 @@
 
   async function saveAnswer(contestId, questionId, value) {
     const key = makeAnswerKey(contestId, questionId);
-    // Local backup
     localStorage.setItem(key, value);
+
+    if (!window.supabase) {
+      console.warn("Supabase not loaded, skipping DB save");
+      return;
+    }
 
     try {
       const {
@@ -156,15 +152,13 @@
           { onConflict: "user_id,contest_id,question_id" }
         );
 
-      if (error) {
-        console.error("Supabase save error", error);
-      }
+      if (error) console.error("Supabase save error", error);
     } catch (e) {
       console.error("Unexpected save error", e);
     }
   }
 
-  // ---------- Dummy scoring (URL ke through result.html ko bhejne ke liye) ----------
+  // ---------- Dummy scoring ----------
   function calculateDummyScore() {
     if (!currentContestId || !selectedQuestions.length) return 0;
     let score = 0;
@@ -179,7 +173,6 @@
     return score;
   }
 
-  // ---------- Finish exam -> result page ----------
   function finishExam() {
     const contestId = currentContestId || getContestIdFromUrl();
     const score = calculateDummyScore();
@@ -192,9 +185,7 @@
     const header = document.getElementById("exam-header");
     if (!header) return;
 
-    const entryText = contest.entryFee === 0
-      ? "Free test"
-      : `Entry ₹${contest.entryFee}`;
+    const entryText = contest.entryFee === 0 ? "Free test" : `Entry ₹${contest.entryFee}`;
 
     header.innerHTML = `
       <div>
