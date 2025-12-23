@@ -8,6 +8,14 @@
   <style>
     * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   </style>
+
+  <!-- Supabase client -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script>
+    const supabaseUrl = "https://tghtgygjawhrcgtwhrej.supabase.co"; // tumhara URL
+    const supabaseKey = "YAHAN_APNA_ANON_KEY_DALO";                 // tumhara anon key
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+  </script>
 </head>
 
 <body class="min-h-screen text-slate-100 bg-slate-950
@@ -110,7 +118,7 @@
   let timerInterval = null;
   let currentContestId = null;
 
-  // ---------- Answer save helpers (localStorage) ----------
+  // ---------- Answer save helpers ----------
   function makeAnswerKey(contestId, questionId) {
     return `answer_${contestId}_${questionId}`;
   }
@@ -120,9 +128,40 @@
     return localStorage.getItem(key) || "";
   }
 
-  function saveAnswer(contestId, questionId, value) {
+  async function saveAnswer(contestId, questionId, value) {
     const key = makeAnswerKey(contestId, questionId);
+    // Local backup
     localStorage.setItem(key, value);
+
+    try {
+      const {
+        data: { user },
+        error: userError
+      } = await supabase.auth.getUser();
+      if (userError || !user) {
+        console.warn("No logged-in user, skipping DB save");
+        return;
+      }
+
+      const { error } = await supabase
+        .from("submissions")
+        .upsert(
+          {
+            user_id: user.id,
+            contest_id: contestId,
+            question_id: questionId,
+            code: value,
+            language: "text"
+          },
+          { onConflict: "user_id,contest_id,question_id" }
+        );
+
+      if (error) {
+        console.error("Supabase save error", error);
+      }
+    } catch (e) {
+      console.error("Unexpected save error", e);
+    }
   }
 
   // ---------- Dummy scoring (URL ke through result.html ko bhejne ke liye) ----------
@@ -133,7 +172,6 @@
     selectedQuestions.forEach((q, index) => {
       const ans = loadSavedAnswer(currentContestId, q.id).trim();
       if (!ans) return;
-      // simple rule: Q2 ke answer par 100, Q3 ke answer par 200
       if (index === 1) score += 100;
       if (index === 2) score += 200;
     });
