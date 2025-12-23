@@ -23,25 +23,33 @@
   </section>
 </main>
 
+<!-- Supabase + Config -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="contests-config.js"></script>
+
 <script>
+  // === Supabase client: yahan apna URL + KEY daalo ===
+  const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ---------- Helpers ----------
   function getContestIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get("contestId");
-  }
-
-  function getScoreFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return Number(params.get("score") || 0);
   }
 
   function findContestById(id) {
     return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
   }
 
-  // Abhi ke liye dummy leaderboard data (baad me Supabase se aayega)
+  // Fallback score (agar Supabase se kuch na mile)
+  function getScoreFromUrlFallback() {
+    const params = new URLSearchParams(window.location.search);
+    return Number(params.get("score") || 0);
+  }
+
   function getDummyLeaderboard(contestId, yourScore) {
-    // Your score ko leaderboard me include karo
     const leaderboard = [
       { rank: 1, name: "Rahul Sharma", score: 300, time: "25:32" },
       { rank: 2, name: "Priya K.", score: 280, time: "27:10" },
@@ -49,21 +57,14 @@
       { rank: 4, name: "Neha R", score: 240, time: "32:05" },
       { rank: 5, name: "You", score: yourScore, time: "35:12" }
     ];
-    
-    // Score ke basis par rank adjust karo (simple logic)
     leaderboard.sort((a, b) => b.score - a.score);
-    leaderboard.forEach((row, index) => {
-      row.rank = index + 1;
-    });
-    
+    leaderboard.forEach((row, index) => { row.rank = index + 1; });
     return leaderboard;
   }
 
-  function renderHeader(contest) {
+  function renderHeader(contest, yourScore) {
     const header = document.getElementById("result-header");
     if (!header) return;
-
-    const yourScore = getScoreFromUrl();
 
     header.innerHTML = `
       <div>
@@ -79,7 +80,7 @@
           • Top ${contest.maxWinners} students get rewards
         </p>
         <p class="text-emerald-400 text-sm font-semibold">
-          Your score: <span id="your-score">${yourScore}</span> / 300
+          Your score: <span id="your-score">${yourScore}</span> / 900
         </p>
       </div>
 
@@ -90,11 +91,50 @@
     `;
   }
 
-  function renderLeaderboard(contest) {
+  function renderLeaderboardRows(rows, yourUserId) {
+    return rows.map((row, index) => {
+      const isYou = row.user_id === yourUserId;
+      return `
+        <tr class="border-t border-slate-800 hover:bg-slate-800/60 ${isYou ? 'bg-emerald-500/20 border-emerald-400/50' : ''}">
+          <td class="px-3 py-2 text-center font-semibold ${isYou ? 'text-emerald-400' : ''}">${index + 1}</td>
+          <td class="px-3 py-2 font-semibold ${isYou ? 'text-emerald-400' : ''}">${isYou ? 'You' : (row.username || 'User')}</td>
+          <td class="px-3 py-2 text-center font-semibold ${isYou ? 'text-emerald-400' : ''}">${row.score}</td>
+          <td class="px-3 py-2 text-center">–</td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  function renderLeaderboardFromDb(rows, yourUserId) {
     const lb = document.getElementById("leaderboard");
     if (!lb) return;
 
-    const yourScore = getScoreFromUrl();
+    const bodyRows = renderLeaderboardRows(rows, yourUserId);
+
+    lb.innerHTML = `
+      <h2 class="text-sm font-semibold mb-2">Leaderboard (Top 50)</h2>
+      <div class="border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-[11px]">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-2 text-left">Rank</th>
+              <th class="px-3 py-2 text-left">Student</th>
+              <th class="px-3 py-2 text-left">Score</th>
+              <th class="px-3 py-2 text-left">Time</th>
+            </tr>
+          </thead>
+          <tbody class="text-slate-200">
+            ${bodyRows}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+
+  function renderLeaderboardDummy(contest, yourScore) {
+    const lb = document.getElementById("leaderboard");
+    if (!lb) return;
+
     const rows = getDummyLeaderboard(contest.id, yourScore)
       .map(row => {
         const isYou = row.name === "You";
@@ -129,7 +169,8 @@
     `;
   }
 
-  function initResultsPage() {
+  // -------- REAL SCORE + LEADERBOARD (Supabase) --------
+  async function calculateScoreAndSave() {
     const contestId = getContestIdFromUrl();
     const contest = findContestById(contestId);
 
@@ -145,11 +186,77 @@
       return;
     }
 
-    renderHeader(contest);
-    renderLeaderboard(contest);
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) {
+        alert('Please login again.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      // 1) User submissions
+      const { data: submissions } = await supabaseClient
+        .from('submissions')
+        .select('question_id, code')
+        .eq('user_id', user.id)
+        .eq('contest_id', contestId);
+
+      // 2) Problems with marks
+      const { data: problems } = await supabaseClient
+        .from('problems')
+        .select('id, marks');
+
+      // 3) Calculate total score
+      let totalScore = 0;
+      if (submissions && problems) {
+        submissions.forEach(sub => {
+          const p = problems.find(pr => pr.id === sub.question_id);
+          if (p && sub.code && sub.code.trim().length > 0) {
+            totalScore += p.marks;
+          }
+        });
+      }
+
+      const fallbackScore = getScoreFromUrlFallback();
+      const finalScore = totalScore || fallbackScore;
+
+      // 4) Header render
+      renderHeader(contest, finalScore);
+
+      // 5) Save to leaderboard
+      await supabaseClient
+        .from('leaderboard')
+        .upsert({
+          contest_id: contestId,
+          user_id: user.id,
+          score: finalScore
+        });
+
+      await supabaseClient.rpc('update_leaderboard_ranks', { target_contest_id: contestId });
+
+      // 6) Fetch top 50 leaderboard
+      const { data: lbRows } = await supabaseClient
+        .from('leaderboard')
+        .select('user_id, score')
+        .eq('contest_id', contestId)
+        .order('score', { ascending: false })
+        .limit(50);
+
+      if (lbRows && lbRows.length) {
+        renderLeaderboardFromDb(lbRows, user.id);
+      } else {
+        renderLeaderboardDummy(contest, finalScore);
+      }
+
+    } catch (err) {
+      console.error('Result error', err);
+      const fallback = getScoreFromUrlFallback();
+      renderHeader(contest || { title: 'Contest', type: 'free', entryFee: 0, totalPrize: 0, maxWinners: 0 }, fallback);
+      renderLeaderboardDummy(contest || { id: 'unknown' }, fallback);
+    }
   }
 
-  document.addEventListener("DOMContentLoaded", initResultsPage);
+  document.addEventListener("DOMContentLoaded", calculateScoreAndSave);
 </script>
 
 </body>
