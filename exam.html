@@ -147,9 +147,13 @@
           { onConflict: "user_id,contest_id,question_id" }
         );
 
-      if (error) console.error("Supabase save error", error);
+      if (error) {
+        alert("Supabase error: " + (error.message || JSON.stringify(error)));
+        console.error("Supabase save error", error);
+      }
     } catch (e) {
       console.error("Unexpected save error", e);
+      alert("Unexpected save error: " + e.message);
     }
   }
 
