@@ -50,60 +50,46 @@
   // ---------- QUESTION BANK (contest-wise) ----------
   const QUESTION_BANK = {
     "paid-9": [
-      {
-        id: "p9-q1",
-        title: "Two Sum",
-        statement: "Given an array and a target, return indices of the two numbers such that they add up to target.",
-        level: "Easy",
-        topic: "Arrays"
-      },
-      {
-        id: "p9-q2",
-        title: "Maximum Subarray",
-        statement: "Find the contiguous subarray with maximum sum.",
-        level: "Easy",
-        topic: "Kadane"
-      },
-      {
-        id: "p9-q3",
-        title: "Valid Parentheses",
-        statement: "Check if the input string with brackets is valid.",
-        level: "Easy",
-        topic: "Stack"
-      },
-      {
-        id: "p9-q4",
-        title: "Merge Sorted Arrays",
-        statement: "Merge two sorted arrays into one sorted array.",
-        level: "Easy",
-        topic: "Two Pointers"
-      }
+      { id: "p9-q1", title: "Two Sum", statement: "Given an array and a target, return indices of the two numbers such that they add up to target.", level: "Easy", topic: "Arrays" },
+      { id: "p9-q2", title: "Maximum Subarray", statement: "Find the contiguous subarray with maximum sum.", level: "Easy", topic: "Kadane" },
+      { id: "p9-q3", title: "Valid Parentheses", statement: "Check if the input string with brackets is valid.", level: "Easy", topic: "Stack" }
     ],
 
     "free-200": [
-      {
-        id: "f200-q1",
-        title: "Find Minimum",
-        statement: "Given N numbers, print the minimum element.",
-        level: "Easy",
-        topic: "Arrays"
-      },
-      {
-        id: "f200-q2",
-        title: "Reverse String",
-        statement: "Reverse the given string without using extra library functions.",
-        level: "Easy",
-        topic: "Strings"
-      },
-      {
-        id: "f200-q3",
-        title: "Sum of Digits",
-        statement: "Given an integer, find sum of its digits.",
-        level: "Easy",
-        topic: "Math"
-      }
+      { id: "f200-q1", title: "Find Minimum", statement: "Given N numbers, print the minimum element.", level: "Easy", topic: "Arrays" },
+      { id: "f200-q2", title: "Reverse String", statement: "Reverse the given string without using extra library functions.", level: "Easy", topic: "Strings" },
+      { id: "f200-q3", title: "Sum of Digits", statement: "Given an integer, find sum of its digits.", level: "Easy", topic: "Math" }
+    ],
+
+    "paid-49": [
+      { id: "p49-q1", title: "Binary Search", statement: "Implement binary search on a sorted array.", level: "Easy", topic: "Binary Search" },
+      { id: "p49-q2", title: "Rotate Array", statement: "Rotate array by k steps to the right.", level: "Easy", topic: "Arrays" },
+      { id: "p49-q3", title: "First Unique Character", statement: "Find index of first non-repeating character in a string.", level: "Easy", topic: "Hash Map" }
+    ],
+
+    "paid-99": [
+      { id: "p99-q1", title: "Two Pointers Sum", statement: "Given sorted array and target, check if any pair has sum = target.", level: "Easy", topic: "Two Pointers" },
+      { id: "p99-q2", title: "Sort 0 1 2", statement: "Sort array containing only 0,1,2.", level: "Easy", topic: "Sorting" },
+      { id: "p99-q3", title: "Anagram Check", statement: "Check if two strings are anagrams.", level: "Easy", topic: "Strings" }
+    ],
+
+    "paid-149": [
+      { id: "p149-q1", title: "Merge Intervals", statement: "Given intervals, merge all overlapping intervals.", level: "Medium", topic: "Intervals" },
+      { id: "p149-q2", title: "Longest Substring", statement: "Length of longest substring without repeating characters.", level: "Medium", topic: "Sliding Window" },
+      { id: "p149-q3", title: "Top K Frequent", statement: "Return k most frequent elements from array.", level: "Medium", topic: "Heap" }
+    ],
+
+    "paid-199": [
+      { id: "p199-q1", title: "Kth Largest Element", statement: "Find kth largest element in an unsorted array.", level: "Medium", topic: "Heap" },
+      { id: "p199-q2", title: "Number of Islands", statement: "Given grid of 0/1, count number of islands.", level: "Medium", topic: "DFS" },
+      { id: "p199-q3", title: "Course Schedule", statement: "Check if you can finish all courses given prerequisites.", level: "Medium", topic: "Graph / Topo Sort" }
+    ],
+
+    "free-1": [
+      { id: "f1-q1", title: "Print Hello", statement: "Print 'Hello, World!'.", level: "Easy", topic: "Basics" },
+      { id: "f1-q2", title: "Add Two Numbers", statement: "Given two integers, output their sum.", level: "Easy", topic: "Math" },
+      { id: "f1-q3", title: "Odd or Even", statement: "Check if a number is odd or even.", level: "Easy", topic: "Conditions" }
     ]
-    // baaki contests ke liye aage aur question arrays add kar sakte ho
   };
 
   function pickRandomQuestionsForContest(contestId, count = 3) {
@@ -139,7 +125,7 @@
     localStorage.setItem(key, value);
   }
 
-  // ---------- Dummy scoring (URL ke through results.html ko bhejne ke liye) ----------
+  // ---------- Dummy scoring (URL ke through result.html ko bhejne ke liye) ----------
   function calculateDummyScore() {
     if (!currentContestId || !selectedQuestions.length) return 0;
     let score = 0;
@@ -155,12 +141,12 @@
     return score;
   }
 
-  // ---------- Finish exam -> results page ----------
+  // ---------- Finish exam -> result page ----------
   function finishExam() {
     const contestId = currentContestId || getContestIdFromUrl();
     const score = calculateDummyScore();
     window.location.href =
-      `results.html?contestId=${encodeURIComponent(contestId)}&score=${encodeURIComponent(score)}`;
+      `result.html?contestId=${encodeURIComponent(contestId)}&score=${encodeURIComponent(score)}`;
   }
 
   // ---------- Render header ----------
