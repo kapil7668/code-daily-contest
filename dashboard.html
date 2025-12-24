@@ -152,7 +152,7 @@
       </div>
     </section>
 
-    <!-- NEW: Global Top 10 Leaderboard -->
+    <!-- Global Top 10 Leaderboard -->
     <section id="global-leaderboard" class="mt-6 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
       <div class="flex items-center justify-between mb-2">
         <h2 class="text-sm font-semibold text-slate-100">Top 10 Leaderboard</h2>
@@ -167,7 +167,7 @@
 
   <!-- Problems Tab -->
   <section id="tab-problems" class="tab-page hidden">
-    <!-- yahan tumhara problems wala code aa sakta hai -->
+    <!-- problems content -->
   </section>
 
   <!-- Contests Tab -->
@@ -179,7 +179,6 @@
       </button>
     </div>
 
-    <!-- Naya dynamic container -->
     <div id="contests-container" class="space-y-3 text-xs"></div>
   </section>
 
@@ -239,7 +238,7 @@ tabButtons.forEach(btn => {
   });
 });
 
-// ==== NEW: Global Top 10 Leaderboard ====
+// Global Top 10 Leaderboard
 async function loadGlobalLeaderboard() {
   const container = document.getElementById('global-leaderboard-body');
   if (!container) return;
@@ -266,13 +265,24 @@ async function loadGlobalLeaderboard() {
 
     const rowsHtml = data.map((row, index) => {
       const isYou = user && row.user_id === user.id;
+
+      // Safe display name
+      let displayName = 'User';
+      if (isYou) {
+        displayName = 'You';
+      } else if (row.username) {
+        displayName = row.username;
+      } else if (row.user_id) {
+        displayName = row.user_id.slice(0, 6) + '...';
+      }
+
       return `
         <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
           <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
             ${index + 1}
           </td>
           <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-            ${isYou ? 'You' : (row.user_id.slice(0, 6) + '...')}
+            ${displayName}
           </td>
           <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
             ${row.score}
@@ -312,7 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- contests config -->
 <script src="contests-config.js"></script>
 <script src="contests-list.js"></script>
 </body>
