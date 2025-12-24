@@ -181,6 +181,18 @@
         <p class="text-[11px] text-slate-400">No contest selected.</p>
       </div>
     </section>
+
+    <!-- My contest history -->
+    <section id="my-history" class="mt-6 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-semibold text-slate-100">My contest history</h2>
+        <span class="text-[11px] text-slate-400">Recent 10 contests</span>
+      </div>
+
+      <div id="my-history-body" class="text-xs text-slate-200">
+        <p class="text-[11px] text-slate-400">Loading your contests...</p>
+      </div>
+    </section>
   </section>
 
   <!-- Problems Tab -->
@@ -268,7 +280,7 @@ async function loadGlobalLeaderboard() {
       .from('leaderboard')
       .select('contest_id, user_id, score, rank')
       .order('score', { ascending: false })
-      .limit(10);   // top 10[web:21][web:101]
+      .limit(10);   // top 10[web:55][web:21]
 
     if (error) {
       console.error('Leaderboard error:', error);
@@ -424,9 +436,79 @@ async function loadContestLeaderboard(contestId) {
   }
 }
 
+// My contest history
+async function loadMyContestHistory() {
+  const container = document.getElementById('my-history-body');
+  if (!container) return;
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      container.innerHTML = `<p class="text-[11px] text-slate-400">Please login again.</p>`;
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('contest_id, score, rank, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10);   // last 10 contests[web:55][web:21]
+
+    if (error) {
+      console.error('My history error:', error);
+      container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load your contests.</p>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = `<p class="text-[11px] text-slate-400">You have not played any contest yet.</p>`;
+      return;
+    }
+
+    const rowsHtml = data.map((row) => {
+      const date = row.created_at
+        ? new Date(row.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+        : '-';
+      const rankText = row.rank ? `#${row.rank}` : '-';
+
+      return `
+        <tr class="border-t border-slate-800 hover:bg-slate-800/60">
+          <td class="px-3 py-1.5 text-[11px] text-slate-200">${row.contest_id}</td>
+          <td class="px-3 py-1.5 text-center text-[11px] text-slate-100 font-semibold">${row.score}</td>
+          <td class="px-3 py-1.5 text-center text-[11px] text-emerald-400 font-semibold">${rankText}</td>
+          <td class="px-3 py-1.5 text-[11px] text-slate-400">${date}</td>
+        </tr>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-[11px]">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-1.5 text-left">Contest</th>
+              <th class="px-3 py-1.5 text-left">Score</th>
+              <th class="px-3 py-1.5 text-left">Rank</th>
+              <th class="px-3 py-1.5 text-left">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (e) {
+    console.error('My history load error:', e);
+    container.innerHTML = `<p class="text-[11px] text-red-400">Error loading your contests.</p>`;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   loadGlobalLeaderboard();
   initContestDropdown();
+  loadMyContestHistory();
 });
 </script>
 
