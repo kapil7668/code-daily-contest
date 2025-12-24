@@ -151,11 +151,23 @@
 
       </div>
     </section>
+
+    <!-- NEW: Global Top 10 Leaderboard -->
+    <section id="global-leaderboard" class="mt-6 bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="text-sm font-semibold text-slate-100">Top 10 Leaderboard</h2>
+        <span class="text-[11px] text-slate-400">Live scores</span>
+      </div>
+
+      <div id="global-leaderboard-body" class="text-xs text-slate-200">
+        <p class="text-[11px] text-slate-400">Loading leaderboard...</p>
+      </div>
+    </section>
   </section>
 
   <!-- Problems Tab -->
   <section id="tab-problems" class="tab-page hidden">
-    <!-- ... (yahan tumhara problems wala pura section same ka same rehne do) ... -->
+    <!-- yahan tumhara problems wala code aa sakta hai -->
   </section>
 
   <!-- Contests Tab -->
@@ -173,7 +185,7 @@
 
   <!-- Premium Tab -->
   <section id="tab-premium" class="tab-page hidden">
-    <!-- ... tumhara original premium section ... -->
+    <!-- premium content -->
   </section>
 
 </main>
@@ -226,9 +238,81 @@ tabButtons.forEach(btn => {
     });
   });
 });
+
+// ==== NEW: Global Top 10 Leaderboard ====
+async function loadGlobalLeaderboard() {
+  const container = document.getElementById('global-leaderboard-body');
+  if (!container) return;
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('contest_id, user_id, score, rank')
+      .order('score', { ascending: false })
+      .limit(10);   // top 10[web:21][web:101]
+
+    if (error) {
+      console.error('Leaderboard error:', error);
+      container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load leaderboard.</p>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = `<p class="text-[11px] text-slate-400">No scores yet. Play a contest to appear here!</p>`;
+      return;
+    }
+
+    const rowsHtml = data.map((row, index) => {
+      const isYou = user && row.user_id === user.id;
+      return `
+        <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
+          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${index + 1}
+          </td>
+          <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${isYou ? 'You' : (row.user_id.slice(0, 6) + '...')}
+          </td>
+          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${row.score}
+          </td>
+          <td class="px-3 py-1.5 text-[11px] text-slate-400">
+            ${row.contest_id}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-[11px]">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-1.5 text-left">Rank</th>
+              <th class="px-3 py-1.5 text-left">Student</th>
+              <th class="px-3 py-1.5 text-left">Score</th>
+              <th class="px-3 py-1.5 text-left">Contest</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (e) {
+    console.error('Leaderboard load error:', e);
+    container.innerHTML = `<p class="text-[11px] text-red-400">Error loading leaderboard.</p>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadGlobalLeaderboard();
+});
 </script>
 
-<!-- Yahan NEW scripts add kiye -->
+<!-- contests config -->
 <script src="contests-config.js"></script>
 <script src="contests-list.js"></script>
 </body>
