@@ -5,9 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CodeRush Dashboard – Practice & Contests</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase core + common client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="supabase-client.js"></script>
   <style>
     * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   </style>
@@ -222,292 +219,300 @@
 
 </main>
 
-<script src="contests-config.js"></script>
-<script src="contests-list.js"></script>
-
+<!-- Supabase + dashboard logic -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 <script>
-  const supabaseClient = window.supabaseClient;
+const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
 
-  // ===== Auth + navbar =====
-  (async () => {
-    const user = await window.requireAuth();
-    if (!user) return;
-    const emailSpan = document.getElementById('user-email');
-    if (emailSpan) emailSpan.textContent = user.email || '';
-  })();
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const emailSpan = document.getElementById('user-email');
 
-  document.getElementById('logout-btn').onclick = () => {
-    window.logoutAndRedirect('index.html');
-  };
+// Page load par current user check
+(async () => {
+  const { data, error } = await supabaseClient.auth.getUser();
+  if (error || !data.user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  emailSpan.textContent = data.user.email || '';
+})();
 
-  // Tabs handling
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabPages = {
-    explore: document.getElementById('tab-explore'),
-    problems: document.getElementById('tab-problems'),
-    contests: document.getElementById('tab-contests'),
-    premium: document.getElementById('tab-premium')
-  };
+// Logout
+document.getElementById('logout-btn').onclick = async () => {
+  await supabaseClient.auth.signOut();
+  window.location.href = 'index.html';
+};
 
-  tabButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tab = btn.getAttribute('data-tab');
-      tabButtons.forEach(b => {
-        b.classList.remove('text-emerald-400','border-b','border-emerald-400');
-        b.classList.add('text-slate-300');
-      });
-      btn.classList.add('text-emerald-400','border-b','border-emerald-400');
-      Object.keys(tabPages).forEach(key => {
-        if (key === tab) tabPages[key].classList.remove('hidden');
-        else tabPages[key].classList.add('hidden');
-      });
+// Tabs handling
+const tabButtons = document.querySelectorAll('.tab-btn');
+const tabPages = {
+  explore: document.getElementById('tab-explore'),
+  problems: document.getElementById('tab-problems'),
+  contests: document.getElementById('tab-contests'),
+  premium: document.getElementById('tab-premium')
+};
+
+tabButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.getAttribute('data-tab');
+    tabButtons.forEach(b => {
+      b.classList.remove('text-emerald-400','border-b','border-emerald-400');
+      b.classList.add('text-slate-300');
+    });
+    btn.classList.add('text-emerald-400','border-b','border-emerald-400');
+    Object.keys(tabPages).forEach(key => {
+      if (key === tab) tabPages[key].classList.remove('hidden');
+      else tabPages[key].classList.add('hidden');
     });
   });
+});
 
-  // ===== Global Top 10 Leaderboard =====
-  async function loadGlobalLeaderboard() {
-    const container = document.getElementById('global-leaderboard-body');
-    if (!container) return;
+// Global Top 10 Leaderboard
+async function loadGlobalLeaderboard() {
+  const container = document.getElementById('global-leaderboard-body');
+  if (!container) return;
 
-    try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
 
-      const { data, error } = await supabaseClient
-        .from('leaderboard')
-        .select('contest_id, user_id, score, rank')
-        .order('score', { ascending: false })
-        .limit(10);   // top 10[web:55]
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('contest_id, user_id, score, rank')
+      .order('score', { ascending: false })
+      .limit(10);   // top 10[web:55][web:21]
 
-      if (error) {
-        console.error('Leaderboard error:', error);
-        container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load leaderboard.</p>`;
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        container.innerHTML = `<p class="text-[11px] text-slate-400">No scores yet. Play a contest to appear here!</p>`;
-        return;
-      }
-
-      const rowsHtml = data.map((row, index) => {
-        const isYou = user && row.user_id === user.id;
-
-        let displayName = 'User';
-        if (isYou) displayName = 'You';
-        else if (row.username) displayName = row.username;
-        else if (row.user_id) displayName = row.user_id.slice(0, 6) + '...';
-
-        return `
-          <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${index + 1}
-            </td>
-            <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${displayName}
-            </td>
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${row.score}
-            </td>
-            <td class="px-3 py-1.5 text-[11px] text-slate-400">
-              ${row.contest_id}
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      container.innerHTML = `
-        <div class="border border-slate-800 rounded-xl overflow-hidden">
-          <table class="w-full text-[11px]">
-            <thead class="bg-slate-800/80 text-slate-300">
-              <tr>
-                <th class="px-3 py-1.5 text-left">Rank</th>
-                <th class="px-3 py-1.5 text-left">Student</th>
-                <th class="px-3 py-1.5 text-left">Score</th>
-                <th class="px-3 py-1.5 text-left">Contest</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-        </div>
-      `;
-    } catch (e) {
-      console.error('Leaderboard load error:', e);
-      container.innerHTML = `<p class="text-[11px] text-red-400">Error loading leaderboard.</p>`;
+    if (error) {
+      console.error('Leaderboard error:', error);
+      container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load leaderboard.</p>`;
+      return;
     }
-  }
 
-  // ===== Contest-wise leaderboard =====
-  function initContestDropdown() {
-    const select = document.getElementById('contest-select');
-    if (!select || typeof CONTESTS === 'undefined') return;
-
-    CONTESTS.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = `${c.title} (${c.type === 'paid' ? 'Paid' : 'Free'})`;
-      select.appendChild(opt);
-    });
-
-    select.addEventListener('change', () => {
-      const contestId = select.value;
-      const body = document.getElementById('contest-leaderboard-body');
-      if (!contestId) {
-        body.innerHTML = `<p class="text-[11px] text-slate-400">No contest selected.</p>`;
-        return;
-      }
-      loadContestLeaderboard(contestId);
-    });
-  }
-
-  async function loadContestLeaderboard(contestId) {
-    const container = document.getElementById('contest-leaderboard-body');
-    if (!container) return;
-
-    try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-
-      const { data, error } = await supabaseClient
-        .from('leaderboard')
-        .select('user_id, score, rank')
-        .eq('contest_id', contestId)
-        .order('score', { ascending: false });
-
-      if (error) {
-        console.error('Contest leaderboard error:', error);
-        container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load contest leaderboard.</p>`;
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        container.innerHTML = `<p class="text-[11px] text-slate-400">No participants yet for this contest.</p>`;
-        return;
-      }
-
-      data.sort((a, b) => b.score - a.score);
-
-      const rowsHtml = data.map((row, index) => {
-        const { data: userData } = { data: { user } };
-        const isYou = user && row.user_id === user.id;
-        const rank = row.rank || index + 1;
-
-        let displayName = 'User';
-        if (isYou) displayName = 'You';
-        else if (row.user_id) displayName = row.user_id.slice(0, 6) + '...';
-
-        return `
-          <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${rank}
-            </td>
-            <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${displayName}
-            </td>
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${row.score}
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      container.innerHTML = `
-        <div class="border border-slate-800 rounded-xl overflow-hidden">
-          <table class="w-full text-[11px]">
-            <thead class="bg-slate-800/80 text-slate-300">
-              <tr>
-                <th class="px-3 py-1.5 text-left">Rank</th>
-                <th class="px-3 py-1.5 text-left">Student</th>
-                <th class="px-3 py-1.5 text-left">Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-        </div>
-      `;
-    } catch (e) {
-      console.error('Contest leaderboard load error:', e);
-      container.innerHTML = `<p class="text-[11px] text-red-400">Error loading contest leaderboard.</p>`;
+    if (!data || data.length === 0) {
+      container.innerHTML = `<p class="text-[11px] text-slate-400">No scores yet. Play a contest to appear here!</p>`;
+      return;
     }
-  }
 
-  // ===== My contest history =====
-  async function loadMyContestHistory() {
-    const container = document.getElementById('my-history-body');
-    if (!container) return;
+    const rowsHtml = data.map((row, index) => {
+      const isYou = user && row.user_id === user.id;
 
-    try {
-      const user = await window.getCurrentUser();
-      if (!user) {
-        container.innerHTML = `<p class="text-[11px] text-slate-400">Please login again.</p>`;
-        return;
-      }
+      let displayName = 'User';
+      if (isYou) displayName = 'You';
+      else if (row.username) displayName = row.username;
+      else if (row.user_id) displayName = row.user_id.slice(0, 6) + '...';
 
-      const { data, error } = await supabaseClient
-        .from('leaderboard')
-        .select('contest_id, score, rank, created_at')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(10);   // last 10 contests
-
-      if (error) {
-        console.error('My history error:', error);
-        container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load your contests.</p>`;
-        return;
-      }
-
-      if (!data || data.length === 0) {
-        container.innerHTML = `<p class="text-[11px] text-slate-400">You have not played any contest yet.</p>`;
-        return;
-      }
-
-      const rowsHtml = data.map((row) => {
-        const date = row.created_at
-          ? new Date(row.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
-          : '-';
-        const rankText = row.rank ? `#${row.rank}` : '-';
-
-        return `
-          <tr class="border-t border-slate-800 hover:bg-slate-800/60">
-            <td class="px-3 py-1.5 text-[11px] text-slate-200">${row.contest_id}</td>
-            <td class="px-3 py-1.5 text-center text-[11px] text-slate-100 font-semibold">${row.score}</td>
-            <td class="px-3 py-1.5 text-center text-[11px] text-emerald-400 font-semibold">${rankText}</td>
-            <td class="px-3 py-1.5 text-[11px] text-slate-400">${date}</td>
-          </tr>
-        `;
-      }).join('');
-
-      container.innerHTML = `
-        <div class="border border-slate-800 rounded-xl overflow-hidden">
-          <table class="w-full text-[11px]">
-            <thead class="bg-slate-800/80 text-slate-300">
-              <tr>
-                <th class="px-3 py-1.5 text-left">Contest</th>
-                <th class="px-3 py-1.5 text-left">Score</th>
-                <th class="px-3 py-1.5 text-left">Rank</th>
-                <th class="px-3 py-1.5 text-left">Date</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rowsHtml}
-            </tbody>
-          </table>
-        </div>
+      return `
+        <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
+          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${index + 1}
+          </td>
+          <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${displayName}
+          </td>
+          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${row.score}
+          </td>
+          <td class="px-3 py-1.5 text-[11px] text-slate-400">
+            ${row.contest_id}
+          </td>
+        </tr>
       `;
-    } catch (e) {
-      console.error('My history load error:', e);
-      container.innerHTML = `<p class="text-[11px] text-red-400">Error loading your contests.</p>`;
-    }
-  }
+    }).join('');
 
-  document.addEventListener('DOMContentLoaded', () => {
-    loadGlobalLeaderboard();
-    initContestDropdown();
-    loadMyContestHistory();
+    container.innerHTML = `
+      <div class="border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-[11px]">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-1.5 text-left">Rank</th>
+              <th class="px-3 py-1.5 text-left">Student</th>
+              <th class="px-3 py-1.5 text-left">Score</th>
+              <th class="px-3 py-1.5 text-left">Contest</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (e) {
+    console.error('Leaderboard load error:', e);
+    container.innerHTML = `<p class="text-[11px] text-red-400">Error loading leaderboard.</p>`;
+  }
+}
+
+// Contest-wise leaderboard
+function initContestDropdown() {
+  const select = document.getElementById('contest-select');
+  if (!select || typeof CONTESTS === 'undefined') return;
+
+  CONTESTS.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.title} (${c.type === 'paid' ? 'Paid' : 'Free'})`;
+    select.appendChild(opt);
   });
+
+  select.addEventListener('change', () => {
+    const contestId = select.value;
+    const body = document.getElementById('contest-leaderboard-body');
+    if (!contestId) {
+      body.innerHTML = `<p class="text-[11px] text-slate-400">No contest selected.</p>`;
+      return;
+    }
+    loadContestLeaderboard(contestId);
+  });
+}
+
+async function loadContestLeaderboard(contestId) {
+  const container = document.getElementById('contest-leaderboard-body');
+  if (!container) return;
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('user_id, score, rank')
+      .eq('contest_id', contestId)
+      .order('score', { ascending: false });
+
+    if (error) {
+      console.error('Contest leaderboard error:', error);
+      container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load contest leaderboard.</p>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = `<p class="text-[11px] text-slate-400">No participants yet for this contest.</p>`;
+      return;
+    }
+
+    data.sort((a, b) => b.score - a.score);
+
+    const rowsHtml = data.map((row, index) => {
+      const isYou = user && row.user_id === user.id;
+      const rank = row.rank || index + 1;
+
+      let displayName = 'User';
+      if (isYou) displayName = 'You';
+      else if (row.user_id) displayName = row.user_id.slice(0, 6) + '...';
+
+      return `
+        <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
+          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${rank}
+          </td>
+          <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${displayName}
+          </td>
+          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            ${row.score}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-[11px]">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-1.5 text-left">Rank</th>
+              <th class="px-3 py-1.5 text-left">Student</th>
+              <th class="px-3 py-1.5 text-left">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (e) {
+    console.error('Contest leaderboard load error:', e);
+    container.innerHTML = `<p class="text-[11px] text-red-400">Error loading contest leaderboard.</p>`;
+  }
+}
+
+// My contest history
+async function loadMyContestHistory() {
+  const container = document.getElementById('my-history-body');
+  if (!container) return;
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      container.innerHTML = `<p class="text-[11px] text-slate-400">Please login again.</p>`;
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('contest_id, score, rank, created_at')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false })
+      .limit(10);   // last 10 contests[web:55][web:21]
+
+    if (error) {
+      console.error('My history error:', error);
+      container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load your contests.</p>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      container.innerHTML = `<p class="text-[11px] text-slate-400">You have not played any contest yet.</p>`;
+      return;
+    }
+
+    const rowsHtml = data.map((row) => {
+      const date = row.created_at
+        ? new Date(row.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+        : '-';
+      const rankText = row.rank ? `#${row.rank}` : '-';
+
+      return `
+        <tr class="border-t border-slate-800 hover:bg-slate-800/60">
+          <td class="px-3 py-1.5 text-[11px] text-slate-200">${row.contest_id}</td>
+          <td class="px-3 py-1.5 text-center text-[11px] text-slate-100 font-semibold">${row.score}</td>
+          <td class="px-3 py-1.5 text-center text-[11px] text-emerald-400 font-semibold">${rankText}</td>
+          <td class="px-3 py-1.5 text-[11px] text-slate-400">${date}</td>
+        </tr>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="border border-slate-800 rounded-xl overflow-hidden">
+        <table class="w-full text-[11px]">
+          <thead class="bg-slate-800/80 text-slate-300">
+            <tr>
+              <th class="px-3 py-1.5 text-left">Contest</th>
+              <th class="px-3 py-1.5 text-left">Score</th>
+              <th class="px-3 py-1.5 text-left">Rank</th>
+              <th class="px-3 py-1.5 text-left">Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rowsHtml}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch (e) {
+    console.error('My history load error:', e);
+    container.innerHTML = `<p class="text-[11px] text-red-400">Error loading your contests.</p>`;
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  loadGlobalLeaderboard();
+  initContestDropdown();
+  loadMyContestHistory();
+});
 </script>
 
+<script src="contests-config.js"></script>
+<script src="contests-list.js"></script>
 </body>
 </html>
