@@ -11,6 +11,9 @@
 </head>
 <body class="bg-slate-900 text-slate-100">
 
+<!-- Simple change to trigger GitHub Pages deploy -->
+<!-- CodeRush landing page -->
+
 <!-- Navbar -->
 <header class="border-b border-slate-800 bg-slate-900/95 backdrop-blur sticky top-0 z-30">
   <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
@@ -171,11 +174,23 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 
 <script>
-// Supabase config (tumhare project ke hisaab se)
+// Supabase config
 const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Agar already logged in hai to direct dashboard par bhejo
+(async () => {
+  try {
+    const { data } = await supabaseClient.auth.getUser();
+    if (data && data.user) {
+      window.location.href = 'dashboard.html';
+    }
+  } catch (e) {
+    console.error('Auth check error:', e);
+  }
+})();
 
 // open / close modal helpers
 const modal = document.getElementById('auth-modal');
@@ -186,8 +201,7 @@ const form = document.getElementById('auth-form');
 const emailInput = document.getElementById('auth-email');
 const passInput = document.getElementById('auth-password');
 
-function openModal(mode) {
-  modal.classList.remove('hidden');
+function setMode(mode) {
   if (mode === 'signup') {
     authTitle.textContent = 'Create your CodeRush account';
     tabLogin.classList.remove('bg-slate-800','text-emerald-400');
@@ -203,6 +217,11 @@ function openModal(mode) {
   }
 }
 
+function openModal(mode) {
+  setMode(mode);
+  modal.classList.remove('hidden');
+}
+
 document.getElementById('open-login').onclick = () => openModal('login');
 document.getElementById('open-signup').onclick = () => openModal('signup');
 document.getElementById('cta-start').onclick = () => openModal('signup');
@@ -211,8 +230,8 @@ document.getElementById('close-auth').onclick = () => {
   modal.classList.add('hidden');
 };
 
-tabLogin.onclick = () => openModal('login');
-tabSignup.onclick = () => openModal('signup');
+tabLogin.onclick = () => setMode('login');
+tabSignup.onclick = () => setMode('signup');
 
 // Auth form submit: sign up ya login
 form.addEventListener('submit', async (e) => {
@@ -226,10 +245,8 @@ form.addEventListener('submit', async (e) => {
 
   try {
     if (isSignup) {
-      // Signup
       result = await supabaseClient.auth.signUp({ email, password });
     } else {
-      // Login
       result = await supabaseClient.auth.signInWithPassword({ email, password });
     }
 
@@ -238,7 +255,6 @@ form.addEventListener('submit', async (e) => {
       return;
     }
 
-    // Success: redirect to dashboard
     window.location.href = 'dashboard.html';
   } catch (err) {
     alert('Something went wrong. Please try again.');
