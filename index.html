@@ -13,76 +13,58 @@
   </style>
 </head>
 
-<body class="min-h-screen bg-slate-950 text-slate-100
-             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
+<body class="min-h-screen bg-slate-950 text-slate-100">
 
-<main class="max-w-5xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center gap-8">
-  <!-- Left: hero content -->
-  <section class="flex-1">
-    <div class="flex items-center gap-2 mb-4">
-      <div class="h-9 w-9 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
-        C
-      </div>
-      <span class="font-semibold text-lg tracking-tight">CodeRush</span>
-    </div>
+<main class="max-w-4xl mx-auto px-4 py-10">
+  <h1 class="text-3xl md:text-4xl font-bold mb-3">
+    Welcome to <span class="text-emerald-400">CodeRush</span>
+  </h1>
+  <p class="text-slate-300 mb-6 text-sm md:text-base">
+    Daily coding contests, practice problems and live leaderboards – sab ek hi jagah.
+  </p>
 
-    <h1 class="text-3xl md:text-4xl font-bold mb-3 leading-tight">
-      Daily coding contests with <span class="text-emerald-400">real rewards</span>.
-    </h1>
-
-    <p class="text-slate-300 text-sm md:text-base mb-4">
-      Solve DSA problems, compete with others, and climb the leaderboard. Free daily rush + paid mega contests – all in one place.
-    </p>
-
-    <ul class="text-xs md:text-sm text-slate-300 space-y-1 mb-5">
-      <li>• LeetCode‑style problems with limited‑time contests</li>
-      <li>• Live leaderboard and detailed result breakdown</li>
-      <li>• Top performers win prizes in select contests</li>
-    </ul>
-
-    <div class="flex flex-wrap items-center gap-3 text-xs">
+  <div class="flex flex-col md:flex-row gap-6">
+    <!-- Left: buttons -->
+    <section class="flex-1">
       <button id="start-btn"
-        class="px-4 py-2 rounded-lg bg-emerald-500 text-slate-900 font-semibold">
+        class="px-4 py-2 rounded-lg bg-emerald-500 text-slate-900 font-semibold text-sm">
         Go to dashboard
       </button>
-      <button id="logout-btn" class="hidden px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200">
+      <button id="logout-btn"
+        class="hidden ml-3 px-3 py-1.5 rounded-lg border border-slate-700 text-slate-200 text-xs">
         Logout
       </button>
-      <p id="login-hint" class="text-[11px] text-slate-400">
+
+      <p id="login-hint" class="mt-2 text-[11px] text-slate-400">
         You’ll be asked to login or sign up with email.
       </p>
-    </div>
-  </section>
+    </section>
 
-  <!-- Right: login card -->
-  <section class="w-full max-w-sm bg-slate-900/80 border border-slate-800 rounded-2xl p-4 text-xs">
-    <h2 class="text-sm font-semibold mb-2">Login / Sign up</h2>
-    <p class="text-[11px] text-slate-300 mb-3">
-      Enter your email. A magic link will be sent using Supabase Auth. Click that link to come back logged‑in.
-    </p>
+    <!-- Right: small login box -->
+    <section class="w-full max-w-sm bg-slate-900/80 border border-slate-800 rounded-xl p-4 text-xs">
+      <h2 class="text-sm font-semibold mb-2">Login / Sign up</h2>
+      <div class="space-y-2 mb-3">
+        <label class="block text-[11px] text-slate-300 mb-1">Email</label>
+        <input id="email-input" type="email"
+          class="w-full px-3 py-1.5 rounded-lg bg-slate-950/80 border border-slate-700 text-[12px] focus:outline-none focus:ring-1 focus:ring-emerald-500"
+          placeholder="you@example.com" />
+      </div>
 
-    <div class="space-y-2 mb-3">
-      <label class="block text-[11px] text-slate-300 mb-1">Email</label>
-      <input id="email-input" type="email"
-        class="w-full px-3 py-1.5 rounded-lg bg-slate-950/80 border border-slate-700 text-[12px] focus:outline-none focus:ring-1 focus:ring-emerald-500"
-        placeholder="you@example.com" />
-    </div>
+      <button id="login-btn"
+        class="w-full px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold mb-2">
+        Continue with email
+      </button>
 
-    <button id="login-btn"
-      class="w-full px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold mb-2">
-      Continue with email
-    </button>
-
-    <p id="auth-status" class="text-[11px] text-slate-400">
-      You will receive a magic link if this email is valid.
-    </p>
-  </section>
+      <p id="auth-status" class="text-[11px] text-slate-400">
+        You will receive a magic link if this email is valid.
+      </p>
+    </section>
+  </div>
 </main>
 
 <script>
   const supabaseClient = window.supabaseClient;
 
-  // On load: check current session
   document.addEventListener('DOMContentLoaded', async () => {
     const user = await window.getCurrentUser();
     const startBtn = document.getElementById('start-btn');
@@ -95,13 +77,10 @@
       startBtn.onclick = () => window.location.href = 'dashboard.html';
     } else {
       loginHint.textContent = 'Enter email and click "Continue" to get a magic login link.';
-      startBtn.onclick = () => {
-        document.getElementById('email-input').focus();
-      };
+      startBtn.onclick = () => document.getElementById('email-input').focus();
     }
   });
 
-  // Magic-link login from index itself
   document.getElementById('login-btn').addEventListener('click', async () => {
     const emailInput = document.getElementById('email-input');
     const status = document.getElementById('auth-status');
@@ -123,7 +102,7 @@
       options: {
         emailRedirectTo: window.location.origin + window.location.pathname
       }
-    }); // magic-link sign-in[web:215][web:227]
+    }); // magic-link login[web:215][web:227]
 
     if (error) {
       status.textContent = error.message;
@@ -136,7 +115,6 @@
     }
   });
 
-  // Logout
   document.getElementById('logout-btn').addEventListener('click', () => {
     window.logoutAndRedirect('index.html');
   });
