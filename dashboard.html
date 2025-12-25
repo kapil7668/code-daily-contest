@@ -73,13 +73,14 @@
         </ul>
       </div>
 
+      <!-- Quick stats card – now live data -->
       <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
         <h2 class="font-semibold mb-1 text-sm">Quick stats</h2>
-        <p class="text-slate-300 text-xs mb-2">Abhi dummy data hai, baad me Supabase se aayega.</p>
+        <p class="text-slate-300 text-xs mb-2">Live contest stats from your account.</p>
         <ul class="text-[11px] text-slate-400 space-y-1">
-          <li>Total solved: 0</li>
-          <li>Current streak: 0 days</li>
-          <li>Rating: 1200 (unrated)</li>
+          <li>Total contests played: <span id="stat-total-contests">0</span></li>
+          <li>Best score: <span id="stat-best-score">0</span></li>
+          <li>Best rank: <span id="stat-best-rank">-</span></li>
         </ul>
       </div>
     </div>
@@ -268,6 +269,40 @@ tabButtons.forEach(btn => {
   });
 });
 
+// --------- NEW: Dashboard stats from leaderboard ----------
+async function loadDashboardStats() {
+  const totalEl = document.getElementById('stat-total-contests');
+  const bestScoreEl = document.getElementById('stat-best-score');
+  const bestRankEl = document.getElementById('stat-best-rank');
+  if (!totalEl || !bestScoreEl || !bestRankEl) return;
+
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) return;
+
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('score, rank')
+      .eq('user_id', user.id);  // current user ke saare contests[web:330][web:335]
+
+    if (error || !data) return;
+
+    const totalContests = data.length;
+    const bestScore = data.reduce((max, r) => Math.max(max, r.score || 0), 0);
+    const bestRankVal = data.reduce((min, r) => {
+      if (!r.rank) return min;
+      return Math.min(min, r.rank);
+    }, Infinity);
+
+    totalEl.textContent = totalContests;
+    bestScoreEl.textContent = bestScore;
+    bestRankEl.textContent = bestRankVal === Infinity ? '-' : `#${bestRankVal}`;
+  } catch (e) {
+    console.error('Dashboard stats error:', e);
+  }
+}
+// --------------------------------------------------------
+
 // Global Top 10 Leaderboard
 async function loadGlobalLeaderboard() {
   const container = document.getElementById('global-leaderboard-body');
@@ -280,7 +315,7 @@ async function loadGlobalLeaderboard() {
       .from('leaderboard')
       .select('contest_id, user_id, score, rank')
       .order('score', { ascending: false })
-      .limit(10);   // top 10[web:55][web:21]
+      .limit(10);   // top 10[web:322][web:330]
 
     if (error) {
       console.error('Leaderboard error:', error);
@@ -453,7 +488,7 @@ async function loadMyContestHistory() {
       .select('contest_id, score, rank, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(10);   // last 10 contests[web:55][web:21]
+      .limit(10);   // last 10 contests[web:322][web:330]
 
     if (error) {
       console.error('My history error:', error);
@@ -506,6 +541,7 @@ async function loadMyContestHistory() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadDashboardStats();
   loadGlobalLeaderboard();
   initContestDropdown();
   loadMyContestHistory();
