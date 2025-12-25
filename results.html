@@ -1,315 +1,295 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contest Result – CodeRush</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CodeRush – Contest Results</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase core + common client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="supabase-client.js"></script>
   <style>
     * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .code-snippet { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
   </style>
 </head>
 
 <body class="min-h-screen text-slate-100 bg-slate-950
              bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
 
-<main class="max-w-4xl mx-auto px-4 py-6 mt-6 mb-10 bg-slate-900/85 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
-  <!-- Header -->
-  <div id="result-header" class="flex items-center justify-between mb-4">
-    <!-- JS se fill hoga -->
+<!-- Top Navbar -->
+<header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
+  <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+    <div class="flex items-center gap-2">
+      <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
+        C
+      </div>
+      <span class="font-semibold text-lg tracking-tight">CodeRush</span>
+    </div>
+    <div class="flex items-center gap-3 text-xs">
+      <span id="user-email-results" class="hidden sm:inline text-slate-300"></span>
+      <a href="dashboard.html" class="px-3 py-1.5 rounded-lg border border-slate-700 hover:border-emerald-400 hover:text-emerald-300">
+        ← Back to Dashboard
+      </a>
+    </div>
+  </nav>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 py-8">
+  <!-- Contest header -->
+  <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 mb-6 text-center">
+    <div class="flex flex-col md:flex-row items-center gap-4 md:justify-between mb-4">
+      <div class="flex items-center gap-3">
+        <div class="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-bold text-lg">
+          C
+        </div>
+        <div>
+          <h1 id="contest-title-results" class="text-xl md:text-2xl font-bold">Free Daily Rush #47</h1>
+          <p id="contest-date" class="text-sm text-slate-400">Dec 25, 2025 • 60 minutes</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 text-sm">
+        <div class="text-center">
+          <div id="final-score" class="text-3xl font-bold text-emerald-400">52</div>
+          <div class="text-xs text-slate-400">Final Score</div>
+        </div>
+        <div class="text-center">
+          <div id="final-rank" class="text-3xl font-bold text-amber-400">#3</div>
+          <div class="text-xs text-slate-400">of 127</div>
+        </div>
+        <div class="text-center">
+          <div class="text-3xl font-bold text-emerald-400">3/3</div>
+          <div class="text-xs text-slate-400">Solved</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Prize info -->
+    <div class="grid md:grid-cols-3 gap-4 mt-6">
+      <div class="bg-emerald-500/20 border border-emerald-500/40 rounded-xl p-4">
+        <h3 class="font-semibold text-sm mb-1">🏆 1st Prize</h3>
+        <div class="text-lg font-bold text-emerald-400">₹500</div>
+      </div>
+      <div class="bg-amber-500/20 border border-amber-500/40 rounded-xl p-4">
+        <h3 class="font-semibold text-sm mb-1">🥈 2nd Prize</h3>
+        <div class="text-lg font-bold text-amber-400">₹250</div>
+      </div>
+      <div class="bg-slate-700/50 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold text-sm mb-1">🥉 3rd Prize</h3>
+        <div class="text-lg font-bold text-slate-300">₹100</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <!-- Left: Problem-wise results -->
+    <section>
+      <h2 class="text-lg font-bold mb-4">Problem-wise breakdown</h2>
+      <div id="problem-results-list" class="space-y-3"></div>
+    </section>
+
+    <!-- Right: Full leaderboard -->
+    <section>
+      <h2 class="text-lg font-bold mb-4 flex items-center justify-between">
+        Full Leaderboard
+        <span id="total-participants" class="text-sm text-slate-400">127 participants</span>
+      </h2>
+      <div id="full-leaderboard" class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
+        <div class="animate-pulse py-8">
+          <div class="h-4 bg-slate-700 rounded mx-4 mb-2"></div>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- Overall score card -->
-  <section id="score-card" class="mb-5">
-    <div class="bg-slate-800/80 border border-slate-700 rounded-2xl px-4 py-3 flex items-center justify-between">
-      <div>
-        <p class="text-[11px] text-slate-400">Overall score</p>
-        <p id="overall-score" class="text-xl font-semibold text-emerald-400">Calculating...</p>
-      </div>
-      <button onclick="window.location.href='dashboard.html'"
-        class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
-        Back to dashboard
-      </button>
-    </div>
-  </section>
+  <!-- Action buttons -->
+  <div class="flex flex-col sm:flex-row gap-3 mt-8 pt-6 border-t border-slate-800">
+    <button id="share-results" class="flex-1 bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-900 py-3 rounded-xl font-semibold text-center hover:from-emerald-400 hover:to-cyan-400">
+      📱 Share Results
+    </button>
+    <a href="exam.html?type=free" class="flex-1 border border-emerald-400 text-emerald-400 py-3 rounded-xl font-semibold text-center hover:bg-emerald-500/20">
+      Play Next Contest
+    </a>
+  </div>
+</div>
 
-  <!-- Per-question breakdown -->
-  <section class="mb-5">
-    <h2 class="text-sm font-semibold mb-2">Question wise breakdown</h2>
-    <div id="breakdown-body" class="border border-slate-800 rounded-xl overflow-hidden text-xs">
-      <div class="px-3 py-2 text-[11px] text-slate-400">Loading breakdown...</div>
-    </div>
-  </section>
-
-  <!-- Leaderboard (Top 50 of this contest) -->
-  <section id="leaderboard" class="mt-4 text-xs">
-    <h2 class="text-sm font-semibold mb-2">Contest leaderboard (Top 50)</h2>
-    <div id="leaderboard-body" class="border border-slate-800 rounded-xl overflow-hidden">
-      <div class="px-3 py-2 text-[11px] text-slate-400">Loading leaderboard...</div>
-    </div>
-  </section>
-</main>
-
-<script src="contests-config.js"></script>
 <script>
-  // === Supabase client (tumhara project) ===
-  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = window.supabaseClient;
+  let contestId = null;
+  let userResults = null;
 
-  // Helpers
-  function getContestIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("contestId");
-  }
+  // ===== Auth + Init =====
+  document.addEventListener('DOMContentLoaded', async () => {
+    const user = await window.requireAuth();
+    if (!user) return;
+    
+    document.getElementById('user-email-results').textContent = user.email;
+    
+    // Get contest ID from URL or latest contest
+    const urlParams = new URLSearchParams(window.location.search);
+    contestId = urlParams.get('contest') || 'daily-rush-251225';
+    
+    await loadResults(contestId);
+  });
 
-  function findContestById(id) {
-    return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
-  }
-
-  function getScoreFromUrlFallback() {
-    const params = new URLSearchParams(window.location.search);
-    return Number(params.get("score") || 0);
-  }
-
-  function renderHeader(contest, yourScore) {
-    const header = document.getElementById("result-header");
-    if (!header || !contest) return;
-
-    header.innerHTML = `
-      <div>
-        <p class="text-[11px] uppercase tracking-wide ${
-          contest.type === "free" ? "text-emerald-400" : "text-amber-400"
-        } mb-1">
-          ${contest.type === "free" ? "Free contest" : "Paid contest"}
-        </p>
-        <h1 class="text-xl font-semibold mb-1">${contest.title} – Result</h1>
-        <p class="text-slate-300 text-xs mb-1">
-          Entry ${contest.entryFee === 0 ? "Free" : "₹" + contest.entryFee}
-          • Total prize ₹${contest.totalPrize}
-          • Top ${contest.maxWinners} students get rewards
-        </p>
-        <p class="text-emerald-400 text-sm font-semibold">
-          Your score: <span id="your-score">${yourScore}</span> / 900
-        </p>
-      </div>
-    `;
-  }
-
-  // Main flow: calculate score, show breakdown, save to leaderboard
-  async function loadResultPage() {
-    const contestId = getContestIdFromUrl();
-    const contest = findContestById(contestId);
-
-    if (!contest) {
-      document.body.innerHTML = `
-        <div class="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100">
-          <div class="bg-slate-900 border border-slate-800 rounded-xl px-5 py-4 text-sm">
-            <p class="text-red-400 font-semibold mb-2">Invalid contest.</p>
-            <a href="dashboard.html" class="text-emerald-400 underline text-xs">Back to dashboard</a>
-          </div>
-        </div>
-      `;
-      return;
-    }
-
+  // ===== Load results =====
+  async function loadResults(contestId) {
     try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (!user) {
-        alert('Please login again.');
-        window.location.href = 'index.html';
-        return;
-      }
-
-      // 1) Submissions for this contest
-      const { data: submissions } = await supabaseClient
-        .from('submissions')
-        .select('question_id, code')
+      const user = await window.getCurrentUser();
+      
+      // Get user results
+      const { data: userData } = await supabaseClient
+        .from('leaderboard')
+        .select('*, submissions(score, problem_num, status)')
         .eq('user_id', user.id)
-        .eq('contest_id', contestId);
+        .eq('contest_id', contestId)
+        .single();
 
-      // 2) Problems with marks
-      const { data: problems } = await supabaseClient
-        .from('problems')
-        .select('id, title, marks');
+      // Get contest info (dummy for now)
+      const contestInfo = {
+        title: 'Free Daily Rush #47',
+        date: 'Dec 25, 2025',
+        totalParticipants: 127
+      };
 
-      // 3) Calculate total score + breakdown rows
-      let totalScore = 0;
-      const breakdownRows = [];
+      // Update header
+      document.getElementById('contest-title-results').textContent = contestInfo.title;
+      document.getElementById('contest-date').textContent = contestInfo.date;
+      document.getElementById('total-participants').textContent = `${contestInfo.totalParticipants} participants`;
+      
+      // Update scores (dummy data for demo)
+      document.getElementById('final-score').textContent = '52';
+      document.getElementById('final-rank').textContent = '#3';
 
-      const problemMap = {};
-      if (problems) {
-        problems.forEach(p => { problemMap[p.id] = p; });
-      }
-
-      const questionIds = ['q1', 'q2', 'q3']; // abhi fixed 3 questions
-      questionIds.forEach((qid, index) => {
-        const p = problemMap[qid] || { title: `Question ${index + 1}`, marks: 0 };
-        const sub = submissions ? submissions.find(s => s.question_id === qid) : null;
-        const attempted = sub && sub.code && sub.code.trim().length > 0;
-        const gained = attempted ? p.marks : 0;
-        totalScore += gained;
-
-        breakdownRows.push({
-          id: qid,
-          title: p.title,
-          marks: p.marks,
-          attempted,
-          gained
-        });
-      });
-
-      const fallbackScore = getScoreFromUrlFallback();
-      const finalScore = totalScore || fallbackScore;
-
-      // 4) Render header + overall score
-      renderHeader(contest, finalScore);
-      document.getElementById('overall-score').textContent = `${finalScore} / 900`;
-
-      // 5) Render breakdown table
-      renderBreakdownTable(breakdownRows);
-
-      // 6) Save to leaderboard + show leaderboard
-      await saveToLeaderboardAndShow(user.id, contestId, finalScore);
-
-    } catch (err) {
-      console.error('Result error', err);
-      document.getElementById('overall-score').textContent = 'Error';
-      document.getElementById('breakdown-body').innerHTML =
-        `<div class="px-3 py-2 text-[11px] text-red-400">Error loading result.</div>`;
-      document.getElementById('leaderboard-body').innerHTML =
-        `<div class="px-3 py-2 text-[11px] text-red-400">Error loading leaderboard.</div>`;
+      userResults = userData;
+      await loadProblemResults();
+      await loadFullLeaderboard(contestId);
+      
+    } catch (error) {
+      console.error('Results load error:', error);
+      document.getElementById('problem-results-list').innerHTML = 
+        '<p class="text-slate-400 text-sm">No results found. Complete a contest first.</p>';
     }
   }
 
-  function renderBreakdownTable(rows) {
-    const body = document.getElementById('breakdown-body');
-    if (!body) return;
+  // ===== Problem results =====
+  async function loadProblemResults() {
+    const container = document.getElementById('problem-results-list');
+    
+    // Demo problem results
+    const demoProblems = [
+      {
+        num: 1,
+        title: 'Two Sum',
+        score: 20,
+        status: '✅ Accepted',
+        time: '2:34',
+        attempts: 1
+      },
+      {
+        num: 2,
+        title: 'Valid Parentheses',
+        score: 20,
+        status: '✅ Accepted',
+        time: '5:12',
+        attempts: 2
+      },
+      {
+        num: 3,
+        title: 'Longest Common Prefix',
+        score: 12,
+        status: '❌ Partial (TLE)',
+        time: '8:45',
+        attempts: 3
+      }
+    ];
 
-    if (!rows || rows.length === 0) {
-      body.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No submissions found.</div>`;
-      return;
-    }
-
-    const htmlRows = rows.map((row, index) => `
-      <tr class="border-t border-slate-800">
-        <td class="px-3 py-2 text-[11px] text-slate-200">Q${index + 1}</td>
-        <td class="px-3 py-2 text-[11px] text-slate-200">${row.title}</td>
-        <td class="px-3 py-2 text-[11px] text-center text-slate-100">${row.marks}</td>
-        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400' : 'text-slate-400'}">
-          ${row.attempted ? 'Attempted' : 'Not attempted'}
-        </td>
-        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400' : 'text-slate-400'}">
-          ${row.gained}
-        </td>
-      </tr>
+    const html = demoProblems.map(problem => `
+      <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 hover:border-emerald-500/50 transition-all">
+        <div class="flex items-center justify-between mb-2">
+          <h3 class="font-semibold text-sm">${problem.title}</h3>
+          <span class="px-2 py-1 rounded-full text-[11px] bg-emerald-500/20 text-emerald-400">
+            ${problem.score}/20
+          </span>
+        </div>
+        <div class="flex items-center gap-4 text-xs text-slate-400 mb-2">
+          <span>${problem.status}</span>
+          <span>• ${problem.time}</span>
+          <span>• ${problem.attempts} attempts</span>
+        </div>
+        <div class="code-snippet bg-slate-800/50 p-2 rounded-lg text-emerald-400 text-[11px] overflow-x-auto">
+          function ${problem.title.toLowerCase().replace(/\s+/g, '')}(...) { ... }
+        </div>
+      </div>
     `).join('');
 
-    body.innerHTML = `
-      <table class="w-full text-[11px]">
-        <thead class="bg-slate-800/80 text-slate-300">
-          <tr>
-            <th class="px-3 py-2 text-left">Q#</th>
-            <th class="px-3 py-2 text-left">Question</th>
-            <th class="px-3 py-2 text-left">Marks</th>
-            <th class="px-3 py-2 text-left">Status</th>
-            <th class="px-3 py-2 text-left">Gained</th>
-          </tr>
-        </thead>
-        <tbody class="text-slate-200">
-          ${htmlRows}
-        </tbody>
-      </table>
-    `;
+    container.innerHTML = html;
   }
 
-  async function saveToLeaderboardAndShow(userId, contestId, score) {
-    // Save / update score
-    const { error: upsertError } = await supabaseClient
-      .from('leaderboard')
-      .upsert({ contest_id: contestId, user_id: userId, score: score });
-
-    if (upsertError) {
-      console.error('Leaderboard save error:', upsertError);
-    } else {
-      // Update ranks via RPC (agar function banaya hai)
-      try {
-        await supabaseClient.rpc('update_leaderboard_ranks', { target_contest_id: contestId });
-      } catch (e) {
-        console.warn('Rank RPC error (optional):', e);
-      }
-    }
-
-    // Fetch top 50 for this contest
-    const container = document.getElementById('leaderboard-body');
+  // ===== Full leaderboard =====
+  async function loadFullLeaderboard(contestId) {
+    const container = document.getElementById('full-leaderboard');
+    
     try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-
-      const { data, error } = await supabaseClient
+      const { data } = await supabaseClient
         .from('leaderboard')
         .select('user_id, score, rank')
         .eq('contest_id', contestId)
         .order('score', { ascending: false })
-        .limit(50);   // Top 50[web:101]
-
-      if (error) {
-        console.error('Leaderboard fetch error:', error);
-        container.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Failed to load leaderboard.</div>`;
-        return;
-      }
+        .limit(50);
 
       if (!data || data.length === 0) {
-        container.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No participants yet.</div>`;
+        container.innerHTML = '<p class="text-center py-8 text-slate-400 text-sm">No results yet</p>';
         return;
       }
 
-      data.sort((a, b) => b.score - a.score);
-
-      const rowsHtml = data.map((row, index) => {
-        const isYou = user && row.user_id === user.id;
-        const rank = row.rank || index + 1;
-
-        let displayName = 'User';
-        if (isYou) displayName = 'You';
-        else if (row.user_id) displayName = row.user_id.slice(0, 6) + '...';
-
+      const user = await window.getCurrentUser();
+      const rows = data.map((row, index) => {
+        const isYou = row.user_id === user.id;
+        const displayRank = row.rank || index + 1;
+        const displayName = row.user_id.slice(0, 8) + '...';
+        
         return `
-          <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${rank}
-            </td>
-            <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+          <div class="flex items-center px-4 py-3 border-t border-slate-800 last:border-b 
+                      ${isYou ? 'bg-emerald-500/10 border-emerald-500/30' : 'hover:bg-slate-800/50'}">
+            <div class="w-12 text-center font-bold ${isYou ? 'text-emerald-400' : 'text-slate-300'}">
+              ${displayRank}
+            </div>
+            <div class="flex-1 font-mono text-sm truncate ${isYou ? 'text-emerald-400 font-semibold' : ''}">
               ${displayName}
-            </td>
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            </div>
+            <div class="w-20 text-right font-mono font-bold text-emerald-400">
               ${row.score}
-            </td>
-          </tr>
+            </div>
+          </div>
         `;
       }).join('');
 
       container.innerHTML = `
-        <table class="w-full text-[11px]">
-          <thead class="bg-slate-800/80 text-slate-300">
-            <tr>
-              <th class="px-3 py-1.5 text-left">Rank</th>
-              <th class="px-3 py-1.5 text-left">Student</th>
-              <th class="px-3 py-1.5 text-left">Score</th>
-            </tr>
-          </thead>
-          <tbody class="text-slate-200">
-            ${rowsHtml}
-          </tbody>
-        </table>
+        <div class="divide-y divide-slate-800">
+          ${rows}
+        </div>
       `;
-    } catch (e) {
-      console.error('Leaderboard render error:', e);
-      container.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Error loading leaderboard.</div>`;
+    } catch (error) {
+      console.error('Leaderboard error:', error);
+      container.innerHTML = '<p class="text-center py-8 text-red-400 text-sm">Failed to load leaderboard</p>';
     }
   }
 
-  document.addEventListener("DOMContentLoaded", loadResultPage);
+  // ===== Share button =====
+  document.getElementById('share-results').onclick = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: 'CodeRush Contest Results',
+        text: 'Check out my contest results on CodeRush!',
+        url: window.location.href
+      });
+    } else {
+      // Fallback: copy URL
+      navigator.clipboard.writeText(window.location.href);
+      alert('Results link copied! Share it anywhere.');
+    }
+  };
 </script>
 
 </body>
