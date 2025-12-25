@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin – Contest Winners | CodeRush</title>
+  <title>Contest Exam – CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
@@ -17,244 +17,361 @@
 <main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10
              bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
 
+  <!-- Top bar: contest info + timer -->
   <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
     <div>
-      <p class="text-[11px] uppercase tracking-wide text-amber-400 mb-1">Admin only</p>
-      <h1 class="text-xl font-semibold mb-1">Contest winners panel</h1>
-      <p class="text-[11px] text-slate-400">
-        Select a contest to see Top N winners (based on <span class="text-emerald-400">score</span>).
-      </p>
+      <p id="contest-type-badge" class="text-[11px] uppercase tracking-wide text-emerald-400 mb-1"></p>
+      <h1 id="contest-title" class="text-lg md:text-xl font-semibold mb-1">Loading contest...</h1>
+      <p id="contest-meta" class="text-[11px] text-slate-400"></p>
     </div>
 
-    <div class="flex flex-col items-end gap-2 text-xs">
-      <select id="contest-select"
-              class="bg-slate-900 border border-slate-700 text-[11px] px-2 py-1 rounded-lg text-slate-200">
-        <option value="">Select contest</option>
-      </select>
-      <button id="back-dashboard"
-        class="px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-200 hover:border-emerald-400 hover:text-emerald-300">
-        Back to dashboard
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <p class="text-[11px] text-slate-400">Time remaining</p>
+        <p id="timer" class="text-xl font-semibold text-emerald-400">--:--:--</p>
+      </div>
+      <button id="finish-btn"
+        class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
+        Finish & submit
       </button>
     </div>
   </header>
 
-  <!-- Contest meta -->
-  <section id="contest-meta-card" class="mb-4 hidden">
-    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
-      <div>
-        <p id="contest-title" class="font-semibold mb-1"></p>
-        <p id="contest-details" class="text-[11px] text-slate-400"></p>
-      </div>
-      <div class="flex items-center gap-2">
-        <p id="winners-count-label" class="text-[11px] text-slate-300"></p>
-        <button id="copy-csv-btn"
-          class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold disabled:opacity-50">
-          Copy winners CSV
-        </button>
-      </div>
-    </div>
-  </section>
+  <!-- Layout: questions list + current question -->
+  <section class="grid md:grid-cols-[220px,1fr] gap-4 mt-4">
+    <!-- Question list -->
+    <aside class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs">
+      <h2 class="text-[12px] font-semibold mb-2">Questions</h2>
+      <div id="questions-list" class="space-y-1"></div>
+    </aside>
 
-  <!-- Winners table -->
-  <section class="mt-2 text-xs">
-    <h2 class="text-sm font-semibold mb-2">Winners list</h2>
-    <div id="winners-body" class="border border-slate-800 rounded-xl overflow-hidden">
-      <div class="px-3 py-2 text-[11px] text-slate-400">
-        Select a contest to load winners.
+    <!-- Question viewer -->
+    <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs flex flex-col">
+      <div class="mb-2 flex items-center justify-between">
+        <div>
+          <p id="question-label" class="text-[11px] text-slate-400 mb-0.5">Question</p>
+          <h2 id="question-title" class="text-sm font-semibold">Loading...</h2>
+        </div>
+        <div id="question-tags" class="text-[11px] text-right text-slate-400"></div>
       </div>
-    </div>
+
+      <div id="question-statement" class="text-[12px] text-slate-200 mb-3"></div>
+
+      <label class="text-[11px] text-slate-300 mb-1">Your answer / code</label>
+      <textarea id="answer-input"
+        class="flex-1 min-h-[180px] w-full bg-slate-950/70 border border-slate-800 rounded-xl px-3 py-2 text-[12px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        placeholder="Type your solution here..."></textarea>
+
+      <div class="mt-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <button id="save-answer-btn"
+            class="px-3 py-1.5 rounded-lg border border-emerald-500 text-emerald-300 text-[11px] font-semibold">
+            Save answer
+          </button>
+          <!-- Run / Debug button -->
+          <button id="run-debug-btn"
+            class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px]">
+            Run / Debug
+          </button>
+        </div>
+
+        <div class="flex gap-2">
+          <button id="prev-btn"
+            class="px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-200">
+            Previous
+          </button>
+          <button id="next-btn"
+            class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-900 text-[11px] font-semibold">
+            Next
+          </button>
+        </div>
+      </div>
+    </section>
   </section>
 </main>
 
 <script src="contests-config.js"></script>
 <script>
-  // Supabase client (same project)
+  // ====== Supabase client ======
   const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  let currentContest = null;
-  let currentWinners = [];
+  // ====== Helpers ======
+  function getContestIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("contestId");
+  }
 
   function findContestById(id) {
     return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
   }
 
-  function initContestDropdown() {
-    const select = document.getElementById('contest-select');
-    if (!select || !Array.isArray(CONTESTS)) return;
+  // Yahan tum apne actual questions hook kar sakte ho; abhi simple demo
+  const QUESTION_BANK = {
+    default: [
+      { id: 'q1', title: 'Question 1', statement: 'Implement some logic for Q1.', level: 'Easy', topic: 'Arrays' },
+      { id: 'q2', title: 'Question 2', statement: 'Implement some logic for Q2.', level: 'Medium', topic: 'Strings' },
+      { id: 'q3', title: 'Question 3', statement: 'Implement some logic for Q3.', level: 'Hard', topic: 'DP' }
+    ]
+  };
 
-    CONTESTS.forEach(c => {
-      const opt = document.createElement('option');
-      opt.value = c.id;
-      opt.textContent = `${c.title} (${c.type === 'paid' ? 'Paid' : 'Free'})`;
-      select.appendChild(opt);
-    });
-
-    select.addEventListener('change', () => {
-      const id = select.value;
-      if (!id) {
-        document.getElementById('winners-body').innerHTML =
-          `<div class="px-3 py-2 text-[11px] text-slate-400">Select a contest to load winners.</div>`;
-        document.getElementById('contest-meta-card').classList.add('hidden');
-        currentContest = null;
-        currentWinners = [];
-        document.getElementById('copy-csv-btn').disabled = true;
-        return;
-      }
-      loadWinnersForContest(id);
-    });
+  function pickQuestionsForContest(contestId) {
+    // Abhi ke liye default list; baad me contest ke hisaab se change kar sakte ho
+    return QUESTION_BANK.default;
   }
 
-  function renderContestMeta() {
-    const card = document.getElementById('contest-meta-card');
-    const titleEl = document.getElementById('contest-title');
-    const detailsEl = document.getElementById('contest-details');
-    const winnersLabel = document.getElementById('winners-count-label');
+  // ====== Exam state ======
+  let contestId = null;
+  let contestConfig = null;
+  let questions = [];
+  let currentIndex = 0;
+  let timerInterval = null;
+  let examLocked = false;
 
-    if (!currentContest) {
-      card.classList.add('hidden');
-      return;
+  function getAnswerStorageKey(questionId) {
+    return `answer_${contestId}_${questionId}`;
+  }
+
+  async function checkAlreadyFinished() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      window.location.href = 'index.html';
+      return true;
     }
 
-    card.classList.remove('hidden');
-    titleEl.textContent = currentContest.title || '';
-    detailsEl.textContent =
-      `Type: ${currentContest.type === 'paid' ? 'Paid' : 'Free'} • ` +
-      `Entry ${currentContest.entryFee === 0 ? 'Free' : '₹' + currentContest.entryFee} • ` +
-      `Total prize ₹${currentContest.totalPrize}`;
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('score')
+      .eq('user_id', user.id)
+      .eq('contest_id', contestId)
+      .maybeSingle(); // ek row ya null[web:55]
 
-    const maxWinners = currentContest.maxWinners || 50;
-    winnersLabel.textContent = `Configured winners: Top ${maxWinners}`;
+    if (error) {
+      console.warn('Leaderboard check error:', error);
+      return false;
+    }
+
+    if (data) {
+      window.location.href = `results.html?contestId=${contestId}`;
+      return true;
+    }
+    return false;
   }
 
-  async function loadWinnersForContest(contestId) {
-    const body = document.getElementById('winners-body');
-    body.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">Loading winners...</div>`;
+  // ====== Timer ======
+  function startTimer(totalSeconds = 60 * 60) {
+    let remaining = totalSeconds;
+    const timerEl = document.getElementById('timer');
 
-    currentContest = findContestById(contestId);
-    renderContestMeta();
+    function render() {
+      const h = String(Math.floor(remaining / 3600)).padStart(2, '0');
+      const m = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      timerEl.textContent = `${h}:${m}:${s}`;
+    }
 
-    const maxWinners = currentContest?.maxWinners || 50;
+    render();
+
+    timerInterval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        timerEl.textContent = '00:00:00';
+        autoSubmitExam();
+        return;
+      }
+      render();
+    }, 1000);
+  }
+
+  // ====== UI render ======
+  function renderContestHeader() {
+    const typeBadge = document.getElementById('contest-type-badge');
+    const titleEl = document.getElementById('contest-title');
+    const metaEl = document.getElementById('contest-meta');
+
+    if (!contestConfig) return;
+
+    typeBadge.textContent = contestConfig.type === 'free' ? 'Free contest' : 'Paid contest';
+    typeBadge.classList.toggle('text-emerald-400', contestConfig.type === 'free');
+    typeBadge.classList.toggle('text-amber-400', contestConfig.type === 'paid');
+
+    titleEl.textContent = contestConfig.title || 'Contest';
+
+    metaEl.textContent =
+      `Entry ${contestConfig.entryFee === 0 ? 'Free' : '₹' + contestConfig.entryFee} • ` +
+      `Total prize ₹${contestConfig.totalPrize} • ` +
+      `Top ${contestConfig.maxWinners} students get rewards`;
+  }
+
+  function renderQuestionsList() {
+    const list = document.getElementById('questions-list');
+    list.innerHTML = '';
+
+    questions.forEach((q, index) => {
+      const btn = document.createElement('button');
+      btn.className =
+        'w-full text-left px-3 py-1.5 rounded-lg border text-[11px] mb-1 ' +
+        (index === currentIndex
+          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
+          : 'bg-slate-900 border-slate-700 text-slate-200');
+      btn.textContent = `Q${index + 1} • ${q.level || ''}`;
+      btn.onclick = () => {
+        if (examLocked) return;
+        saveCurrentAnswer();
+        currentIndex = index;
+        renderCurrentQuestion();
+        renderQuestionsList();
+      };
+      list.appendChild(btn);
+    });
+  }
+
+  function renderCurrentQuestion() {
+    const q = questions[currentIndex];
+    if (!q) return;
+
+    document.getElementById('question-label').textContent = `Question ${currentIndex + 1}`;
+    document.getElementById('question-title').textContent = q.title || '';
+    document.getElementById('question-statement').textContent = q.statement || '';
+
+    document.getElementById('question-tags').textContent =
+      `${q.level || ''}${q.topic ? ' • ' + q.topic : ''}`;
+
+    const saved = localStorage.getItem(getAnswerStorageKey(q.id)) || '';
+    document.getElementById('answer-input').value = saved;
+  }
+
+  // ====== Answers ======
+  async function saveAnswer(questionId, value) {
+    localStorage.setItem(getAnswerStorageKey(questionId), value || '');
 
     try {
-      const { data, error } = await supabaseClient
-        .from('leaderboard')
-        .select('user_id, score, rank')
-        .eq('contest_id', contestId)
-        .order('score', { ascending: false })
-        .limit(maxWinners); // Top N winners[web:21][web:111]
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) return;
 
-      if (error) {
-        console.error('Winners load error:', error);
-        body.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Failed to load winners.</div>`;
-        document.getElementById('copy-csv-btn').disabled = true;
-        return;
-      }
+      const { error } = await supabaseClient
+        .from('submissions')
+        .insert({
+          user_id: user.id,
+          contest_id: contestId,
+          question_id: questionId,
+          code: value || '',
+          language: 'text'
+        });
 
-      if (!data || data.length === 0) {
-        body.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No participants / winners yet for this contest.</div>`;
-        document.getElementById('copy-csv-btn').disabled = true;
-        return;
-      }
-
-      // Sort + rank fallback
-      data.sort((a, b) => b.score - a.score);
-      currentWinners = data.map((row, index) => ({
-        rank: row.rank || index + 1,
-        user_id: row.user_id,
-        score: row.score
-      }));
-
-      renderWinnersTable();
-      document.getElementById('copy-csv-btn').disabled = false;
+      if (error) console.error('Save submission error:', error);
     } catch (e) {
-      console.error('Winners exception:', e);
-      body.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Error loading winners.</div>`;
-      document.getElementById('copy-csv-btn').disabled = true;
+      console.error('Save submission exception:', e);
     }
   }
 
-  function renderWinnersTable() {
-    const body = document.getElementById('winners-body');
-
-    const rowsHtml = currentWinners.map((w) => {
-      const shortId = w.user_id ? w.user_id.slice(0, 8) + '...' : '-';
-      return `
-        <tr class="border-t border-slate-800 hover:bg-slate-800/60">
-          <td class="px-3 py-1.5 text-center text-[11px] text-emerald-400 font-semibold">#${w.rank}</td>
-          <td class="px-3 py-1.5 text-[11px] text-slate-100">${shortId}</td>
-          <td class="px-3 py-1.5 text-center text-[11px] text-slate-100 font-semibold">${w.score}</td>
-        </tr>
-      `;
-    }).join('');
-
-    body.innerHTML = `
-      <table class="w-full text-[11px]">
-        <thead class="bg-slate-800/80 text-slate-300">
-          <tr>
-            <th class="px-3 py-1.5 text-left">Rank</th>
-            <th class="px-3 py-1.5 text-left">User ID (short)</th>
-            <th class="px-3 py-1.5 text-left">Score</th>
-          </tr>
-        </thead>
-        <tbody class="text-slate-200">
-          ${rowsHtml}
-        </tbody>
-      </table>
-    `;
+  function saveCurrentAnswer() {
+    const q = questions[currentIndex];
+    if (!q) return;
+    const value = document.getElementById('answer-input').value;
+    saveAnswer(q.id, value);
   }
 
-  function copyWinnersCsvToClipboard() {
-    if (!currentContest || !currentWinners.length) return;
+  async function saveAllAnswers() {
+    for (const q of questions) {
+      const key = getAnswerStorageKey(q.id);
+      const currentValue = document.getElementById('answer-input').value;
+      const finalValue = (q.id === questions[currentIndex].id)
+        ? currentValue
+        : (localStorage.getItem(key) || '');
+      await saveAnswer(q.id, finalValue);
+    }
+  }
 
-    const header = ['rank', 'user_id', 'score'];
-    const lines = [header.join(',')];
+  // ====== Finish / Auto submit ======
+  async function autoSubmitExam() {
+    if (examLocked) return;
+    examLocked = true;
 
-    currentWinners.forEach(w => {
-      lines.push(`${w.rank},${w.user_id},${w.score}`);
+    document.getElementById('finish-btn').disabled = true;
+    document.getElementById('finish-btn').textContent = 'Submitting...';
+    document.getElementById('finish-btn').classList.add('opacity-60', 'cursor-not-allowed');
+
+    await saveAllAnswers();
+
+    let fallbackScore = 0;
+    questions.forEach(q => {
+      const val = localStorage.getItem(getAnswerStorageKey(q.id)) || '';
+      if (val.trim().length > 0) fallbackScore += 100;
     });
 
-    const csv = lines.join('\n');
-
-    navigator.clipboard.writeText(csv)
-      .then(() => {
-        alert('Winners CSV copied to clipboard. Excel/Google Sheets me paste kar sakte ho.');
-      })
-      .catch(err => {
-        console.error('Clipboard error:', err);
-        alert('CSV copy nahi ho paya. Console check karo.');
-      });
+    window.location.href = `results.html?contestId=${contestId}&score=${fallbackScore}`;
   }
 
-  async function ensureAdminAccess() {
-    // Optional: basic protection – sirf tumhara email allowed
-    const { data, error } = await supabaseClient.auth.getUser();
-    if (error || !data.user) {
-      window.location.href = 'index.html';
+  async function finishExamClick() {
+    const ok = confirm('Kya aap exam finish karna chahte hain? Baad me questions edit nahi kar paoge.');
+    if (!ok) return;
+    await autoSubmitExam();
+  }
+
+  // ====== Init ======
+  async function initExamPage() {
+    contestId = getContestIdFromUrl();
+    contestConfig = findContestById(contestId);
+
+    if (!contestId || !contestConfig) {
+      alert('Invalid contest.');
+      window.location.href = 'dashboard.html';
       return;
     }
 
-    const email = data.user.email || '';
-    // Yahan apna admin email dal sakte ho
-    const allowed = [/* 'youremail@example.com' */];
+    const already = await checkAlreadyFinished();
+    if (already) return;
 
-    if (allowed.length && !allowed.includes(email)) {
-      alert('Admin panel access denied.');
-      window.location.href = 'dashboard.html';
-    }
+    questions = pickQuestionsForContest(contestId);
+    currentIndex = 0;
+
+    renderContestHeader();
+    renderQuestionsList();
+    renderCurrentQuestion();
+
+    startTimer(60 * 60); // 1 hour
   }
 
-  document.getElementById('back-dashboard').addEventListener('click', () => {
-    window.location.href = 'dashboard.html';
+  // ====== Events ======
+  document.getElementById('save-answer-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    saveCurrentAnswer();
+    alert('Answer saved!');
   });
 
-  document.getElementById('copy-csv-btn').addEventListener('click', copyWinnersCsvToClipboard);
-
-  document.addEventListener('DOMContentLoaded', async () => {
-    await ensureAdminAccess();
-    initContestDropdown();
+  document.getElementById('run-debug-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    // Abhi ke liye dummy: sirf local save + alert
+    saveCurrentAnswer();
+    alert('Code run/debug feature abhi dummy hai. Baad me actual judge se connect karenge.');
   });
+
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    saveCurrentAnswer();
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderCurrentQuestion();
+      renderQuestionsList();
+    }
+  });
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    saveCurrentAnswer();
+    if (currentIndex < questions.length - 1) {
+      currentIndex++;
+      renderCurrentQuestion();
+      renderQuestionsList();
+    }
+  });
+
+  document.getElementById('finish-btn').addEventListener('click', finishExamClick);
+
+  document.addEventListener('DOMContentLoaded', initExamPage);
 </script>
 
 </body>
