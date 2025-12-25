@@ -54,11 +54,11 @@
     </div>
   </section>
 
-  <!-- Right: small login card -->
+  <!-- Right: login card -->
   <section class="w-full max-w-sm bg-slate-900/80 border border-slate-800 rounded-2xl p-4 text-xs">
     <h2 class="text-sm font-semibold mb-2">Login / Sign up</h2>
     <p class="text-[11px] text-slate-300 mb-3">
-      Use your email to login via Supabase magic link (or whatever flow tumne auth.html me banaya hai).
+      Enter your email. A magic link will be sent using Supabase Auth. Click that link to come back logged‑in.
     </p>
 
     <div class="space-y-2 mb-3">
@@ -70,11 +70,11 @@
 
     <button id="login-btn"
       class="w-full px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold mb-2">
-      Continue
+      Continue with email
     </button>
 
     <p id="auth-status" class="text-[11px] text-slate-400">
-      Enter email and continue. (Hook this to your existing auth page or Supabase magic link.)
+      You will receive a magic link if this email is valid.
     </p>
   </section>
 </main>
@@ -82,7 +82,7 @@
 <script>
   const supabaseClient = window.supabaseClient;
 
-  // On load: if already logged in, show email + "Go to dashboard" directly
+  // On load: check current session
   document.addEventListener('DOMContentLoaded', async () => {
     const user = await window.getCurrentUser();
     const startBtn = document.getElementById('start-btn');
@@ -94,14 +94,19 @@
       logoutBtn.classList.remove('hidden');
       startBtn.onclick = () => window.location.href = 'dashboard.html';
     } else {
-      startBtn.onclick = () => window.location.href = 'auth.html'; // ya tumhara actual login page
+      loginHint.textContent = 'Enter email and click "Continue" to get a magic login link.';
+      startBtn.onclick = () => {
+        document.getElementById('email-input').focus();
+      };
     }
   });
 
-  // Simple placeholder login button – tum isko apne auth.html ya Supabase magic link se replace kar sakte ho
-  document.getElementById('login-btn').addEventListener('click', () => {
-    const email = document.getElementById('email-input').value.trim();
+  // Magic-link login from index itself
+  document.getElementById('login-btn').addEventListener('click', async () => {
+    const emailInput = document.getElementById('email-input');
     const status = document.getElementById('auth-status');
+    const email = emailInput.value.trim();
+
     if (!email) {
       status.textContent = 'Please enter a valid email.';
       status.classList.remove('text-emerald-400');
@@ -109,11 +114,29 @@
       return;
     }
 
-    // Abhi ke liye: auth.html pe redirect with email (wahaan actual signup/login handle hoga)
-    const encoded = encodeURIComponent(email);
-    window.location.href = `auth.html?email=${encoded}`;
+    status.textContent = 'Sending magic link...';
+    status.classList.remove('text-red-400');
+    status.classList.add('text-slate-400');
+
+    const { data, error } = await supabaseClient.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: window.location.origin + window.location.pathname
+      }
+    }); // magic-link sign-in[web:215][web:227]
+
+    if (error) {
+      status.textContent = error.message;
+      status.classList.remove('text-emerald-400');
+      status.classList.add('text-red-400');
+    } else {
+      status.textContent = 'Magic link sent! Check your email and open the link on this device.';
+      status.classList.remove('text-red-400');
+      status.classList.add('text-emerald-400');
+    }
   });
 
+  // Logout
   document.getElementById('logout-btn').addEventListener('click', () => {
     window.logoutAndRedirect('index.html');
   });
