@@ -3,365 +3,258 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CodeRush Admin – Winners & Prizes</title>
+  <title>Admin – Contest Winners | CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Supabase core + common client -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script src="supabase-client.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    .status-pending { background: linear-gradient(90deg, #f59e0b20 0%, #fbbf2480 100%); }
-    .status-paid { background: linear-gradient(90deg, #10b98120 0%, #34d39980 100%); }
-    .status-disputed { background: linear-gradient(90deg, #ef444480 0%, #f9731680 100%); }
   </style>
 </head>
 
 <body class="min-h-screen text-slate-100 bg-slate-950
              bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
 
-<!-- Admin Top Navbar -->
-<header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
-  <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
-    <div class="flex items-center gap-2">
-      <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
-        C
-      </div>
-      <span class="font-semibold text-lg tracking-tight">CodeRush Admin</span>
-      <span class="ml-2 px-2 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-full font-mono">#ADMIN</span>
+<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10
+             bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
+
+  <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+    <div>
+      <p class="text-[11px] uppercase tracking-wide text-amber-400 mb-1">Admin only</p>
+      <h1 class="text-xl font-semibold mb-1">Contest winners panel</h1>
+      <p class="text-[11px] text-slate-400">
+        Select a contest to see Top N winners (based on <span class="text-emerald-400">score</span>).
+      </p>
     </div>
-    <div class="flex items-center gap-3 text-xs">
-      <span id="admin-user-email" class="text-slate-300"></span>
-      <button id="logout-admin" class="px-3 py-1.5 rounded-lg border border-red-500/50 hover:border-red-400 text-red-300">
-        Logout
+
+    <div class="flex flex-col items-end gap-2 text-xs">
+      <select id="contest-select"
+              class="bg-slate-900 border border-slate-700 text-[11px] px-2 py-1 rounded-lg text-slate-200">
+        <option value="">Select contest</option>
+      </select>
+      <button id="back-dashboard"
+        class="px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-200 hover:border-emerald-400 hover:text-emerald-300">
+        Back to dashboard
       </button>
     </div>
-  </nav>
-</header>
+  </header>
 
-<main class="max-w-7xl mx-auto px-4 py-8">
-  <!-- Stats Overview -->
-  <section class="grid md:grid-cols-4 gap-4 mb-8">
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 text-center">
-      <div class="text-2xl font-bold text-emerald-400 mb-1">47</div>
-      <div class="text-xs text-slate-400">Contests Completed</div>
-    </div>
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 text-center">
-      <div class="text-2xl font-bold text-amber-400 mb-1">₹12,450</div>
-      <div class="text-xs text-slate-400">Total Payouts</div>
-    </div>
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 text-center">
-      <div class="text-2xl font-bold text-slate-300 mb-1">127</div>
-      <div class="text-xs text-slate-400">Participants</div>
-    </div>
-    <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 text-center">
-      <div class="text-2xl font-bold text-red-400 mb-1">2</div>
-      <div class="text-xs text-slate-400">Pending Payouts</div>
+  <!-- Contest meta -->
+  <section id="contest-meta-card" class="mb-4 hidden">
+    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
+      <div>
+        <p id="contest-title" class="font-semibold mb-1"></p>
+        <p id="contest-details" class="text-[11px] text-slate-400"></p>
+      </div>
+      <div class="flex items-center gap-2">
+        <p id="winners-count-label" class="text-[11px] text-slate-300"></p>
+        <button id="copy-csv-btn"
+          class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold disabled:opacity-50">
+          Copy winners CSV
+        </button>
+      </div>
     </div>
   </section>
 
-  <div class="grid lg:grid-cols-3 gap-6">
-    <!-- Left: Contest Selector + Quick Actions -->
-    <section class="lg:col-span-1">
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 sticky top-24">
-        <h2 class="text-lg font-bold mb-4">Contest Management</h2>
-        
-        <div class="space-y-3 mb-6">
-          <select id="contest-select-admin" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm">
-            <option value="">Select Contest</option>
-          </select>
-          
-          <div class="grid grid-cols-2 gap-2">
-            <button id="refresh-data" class="px-3 py-2 rounded-lg border border-slate-700 hover:border-emerald-400 text-sm">
-              🔄 Refresh
-            </button>
-            <button id="export-csv" class="px-3 py-2 rounded-lg border border-slate-700 hover:border-amber-400 text-sm">
-              📊 Export CSV
-            </button>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="space-y-2">
-          <h3 class="font-semibold text-sm mb-2 text-slate-300">Quick Actions</h3>
-          <button id="mark-all-paid" class="w-full p-2 rounded-lg bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-xs hover:bg-emerald-500/30">
-            ✅ Mark All Paid
-          </button>
-          <button id="dispute-review" class="w-full p-2 rounded-lg bg-amber-500/20 border border-amber-500/40 text-amber-400 text-xs hover:bg-amber-500/30">
-            ⚠️ Review Disputes
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Right: Winners Table -->
-    <section class="lg:col-span-2">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="text-lg font-bold">🏆 Winners & Payouts</h2>
-        <div class="flex items-center gap-2 text-sm">
-          <span id="contest-participants" class="text-slate-400">0 participants</span>
-          <button id="toggle-paid-only" class="px-3 py-1 rounded-lg border border-slate-700 hover:border-emerald-400 text-xs">
-            Paid Only
-          </button>
-        </div>
-      </div>
-
-      <div class="bg-slate-900/80 border border-slate-800 rounded-2xl overflow-hidden">
-        <table id="winners-table" class="w-full text-xs">
-          <thead class="bg-slate-800/80 sticky top-0 z-10">
-            <tr>
-              <th class="px-4 py-3 text-left font-semibold text-slate-300">Rank</th>
-              <th class="px-4 py-3 text-left font-semibold text-slate-300">Contestant</th>
-              <th class="px-4 py-3 text-left font-semibold text-slate-300">Score</th>
-              <th class="px-4 py-3 text-left font-semibold text-slate-300">Prize</th>
-              <th class="px-4 py-3 text-left font-semibold text-slate-300">Status</th>
-              <th class="px-4 py-3 text-left font-semibold text-slate-300">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="winners-tbody">
-            <tr>
-              <td colspan="6" class="px-4 py-12 text-center text-slate-500">
-                Select a contest to view winners
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
-
-  <!-- Payment Modal -->
-  <div id="payment-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-sm w-full">
-      <h3 class="text-lg font-bold mb-4">Mark as Paid</h3>
-      <div id="payment-details" class="mb-4 p-3 bg-slate-800/50 rounded-lg text-sm"></div>
-      <div class="flex gap-3 pt-4 border-t border-slate-800">
-        <button id="confirm-payment" class="flex-1 bg-emerald-500 text-slate-900 py-2 rounded-lg font-semibold">
-          ✅ Confirm Paid
-        </button>
-        <button id="cancel-payment" class="flex-1 border border-slate-700 py-2 rounded-lg text-slate-300">
-          Cancel
-        </button>
+  <!-- Winners table -->
+  <section class="mt-2 text-xs">
+    <h2 class="text-sm font-semibold mb-2">Winners list</h2>
+    <div id="winners-body" class="border border-slate-800 rounded-xl overflow-hidden">
+      <div class="px-3 py-2 text-[11px] text-slate-400">
+        Select a contest to load winners.
       </div>
     </div>
-  </div>
-</div>
+  </section>
+</main>
 
+<script src="contests-config.js"></script>
 <script>
-  const supabaseClient = window.supabaseClient;
-  let currentContestId = null;
-  let winnersData = [];
+  // Supabase client (same project)
+  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ===== Admin Auth Check =====
-  document.addEventListener('DOMContentLoaded', async () => {
-    const user = await window.requireAuth();
-    if (!user) return;
-    
-    // Admin check (email-based for demo)
-    if (!user.email.includes('@admin') && user.email !== 'admin@coderush.in') {
-      alert('Admin access required');
-      window.location.href = 'dashboard.html';
-      return;
-    }
-    
-    document.getElementById('admin-user-email').textContent = user.email;
-    initAdminPanel();
-  });
+  let currentContest = null;
+  let currentWinners = [];
 
-  async function initAdminPanel() {
-    await loadContestDropdown();
-    document.getElementById('logout-admin').onclick = () => window.logoutAndRedirect('index.html');
+  function findContestById(id) {
+    return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
   }
 
-  // ===== Contest Dropdown =====
-  async function loadContestDropdown() {
-    const select = document.getElementById('contest-select-admin');
-    const { data } = await supabaseClient
-      .from('leaderboard')
-      .select('contest_id')
-      .order('contest_id', { ascending: false })
-      .limit(20);
+  function initContestDropdown() {
+    const select = document.getElementById('contest-select');
+    if (!select || !Array.isArray(CONTESTS)) return;
 
-    const contests = [...new Set(data?.map(row => row.contest_id) || [])];
-    contests.forEach(contestId => {
-      const option = document.createElement('option');
-      option.value = contestId;
-      option.textContent = contestId;
-      select.appendChild(option);
+    CONTESTS.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c.id;
+      opt.textContent = `${c.title} (${c.type === 'paid' ? 'Paid' : 'Free'})`;
+      select.appendChild(opt);
     });
 
-    select.onchange = () => loadWinners(select.value);
+    select.addEventListener('change', () => {
+      const id = select.value;
+      if (!id) {
+        document.getElementById('winners-body').innerHTML =
+          `<div class="px-3 py-2 text-[11px] text-slate-400">Select a contest to load winners.</div>`;
+        document.getElementById('contest-meta-card').classList.add('hidden');
+        currentContest = null;
+        currentWinners = [];
+        document.getElementById('copy-csv-btn').disabled = true;
+        return;
+      }
+      loadWinnersForContest(id);
+    });
   }
 
-  // ===== Load Winners Table =====
-  async function loadWinners(contestId) {
-    if (!contestId) return;
-    currentContestId = contestId;
-    
+  function renderContestMeta() {
+    const card = document.getElementById('contest-meta-card');
+    const titleEl = document.getElementById('contest-title');
+    const detailsEl = document.getElementById('contest-details');
+    const winnersLabel = document.getElementById('winners-count-label');
+
+    if (!currentContest) {
+      card.classList.add('hidden');
+      return;
+    }
+
+    card.classList.remove('hidden');
+    titleEl.textContent = currentContest.title || '';
+    detailsEl.textContent =
+      `Type: ${currentContest.type === 'paid' ? 'Paid' : 'Free'} • ` +
+      `Entry ${currentContest.entryFee === 0 ? 'Free' : '₹' + currentContest.entryFee} • ` +
+      `Total prize ₹${currentContest.totalPrize}`;
+
+    const maxWinners = currentContest.maxWinners || 50;
+    winnersLabel.textContent = `Configured winners: Top ${maxWinners}`;
+  }
+
+  async function loadWinnersForContest(contestId) {
+    const body = document.getElementById('winners-body');
+    body.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">Loading winners...</div>`;
+
+    currentContest = findContestById(contestId);
+    renderContestMeta();
+
+    const maxWinners = currentContest?.maxWinners || 50;
+
     try {
       const { data, error } = await supabaseClient
         .from('leaderboard')
-        .select(`
-          user_id,
-          score,
-          rank,
-          contest_id,
-          payouts (*)
-        `)
+        .select('user_id, score, rank')
         .eq('contest_id', contestId)
-        .order('score', { ascending: false });
+        .order('score', { ascending: false })
+        .limit(maxWinners); // Top N winners[web:21][web:111]
 
-      if (error) throw error;
-      
-      winnersData = data || [];
-      document.getElementById('contest-participants').textContent = `${winnersData.length} participants`;
-      
+      if (error) {
+        console.error('Winners load error:', error);
+        body.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Failed to load winners.</div>`;
+        document.getElementById('copy-csv-btn').disabled = true;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        body.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No participants / winners yet for this contest.</div>`;
+        document.getElementById('copy-csv-btn').disabled = true;
+        return;
+      }
+
+      // Sort + rank fallback
+      data.sort((a, b) => b.score - a.score);
+      currentWinners = data.map((row, index) => ({
+        rank: row.rank || index + 1,
+        user_id: row.user_id,
+        score: row.score
+      }));
+
       renderWinnersTable();
-    } catch (error) {
-      console.error('Load winners error:', error);
-      showError('Failed to load winners');
+      document.getElementById('copy-csv-btn').disabled = false;
+    } catch (e) {
+      console.error('Winners exception:', e);
+      body.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Error loading winners.</div>`;
+      document.getElementById('copy-csv-btn').disabled = true;
     }
   }
 
   function renderWinnersTable() {
-    const tbody = document.getElementById('winners-tbody');
-    
-    if (winnersData.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="6" class="px-4 py-12 text-center text-slate-500">
-            No participants yet
-          </td>
-        </tr>
-      `;
-      return;
-    }
+    const body = document.getElementById('winners-body');
 
-    const prizeStructure = {
-      1: '₹500', 2: '₹250', 3: '₹100', 4: '₹50'
-    };
-
-    const rows = winnersData.slice(0, 50).map((winner, index) => {
-      const rank = winner.rank || index + 1;
-      const prize = rank <= 4 ? prizeStructure[rank] : '-';
-      const payout = winner.payouts?.[0];
-      const status = payout?.status || 'pending';
-      
+    const rowsHtml = currentWinners.map((w) => {
+      const shortId = w.user_id ? w.user_id.slice(0, 8) + '...' : '-';
       return `
-        <tr class="border-t border-slate-800 hover:bg-slate-800/50 transition-colors ${status === 'paid' ? 'status-paid' : ''}">
-          <td class="px-4 py-3 font-mono font-bold text-emerald-400">${rank}</td>
-          <td class="px-4 py-3">
-            <div class="font-mono text-sm">${winner.user_id.slice(0,12)}...</div>
-            <div class="text-[11px] text-slate-500">${winner.user_id}</div>
-          </td>
-          <td class="px-4 py-3 font-mono font-bold">${winner.score}</td>
-          <td class="px-4 py-3 font-semibold">${prize}</td>
-          <td class="px-4 py-3">
-            <span class="px-2 py-1 rounded-full text-[11px] font-semibold
-                  ${status === 'paid' ? 'bg-emerald-500/30 text-emerald-400 border border-emerald-500/50' : 
-                    status === 'disputed' ? 'bg-amber-500/30 text-amber-400 border border-amber-500/50' : 
-                    'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">
-              ${status === 'paid' ? '✅ Paid' : status === 'disputed' ? '⚠️ Disputed' : '⏳ Pending'}
-            </span>
-          </td>
-          <td class="px-4 py-3">
-            <div class="flex items-center gap-1">
-              ${status !== 'paid' ? 
-                `<button onclick="showPaymentModal(${rank})" 
-                         class="px-2 py-1 rounded text-[11px] bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-500/40">
-                  💰 Pay Now
-                </button>` : ''}
-              <button onclick="copyUserId('${winner.user_id}')" 
-                      class="px-1.5 py-1 rounded text-[10px] border border-slate-600 hover:border-slate-400 text-slate-400">
-                📋
-              </button>
-            </div>
-          </td>
+        <tr class="border-t border-slate-800 hover:bg-slate-800/60">
+          <td class="px-3 py-1.5 text-center text-[11px] text-emerald-400 font-semibold">#${w.rank}</td>
+          <td class="px-3 py-1.5 text-[11px] text-slate-100">${shortId}</td>
+          <td class="px-3 py-1.5 text-center text-[11px] text-slate-100 font-semibold">${w.score}</td>
         </tr>
       `;
     }).join('');
 
-    tbody.innerHTML = rows;
-  }
-
-  // ===== Payment Modal =====
-  function showPaymentModal(rank) {
-    const winner = winnersData.find(w => (w.rank || winnersData.indexOf(w) + 1) === rank);
-    if (!winner) return;
-
-    document.getElementById('payment-details').innerHTML = `
-      <div class="space-y-2">
-        <div><strong>User:</strong> ${winner.user_id}</div>
-        <div><strong>Rank:</strong> #${rank}</div>
-        <div><strong>Score:</strong> ${winner.score}</div>
-        <div><strong>Prize:</strong> ₹${rank === 1 ? 500 : rank === 2 ? 250 : rank === 3 ? 100 : 50}</div>
-      </div>
+    body.innerHTML = `
+      <table class="w-full text-[11px]">
+        <thead class="bg-slate-800/80 text-slate-300">
+          <tr>
+            <th class="px-3 py-1.5 text-left">Rank</th>
+            <th class="px-3 py-1.5 text-left">User ID (short)</th>
+            <th class="px-3 py-1.5 text-left">Score</th>
+          </tr>
+        </thead>
+        <tbody class="text-slate-200">
+          ${rowsHtml}
+        </tbody>
+      </table>
     `;
-    
-    document.getElementById('payment-modal').classList.remove('hidden');
-    document.getElementById('confirm-payment').onclick = () => confirmPayment(winner, rank);
   }
 
-  async function confirmPayment(winner, rank) {
-    try {
-      const prize = rank === 1 ? 500 : rank === 2 ? 250 : rank === 3 ? 100 : 50;
-      
-      await supabaseClient.from('payouts').upsert({
-        contest_id: currentContestId,
-        user_id: winner.user_id,
-        rank: rank,
-        amount: prize,
-        status: 'paid',
-        paid_at: new Date().toISOString(),
-        admin_id: (await window.getCurrentUser()).id
-      });
+  function copyWinnersCsvToClipboard() {
+    if (!currentContest || !currentWinners.length) return;
 
-      document.getElementById('payment-modal').classList.add('hidden');
-      loadWinners(currentContestId); // Refresh table
-      showSuccess(`₹${prize} paid to ${winner.user_id.slice(0,12)}...`);
-    } catch (error) {
-      showError('Payment update failed');
+    const header = ['rank', 'user_id', 'score'];
+    const lines = [header.join(',')];
+
+    currentWinners.forEach(w => {
+      lines.push(`${w.rank},${w.user_id},${w.score}`);
+    });
+
+    const csv = lines.join('\n');
+
+    navigator.clipboard.writeText(csv)
+      .then(() => {
+        alert('Winners CSV copied to clipboard. Excel/Google Sheets me paste kar sakte ho.');
+      })
+      .catch(err => {
+        console.error('Clipboard error:', err);
+        alert('CSV copy nahi ho paya. Console check karo.');
+      });
+  }
+
+  async function ensureAdminAccess() {
+    // Optional: basic protection – sirf tumhara email allowed
+    const { data, error } = await supabaseClient.auth.getUser();
+    if (error || !data.user) {
+      window.location.href = 'index.html';
+      return;
+    }
+
+    const email = data.user.email || '';
+    // Yahan apna admin email dal sakte ho
+    const allowed = [/* 'youremail@example.com' */];
+
+    if (allowed.length && !allowed.includes(email)) {
+      alert('Admin panel access denied.');
+      window.location.href = 'dashboard.html';
     }
   }
 
-  document.getElementById('cancel-payment').onclick = () => {
-    document.getElementById('payment-modal').classList.add('hidden');
-  };
+  document.getElementById('back-dashboard').addEventListener('click', () => {
+    window.location.href = 'dashboard.html';
+  });
 
-  // ===== Utility Functions =====
-  function copyUserId(userId) {
-    navigator.clipboard.writeText(userId);
-    showSuccess('User ID copied!');
-  }
+  document.getElementById('copy-csv-btn').addEventListener('click', copyWinnersCsvToClipboard);
 
-  function showSuccess(message) {
-    // Simple toast (implement as needed)
-    console.log('✅', message);
-  }
-
-  function showError(message) {
-    console.error('❌', message);
-  }
-
-  // ===== Event Listeners =====
-  document.getElementById('refresh-data').onclick = () => loadWinners(currentContestId);
-  document.getElementById('mark-all-paid').onclick = () => {
-    if (confirm('Mark all top 4 as paid?')) markAllPaid();
-  };
-
-  async function markAllPaid() {
-    const top4 = winnersData.slice(0, 4);
-    const payouts = top4.map((w, i) => ({
-      contest_id: currentContestId,
-      user_id: w.user_id,
-      rank: i + 1,
-      amount: [500, 250, 100, 50][i],
-      status: 'paid',
-      paid_at: new Date().toISOString()
-    }));
-
-    await supabaseClient.from('payouts').upsert(payouts);
-    loadWinners(currentContestId);
-  }
+  document.addEventListener('DOMContentLoaded', async () => {
+    await ensureAdminAccess();
+    initContestDropdown();
+  });
 </script>
 
 </body>
