@@ -73,7 +73,7 @@
     return Number(params.get("score") || 0);
   }
 
-  function renderHeader(contest, yourScore, totalMarks) {
+  function renderHeader(contest, yourScore, maxMarks) {
     const header = document.getElementById("result-header");
     if (!header || !contest) return;
 
@@ -91,7 +91,7 @@
           • Top ${contest.maxWinners} students get rewards
         </p>
         <p class="text-emerald-400 text-sm font-semibold">
-          Your score: <span id="your-score">${yourScore}</span> / ${totalMarks}
+          Your score: <span id="your-score">${yourScore}</span> / ${maxMarks}
         </p>
       </div>
     `;
@@ -134,9 +134,8 @@
         .from('problems')
         .select('id, title, marks');  // marks column[web:282]
 
-      // 3) Calculate total score + total marks + breakdown rows
+      // 3) Calculate total score + breakdown rows
       let totalScore = 0;
-      let totalMarks = 0;
       const breakdownRows = [];
 
       const problemMap = {};
@@ -152,7 +151,6 @@
         const gained = attempted ? (p.marks || 0) : 0;
 
         totalScore += gained;
-        totalMarks += p.marks || 0;
 
         breakdownRows.push({
           id: qid,
@@ -166,9 +164,12 @@
       const fallbackScore = getScoreFromUrlFallback();
       const finalScore = totalScore || fallbackScore;
 
+      // Abhi sab contest 300 marks ke maante hain
+      const maxMarks = 300;
+
       // 4) Render header + overall score
-      renderHeader(contest, finalScore, totalMarks);
-      document.getElementById('overall-score').textContent = `${finalScore} / ${totalMarks}`;
+      renderHeader(contest, finalScore, maxMarks);
+      document.getElementById('overall-score').textContent = `${finalScore} / ${maxMarks}`;
 
       // 5) Render breakdown table
       renderBreakdownTable(breakdownRows);
