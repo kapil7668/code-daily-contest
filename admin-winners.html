@@ -80,7 +80,7 @@
   // Supabase client
   const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); [web:430]
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // Admin email – sirf isi se login hone par page chalega
   const ADMIN_EMAIL = 'kapilrajputana35@gmail.com';
@@ -97,7 +97,7 @@
   // -------- ADMIN ACCESS CHECK --------
   (async () => {
     try {
-      const { data } = await supabaseClient.auth.getUser(); // current user [web:378]
+      const { data } = await supabaseClient.auth.getUser(); // current user
 
       if (!data || !data.user) {
         alert('Please sign in as admin to view this page.');
@@ -198,7 +198,7 @@
         .from('leaderboard')
         .select('user_id, score, rank, created_at')
         .eq('contest_id', contestId)
-        .order('score', { ascending: false }); [web:430]
+        .order('score', { ascending: false });
 
       if (error) {
         console.error('Load winners error:', error);
@@ -311,7 +311,7 @@
       .from('payouts')
       .select('id, user_id, contest_id, prize_amount, rank, is_paid, created_at')
       .order('created_at', { ascending: false })
-      .limit(50); [web:430]
+      .limit(50);
 
     if (error) {
       payoutsTable.textContent = 'Failed to load payouts.';
@@ -369,7 +369,7 @@
     const { error } = await supabaseClient
       .from('payouts')
       .update({ is_paid: true })
-      .eq('id', id); [web:430]
+      .eq('id', id);
 
     if (error) {
       alert('Failed to update payout');
