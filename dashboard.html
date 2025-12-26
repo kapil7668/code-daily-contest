@@ -65,7 +65,9 @@
 
       <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
         <h2 class="font-semibold mb-1 text-sm">Practice sets</h2>
-        <p class="text-slate-300 text-xs mb-2">Hand‑picked sets similar to LeetCode sheets (later yaha se real sets link karenge).</p>
+        <p class="text-slate-300 text-xs mb-2">
+          Hand‑picked sets similar to LeetCode sheets (later yaha se real sets link karenge).
+        </p>
         <ul class="text-[11px] text-slate-400 space-y-1">
           <li>• Beginner 50 DSA</li>
           <li>• 75 Must‑Do Questions</li>
@@ -198,7 +200,57 @@
 
   <!-- Problems Tab -->
   <section id="tab-problems" class="tab-page hidden">
-    <!-- problems content -->
+    <h2 class="text-lg font-semibold mb-2">Practice problems</h2>
+    <p class="text-[11px] text-slate-400 mb-3">
+      Start with these curated sets. Later yaha se real problem pages link kar sakte ho.[web:417]
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-4 text-xs">
+      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold text-sm mb-1">Beginner DSA (20)</h3>
+        <p class="text-slate-300 text-[11px] mb-2">
+          Arrays, strings, hashing – sabse common interview starters.
+        </p>
+        <ul class="text-[11px] text-slate-400 space-y-1 mb-2">
+          <li>• Two Sum</li>
+          <li>• Reverse String</li>
+          <li>• Move Zeroes</li>
+        </ul>
+        <button class="px-3 py-1.5 rounded-lg border border-emerald-400 text-emerald-300">
+          Open set
+        </button>
+      </div>
+
+      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold text-sm mb-1">Core DSA (50)</h3>
+        <p class="text-slate-300 text-[11px] mb-2">
+          Stacks, queues, linked list, trees, DP basics.
+        </p>
+        <ul class="text-[11px] text-slate-400 space-y-1 mb-2">
+          <li>• Valid Parentheses</li>
+          <li>• LRU Cache</li>
+          <li>• Level Order Traversal</li>
+        </ul>
+        <button class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200">
+          Coming soon
+        </button>
+      </div>
+
+      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
+        <h3 class="font-semibold text-sm mb-1">Company sheets</h3>
+        <p class="text-slate-300 text-[11px] mb-2">
+          FAANG style sheets, topic‑wise filters aur difficulty mix.[web:417]
+        </p>
+        <ul class="text-[11px] text-slate-400 space-y-1 mb-2">
+          <li>• SDE‑1 Starter</li>
+          <li>• Product‑based 75</li>
+          <li>• Mixed difficulty set</li>
+        </ul>
+        <button class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200">
+          Coming soon
+        </button>
+      </div>
+    </div>
   </section>
 
   <!-- Contests Tab -->
@@ -210,12 +262,18 @@
       </button>
     </div>
 
+    <div class="mb-4 text-[11px] text-slate-400">
+      <p>• All contests timed hote hain; scoring pehle total score, phir last correct submission time se decide hota hai.</p>
+      <p>• Cheating / code sharing se account ban ho sakta hai.</p>
+      <p>• Paid contests ke prizes 24–48 hours ke andar UPI / bank ke through issue kiye jayenge.</p>
+    </div>
+
     <div id="contests-container" class="space-y-3 text-xs"></div>
   </section>
 
   <!-- Premium Tab -->
   <section id="tab-premium" class="tab-page hidden">
-    <!-- premium content -->
+    <!-- premium content (coming soon) -->
   </section>
 
 </main>
@@ -269,7 +327,7 @@ tabButtons.forEach(btn => {
   });
 });
 
-// --------- NEW: Dashboard stats from leaderboard ----------
+// --------- Dashboard stats from leaderboard ----------
 async function loadDashboardStats() {
   const totalEl = document.getElementById('stat-total-contests');
   const bestScoreEl = document.getElementById('stat-best-score');
@@ -283,7 +341,7 @@ async function loadDashboardStats() {
     const { data, error } = await supabaseClient
       .from('leaderboard')
       .select('score, rank')
-      .eq('user_id', user.id);  // current user ke saare contests[web:330][web:335]
+      .eq('user_id', user.id);  // current user ke saare contests[web:378]
 
     if (error || !data) return;
 
@@ -315,7 +373,7 @@ async function loadGlobalLeaderboard() {
       .from('leaderboard')
       .select('contest_id, user_id, score, rank')
       .order('score', { ascending: false })
-      .limit(10);   // top 10[web:322][web:330]
+      .limit(10);   // top 10[web:378]
 
     if (error) {
       console.error('Leaderboard error:', error);
@@ -488,7 +546,7 @@ async function loadMyContestHistory() {
       .select('contest_id, score, rank, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(10);   // last 10 contests[web:322][web:330]
+      .limit(10);   // last 10 contests[web:378]
 
     if (error) {
       console.error('My history error:', error);
