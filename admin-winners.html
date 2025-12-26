@@ -21,7 +21,7 @@
     <div>
       <h1 class="text-xl md:text-2xl font-bold mb-1">Admin – Contest Winners</h1>
       <p class="text-slate-300 text-xs md:text-sm">
-        Select a contest to see top ranks, scores, prize amounts and payout status.
+        Select a contest to see top ranks, scores, and prize amounts. Use this list for payouts / announcements.
       </p>
     </div>
     <div class="text-[11px] text-slate-400">
@@ -126,89 +126,6 @@
     return 0;
   }
 
-  // payout record read karne ke लिए map bana lo: key = contest_id + user_id + rank
-  function makePayoutKey(contestId, userId, rank) {
-    return `${contestId}::${userId || 'none'}::${rank}`;
-  }
-
-  async function fetchPayoutStatus(contestId, winners) {
-    if (!winners.length) return {};
-
-    const userIds = winners.map(w => w.user_id).filter(Boolean);
-
-    const { data, error } = await supabaseClient
-      .from('payouts')
-      .select('contest_id,user_id,rank,is_paid')
-      .eq('contest_id', contestId)
-      .in('user_id', userIds);
-
-    if (error) {
-      console.error('Fetch payouts error:', error);
-      return {};
-    }
-
-    const map = {};
-    for (const row of data) {
-      const key = makePayoutKey(row.contest_id, row.user_id, row.rank);
-      map[key] = !!row.is_paid;
-    }
-    return map;
-  }
-
-  async function togglePayout(contestId, winner) {
-    const key = makePayoutKey(contestId, winner.user_id, winner.rank);
-
-    // Current status know karne ke लिए payouts table se row le aate hain
-    const { data, error } = await supabaseClient
-      .from('payouts')
-      .select('id,is_paid')
-      .eq('contest_id', contestId)
-      .eq('user_id', winner.user_id)
-      .eq('rank', winner.rank)
-      .maybeSingle();
-
-    if (error && error.code !== 'PGRST116') { // no rows return wali error ignore [web:378]
-      console.error('Read payout row error:', error);
-      alert('Failed to update payout.');
-      return;
-    }
-
-    const currentlyPaid = data ? !!data.is_paid : false;
-    const nextPaid = !currentlyPaid;
-
-    let upsertError;
-
-    if (data && data.id) {
-      // update existing
-      const { error: updErr } = await supabaseClient
-        .from('payouts')
-        .update({ is_paid: nextPaid })
-        .eq('id', data.id);
-      upsertError = updErr;
-    } else {
-      // insert new
-      const { error: insErr } = await supabaseClient
-        .from('payouts')
-        .insert({
-          contest_id: contestId,
-          user_id: winner.user_id,
-          rank: winner.rank,
-          prize_amount: winner.prize,
-          is_paid: nextPaid
-        });
-      upsertError = insErr;
-    }
-
-    if (upsertError) {
-      console.error('Upsert payout error:', upsertError);
-      alert('Failed to update payout.');
-      return;
-    }
-
-    // UI refresh
-    await loadWinners(contestId);
-  }
-
   function initContestOptions() {
     if (!contestSelect || !Array.isArray(CONTESTS)) return;
 
@@ -239,9 +156,9 @@
 
     copyCsvBtn.addEventListener('click', () => {
       if (!lastWinnersData.length) return;
-      const header = ['rank','user_id','score','prize_amount','is_paid'];
+      const header = ['rank','user_id','score','prize_amount'];
       const lines = [header.join(',')].concat(
-        lastWinnersData.map(r => [r.rank, r.user_id, r.score, r.prize, r.is_paid ? 'true' : 'false'].join(','))
+        lastWinnersData.map(r => [r.rank, r.user_id, r.score, r.prize].join(','))
       );
       const csv = lines.join('\n');
       navigator.clipboard.writeText(csv).then(() => {
@@ -252,7 +169,7 @@
     });
   }
 
-  // -------- LOAD WINNERS + PAYOUT STATUS FROM SUPABASE --------
+  // -------- LOAD WINNERS FROM SUPABASE --------
   async function loadWinners(contestId) {
     const contest = findContestById(contestId);
     if (!contest) {
@@ -288,24 +205,16 @@
 
       // Rank fallback + prize mapping
       const sorted = [...data].sort((a, b) => b.score - a.score || new Date(a.created_at) - new Date(b.created_at));
-      let winners = sorted.map((row, index) => {
+      const winners = sorted.map((row, index) => {
         const rank = row.rank || index + 1;
         const prize = getPayoutForRank(contest, rank);
         return {
           rank,
           user_id: row.user_id,
           score: row.score || 0,
-          prize,
-          is_paid: false
+          prize
         };
       }).filter(r => r.rank <= contest.maxWinners);
-
-      // payout status merge karo
-      const payoutMap = await fetchPayoutStatus(contestId, winners);
-      winners = winners.map(w => {
-        const key = makePayoutKey(contestId, w.user_id, w.rank);
-        return { ...w, is_paid: !!payoutMap[key] };
-      });
 
       lastWinnersData = winners;
       copyCsvBtn.disabled = winners.length === 0;
@@ -319,9 +228,6 @@
       const rowsHtml = winners.map(w => {
         const displayId = w.user_id ? w.user_id.slice(0, 6) + '...' : 'User';
         const prizeText = w.prize > 0 ? `₹${w.prize}` : '-';
-        const paidBadge = w.is_paid
-          ? '<span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/15 text-emerald-300 border border-emerald-500/40">Paid</span>'
-          : '<span class="px-2 py-0.5 rounded-full text-[10px] bg-amber-500/10 text-amber-300 border border-amber-500/30">Unpaid</span>';
 
         return `
           <tr class="border-t border-slate-800 hover:bg-slate-800/60">
@@ -329,14 +235,6 @@
             <td class="px-3 py-1.5 text-[11px] text-slate-200">${displayId}</td>
             <td class="px-3 py-1.5 text-center text-[11px] text-slate-100 font-semibold">${w.score}</td>
             <td class="px-3 py-1.5 text-center text-[11px] text-amber-300 font-semibold">${prizeText}</td>
-            <td class="px-3 py-1.5 text-center text-[11px]">
-              <button
-                class="px-2 py-0.5 rounded-md text-[10px] border ${w.is_paid ? 'border-slate-600 text-slate-300 bg-slate-800/60' : 'border-emerald-500/60 text-emerald-300 bg-emerald-500/10'}"
-                data-user-id="${w.user_id}"
-                data-rank="${w.rank}">
-                ${paidBadge}
-              </button>
-            </td>
           </tr>
         `;
       }).join('');
@@ -350,7 +248,6 @@
                 <th class="px-3 py-1.5 text-left">User ID (short)</th>
                 <th class="px-3 py-1.5 text-left">Score</th>
                 <th class="px-3 py-1.5 text-left">Prize</th>
-                <th class="px-3 py-1.5 text-left">Paid?</th>
               </tr>
             </thead>
             <tbody>
@@ -359,19 +256,6 @@
           </table>
         </div>
       `;
-
-      // Button click listeners (delegation)
-      winnersBody.querySelectorAll('button[data-user-id]').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const userId = btn.getAttribute('data-user-id');
-          const rank = parseInt(btn.getAttribute('data-rank'), 10);
-          const winner = winners.find(w => w.user_id === userId && w.rank === rank);
-          if (winner) {
-            togglePayout(contestId, winner);
-          }
-        });
-      });
-
     } catch (e) {
       console.error('Winners render error:', e);
       winnersBody.innerHTML = `<p class="text-[11px] text-red-400">Error loading winners.</p>`;
