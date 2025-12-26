@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contest Winners | CodeRush</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+  <style>
+    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  </style>
+</head>
+
+<body class="min-h-screen bg-slate-950 text-slate-100
+             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.18),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.18),_transparent_55%)]">
+
+<main class="max-w-5xl mx-auto px-4 py-8">
+  <header class="mb-6">
+    <h1 class="text-2xl font-bold mb-1">Recent Contest Winners</h1>
+    <p class="text-xs text-slate-300">
+      Top ranks and prize amounts from recent CodeRush contests.
+    </p>
+  </header>
+
+  <section class="mb-4">
+    <div class="flex flex-col md:flex-row md:items-center gap-3">
+      <div class="flex-1">
+        <label class="block text-xs mb-1">Select contest</label>
+        <select id="public-contest-select"
+                class="w-full bg-slate-900 border border-slate-700 text-[11px] px-2 py-1.5 rounded-lg text-slate-200">
+          <option value="">-- Choose a contest --</option>
+        </select>
+      </div>
+      <p id="public-contest-meta" class="text-[11px] text-slate-400">
+        No contest selected.
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="text-sm font-semibold mb-2">Winners list</h2>
+    <div id="public-winners-body" class="text-xs text-slate-200">
+      <p class="text-[11px] text-slate-400">Select a contest to view winners.</p>
+    </div>
+  </section>
+</main>
+
+<script src="contests-config.js"></script>
+<script>
+  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const contestSelect = document.getElementById('public-contest-select');
+  const winnersBody = document.getElementById('public-winners-body');
+  const contestMeta = document.getElementById('public-contest-meta');
+
+  function findContestById(id) {
+    return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
+  }
+
+  function getPayoutForRank(contest, rank) {
+    if (!contest || !Array.isArray(contest.payouts)) return 0;
+    for (const p of contest.payouts) {
+      if (rank >= p.fromRank && rank <= p.toRank) return p.amount || 0;
+    }
+    return 0;
+  }
+
+  async function loadWinners(contestId) {
+    const contest = findContestById(contestId);
+    if (!contest) {
+      contestMeta.textContent = 'Invalid contest selected.';
+      winnersBody.innerHTML = '<p class="text-[11px] text-red-400">Invalid contest configuration.</p>';
+      return;
+    }
+
+    winnersBody.innerHTML = '<p class="text-[11px] text-slate-400">Loading winners...</p>';
+    contestMeta.textContent =
+      `Contest: ${contest.title} • Entry ₹${contest.entryFee} • Total prize ₹${contest.totalPrize}`;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from('leaderboard')
+        .select('user_id, score, rank, created_at')
+        .eq('contest_id', contestId)
+        .order('score', { ascending: false });
+
+      if (error) {
+        console.error('Load winners error:', error);
+        winnersBody.innerHTML =
+          '<p class="text-[11px] text-red-400">Failed to load winners.</p>';
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        winnersBody.innerHTML =
+          '<p class="text-[11px] text-slate-400">No participants yet for this contest.</p>';
+        return;
+      }
+
+      const sorted = [...data].sort(
+        (a, b) => b.score - a.score || new Date(a.created_at) - new Date(b.created_at)
+      );
+
+      const winners = sorted.map((row, index) => {
+        const rank = row.rank || index + 1;
+        const prize = getPayoutForRank(contest, rank);
+        return { rank, user_id: row.user_id, score: row.score || 0, prize };
+      }).filter(r => r.rank <= contest.maxWinners);
+
+      if (!winners.length) {
+        winnersBody.innerHTML =
+          '<p class="text-[11px] text-slate-400">No winners configured (maxWinners = 0).</p>';
+        return;
+      }
+
+      const rowsHtml = winners.map(w => {
+        const shortId = w.user_id ? w.user_id.slice(0, 6) + '...' : 'User';
+        const prizeText = w.prize > 0 ? `₹${w.prize}` : '-';
+        return `
+          <tr class="border-t border-slate-800">
+            <td class="px-3 py-1.5 text-center text-[11px] text-emerald-400 font-semibold">#${w.rank}</td>
+            <td class="px-3 py-1.5 text-[11px] text-slate-200">${shortId}</td>
+            <td class="px-3 py-1.5 text-center text-[11px] text-slate-100 font-semibold">${w.score}</td>
+            <td class="px-3 py-1.5 text-center text-[11px] text-amber-300 font-semibold">${prizeText}</td>
+          </tr>
+        `;
+      }).join('');
+
+      winnersBody.innerHTML = `
+        <div class="border border-slate-800 rounded-xl overflow-hidden">
+          <table class="w-full text-[11px]">
+            <thead class="bg-slate-800/80 text-slate-300">
+              <tr>
+                <th class="px-3 py-1.5 text-left">Rank</th>
+                <th class="px-3 py-1.5 text-left">User</th>
+                <th class="px-3 py-1.5 text-left">Score</th>
+                <th class="px-3 py-1.5 text-left">Prize</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+        </div>
+      `;
+    } catch (e) {
+      console.error('Winners render error:', e);
+      winnersBody.innerHTML =
+        '<p class="text-[11px] text-red-400">Error loading winners.</p>';
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    if (Array.isArray(CONTESTS)) {
+      CONTESTS.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c.id;
+        opt.textContent = `${c.title} – ${c.type === 'paid' ? 'Paid' : 'Free'}`;
+        contestSelect.appendChild(opt);
+      });
+    }
+
+    contestSelect.addEventListener('change', () => {
+      const id = contestSelect.value;
+      if (!id) {
+        contestMeta.textContent = 'No contest selected.';
+        winnersBody.innerHTML =
+          '<p class="text-[11px] text-slate-400">Select a contest to view winners.</p>';
+        return;
+      }
+      loadWinners(id);
+    });
+  });
+</script>
+
+</body>
+</html>
