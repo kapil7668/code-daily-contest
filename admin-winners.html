@@ -74,6 +74,9 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+  // Admin email – sirf isi se login hone par page chalega
+  const ADMIN_EMAIL = 'kapilrajputana35@gmail.com';
+
   const contestSelect = document.getElementById('admin-contest-select');
   const winnersBody = document.getElementById('winners-body');
   const contestMeta = document.getElementById('contest-meta');
@@ -82,6 +85,33 @@
 
   let lastWinnersData = []; // CSV ke लिए cache
 
+  // -------- ADMIN ACCESS CHECK --------
+  (async () => {
+    try {
+      const { data } = await supabaseClient.auth.getUser(); // current user lana [web:378]
+
+      if (!data || !data.user) {
+        alert('Please sign in as admin to view this page.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      const email = data.user.email;
+
+      if (email !== ADMIN_EMAIL) {
+        alert('You are not allowed to access this page.');
+        window.location.href = 'index.html';
+        return;
+      }
+
+      console.log('Admin verified:', email);
+    } catch (e) {
+      console.error('Admin check failed', e);
+      window.location.href = 'index.html';
+    }
+  })();
+
+  // -------- HELPERS --------
   function findContestById(id) {
     return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
   }
@@ -139,6 +169,7 @@
     });
   }
 
+  // -------- LOAD WINNERS FROM SUPABASE --------
   async function loadWinners(contestId) {
     const contest = findContestById(contestId);
     if (!contest) {
