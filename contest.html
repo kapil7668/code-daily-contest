@@ -44,13 +44,38 @@
   <!-- Main content -->
   <section id="contest-content" class="hidden">
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
-      <div>
-        <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
-        <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
-        <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
+
+      <!-- LEFT: heading + contest details -->
+      <div class="flex-1 space-y-4">
+        <div>
+          <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
+          <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
+          <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
+        </div>
+
+        <!-- Contest details block -->
+        <section id="contest-details"
+                 class="space-y-3 text-sm text-slate-200 bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
+          <h2 class="text-sm font-semibold mb-1">Contest details</h2>
+
+          <p class="text-[11px] text-slate-300">
+            Entry: <span id="detail-entry-fee" class="font-semibold text-slate-100"></span> •
+            Min participants: <span id="detail-min-participants" class="font-semibold text-slate-100"></span> •
+            Total prize: <span id="detail-total-prize" class="font-semibold text-amber-300"></span>
+          </p>
+
+          <div class="mt-1">
+            <h3 class="text-[11px] uppercase tracking-wide text-slate-400 mb-1">Prize breakdown</h3>
+            <ul id="detail-payouts" class="text-[11px] text-slate-200 space-y-1"></ul>
+          </div>
+
+          <p class="text-[11px] text-slate-400">
+            Prize distribution contest khatam hone ke 24–48 ghante ke andar UPI / bank ke through hogi.
+          </p>
+        </section>
       </div>
 
-      <!-- Right side info card -->
+      <!-- RIGHT side info card -->
       <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-3 min-w-[260px]">
         <h2 class="text-[11px] font-semibold mb-2 text-slate-200">When & duration</h2>
         <p id="contest-time" class="text-slate-300 text-[11px] mb-1"></p>
@@ -146,6 +171,8 @@
 
 <!-- Supabase + Razorpay -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="contests-config.js"></script>
+
 <script>
 const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
@@ -253,7 +280,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("paid-contest-section").style.display = "none";
   }
 
-  // Razorpay redirect success handle
   const success = params.get("success");
   const successAmount = params.get("amount");
   if (type === "paid" && success === "1" && successAmount) {
@@ -306,6 +332,24 @@ function loadPaymentButton(amount) {
   document.getElementById("razorpay-container").classList.remove("hidden");
 }
 
+function renderContestDetails(amount) {
+  const config = ENTRY_CONFIG ? ENTRY_CONFIG[amount] : null;
+  if (!config) return;
+
+  document.getElementById('detail-entry-fee').textContent = `₹${config.entryFee}`;
+  document.getElementById('detail-min-participants').textContent = config.minParticipants;
+  document.getElementById('detail-total-prize').textContent = `₹${config.totalPrize}`;
+
+  const ul = document.getElementById('detail-payouts');
+  ul.innerHTML = '';
+  config.payouts.forEach(p => {
+    const range = p.fromRank === p.toRank ? `Rank ${p.fromRank}` : `Rank ${p.fromRank}–${p.toRank}`;
+    const li = document.createElement('li');
+    li.textContent = `${range}: ₹${p.amount}`;
+    ul.appendChild(li);
+  });
+}
+
 function updateSelectedEntry(amount) {
   selectedAmount = amount;
   document.querySelectorAll(".entry-btn").forEach(btn => {
@@ -318,6 +362,7 @@ function updateSelectedEntry(amount) {
       btn.classList.remove("border-emerald-400","bg-emerald-500/10","text-emerald-200");
     }
   });
+  renderContestDetails(amount);
   renderPayButton(amount);
 }
 
@@ -350,7 +395,6 @@ async function registerInSupabase(amount = '99') {
   }
 }
 
-// Razorpay success handler (redirect ke baad)
 async function handleRazorpaySuccess(amount) {
   await registerInSupabase(amount);
   showSuccessMessage();
