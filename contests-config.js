@@ -138,3 +138,16 @@ const CONTESTS = [
     ]
   }
 ];
+
+
+// ====== NEW: ENTRY_CONFIG (entryFee -> contest config) ======
+// Isse contest.html me selected amount (₹9, ₹49, ₹99, ₹149, ₹199) se
+// direct correct contest + payouts mil jayenge.
+
+const ENTRY_CONFIG = {
+  9:   CONTESTS.find(c => c.id === "paid-9"),
+  49:  CONTESTS.find(c => c.id === "paid-49"),
+  99:  CONTESTS.find(c => c.id === "paid-99"),
+  149: CONTESTS.find(c => c.id === "paid-149"),
+  199: CONTESTS.find(c => c.id === "paid-199"),
+};
