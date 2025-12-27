@@ -75,7 +75,7 @@
         </ul>
       </div>
 
-      <!-- Quick stats card – now live data -->
+      <!-- Quick stats card -->
       <div class="bg-slate-800/70 border border-slate-700 rounded-xl p-4">
         <h2 class="font-semibold mb-1 text-sm">Quick stats</h2>
         <p class="text-slate-300 text-xs mb-2">Live contest stats from your account.</p>
@@ -87,7 +87,7 @@
       </div>
     </div>
 
-    <!-- Active contests section -->
+    <!-- Active contests small cards -->
     <section class="mt-4 md:mt-6">
       <div class="flex items-center justify-between mb-3">
         <h2 class="text-base md:text-lg font-semibold">Active contests</h2>
@@ -202,7 +202,7 @@
   <section id="tab-problems" class="tab-page hidden">
     <h2 class="text-lg font-semibold mb-2">Practice problems</h2>
     <p class="text-[11px] text-slate-400 mb-3">
-      Start with these curated sets. Later yaha se real problem pages link kar sakte ho.[web:417]
+      Start with these curated sets. Later yaha se real problem pages link kar sakte ho.[web:44]
     </p>
 
     <div class="grid md:grid-cols-3 gap-4 text-xs">
@@ -216,7 +216,6 @@
           <li>• Reverse String</li>
           <li>• Move Zeroes</li>
         </ul>
-        <!-- yahan change kiya: button -> link -->
         <a href="problems-beginner.html"
            class="inline-block px-3 py-1.5 rounded-lg border border-emerald-400 text-emerald-300">
           Open set
@@ -241,7 +240,7 @@
       <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
         <h3 class="font-semibold text-sm mb-1">Company sheets</h3>
         <p class="text-slate-300 text-[11px] mb-2">
-          FAANG style sheets, topic‑wise filters aur difficulty mix.[web:417]
+          FAANG style sheets, topic‑wise filters aur difficulty mix.[web:44]
         </p>
         <ul class="text-[11px] text-slate-400 space-y-1 mb-2">
           <li>• SDE‑1 Starter</li>
@@ -264,13 +263,221 @@
       </button>
     </div>
 
-    <div class="mb-4 text-[11px] text-slate-400">
+    <div class="mb-5 text-[11px] text-slate-400">
       <p>• All contests timed hote hain; scoring pehle total score, phir last correct submission time se decide hota hai.</p>
       <p>• Cheating / code sharing se account ban ho sakta hai.</p>
       <p>• Paid contests ke prizes 24–48 hours ke andar UPI / bank ke through issue kiye jayenge.</p>
     </div>
 
-    <div id="contests-container" class="space-y-3 text-xs"></div>
+    <!-- LeetCode style contest cards -->
+    <div id="contests-container"
+         class="grid md:grid-cols-2 gap-6 text-xs">
+
+      <!-- Free Starter Contest -->
+      <article
+        class="group relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-800/90 to-slate-900 border border-emerald-500/40 shadow-xl hover:shadow-emerald-500/40 transition-all duration-300 hover:-translate-y-1">
+        <div class="h-36 md:h-40 bg-cover bg-center"
+             style="background-image:url('https://images.pexels.com/photos/2706379/pexels-photo-2706379.jpeg?auto=compress&cs=tinysrgb&w=800');">
+        </div>
+
+        <div class="p-4 md:p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold uppercase text-emerald-300 tracking-wide">
+              Free Contest
+            </span>
+            <span class="text-[11px] text-slate-300">
+              Starts in 1h 30m
+            </span>
+          </div>
+
+          <h3 class="text-lg md:text-xl font-bold text-slate-50 mb-1">
+            Free Starter Contest
+          </h3>
+          <p class="text-[12px] text-slate-400 mb-3">
+            3 Easy–Medium problems • 60 mins • Min 200 students.
+          </p>
+
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="text-[11px] uppercase text-slate-400 tracking-wide">
+                Total Prize
+              </p>
+              <p class="text-2xl md:text-3xl font-black text-emerald-400 drop-shadow-sm">
+                ₹1,000
+              </p>
+            </div>
+            <div class="text-right text-[11px] text-slate-400">
+              <p>Top 1 wins ₹1,000</p>
+              <p>No entry fee</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-1">
+            <p class="text-[11px] text-slate-500">
+              Level: Beginner–Intermediate
+            </p>
+            <a href="contest.html?type=free"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-slate-900 text-[12px] font-semibold hover:bg-emerald-400">
+              Join free
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Free Mega Contest -->
+      <article
+        class="group relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-800/90 to-slate-900 border border-emerald-400/40 shadow-xl hover:shadow-emerald-400/40 transition-all duration-300 hover:-translate-y-1">
+        <div class="h-36 md:h-40 bg-cover bg-center"
+             style="background-image:url('https://images.pexels.com/photos/1552106/pexels-photo-1552106.jpeg?auto=compress&cs=tinysrgb&w=800');">
+        </div>
+
+        <div class="p-4 md:p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold uppercase text-emerald-300 tracking-wide">
+              Free Contest
+            </span>
+            <span class="text-[11px] text-amber-300">
+              Tomorrow • 8:00 PM
+            </span>
+          </div>
+
+          <h3 class="text-lg md:text-xl font-bold text-slate-50 mb-1">
+            Free Mega Contest
+          </h3>
+          <p class="text-[12px] text-slate-400 mb-3">
+            4 Medium problems • 90 mins • Min 500 students.
+          </p>
+
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="text-[11px] uppercase text-slate-400 tracking-wide">
+                Total Prize
+              </p>
+              <p class="text-2xl md:text-3xl font-black text-emerald-400 drop-shadow-sm">
+                ₹2,500
+              </p>
+            </div>
+            <div class="text-right text-[11px] text-slate-400">
+              <p>Top 1 wins ₹2,500</p>
+              <p>No entry fee</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-1">
+            <p class="text-[11px] text-slate-500">
+              Level: Intermediate
+            </p>
+            <a href="contest.html?type=free"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 text-slate-900 text-[12px] font-semibold hover:bg-emerald-400">
+              Join free
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- ₹9 Quick Rush -->
+      <article
+        class="group relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-800/90 to-slate-900 border border-amber-400/50 shadow-xl hover:shadow-amber-400/40 transition-all duration-300 hover:-translate-y-1">
+        <div class="h-36 md:h-40 bg-cover bg-center"
+             style="background-image:url('https://images.pexels.com/photos/7944947/pexels-photo-7944947.jpeg?auto=compress&cs=tinysrgb&w=800');">
+        </div>
+
+        <div class="p-4 md:p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold uppercase text-amber-300 tracking-wide">
+              Paid Contest
+            </span>
+            <span class="text-[11px] text-slate-300">
+              Entry ₹9 • 110+ players
+            </span>
+          </div>
+
+          <h3 class="text-lg md:text-xl font-bold text-slate-50 mb-1">
+            ₹9 Quick Rush
+          </h3>
+          <p class="text-[12px] text-slate-400 mb-3">
+            45 mins sprint • 3 Easy–Medium DSA questions.
+          </p>
+
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="text-[11px] uppercase text-slate-400 tracking-wide">
+                Total Prize
+              </p>
+              <p class="text-2xl md:text-3xl font-black text-amber-300 drop-shadow-sm">
+                ₹590
+              </p>
+            </div>
+            <div class="text-right text-[11px] text-slate-400">
+              <p>Top 10 get payout</p>
+              <p>1st ₹300 • 2nd ₹100 • 3rd ₹50 • 4–10 ₹20</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-1">
+            <p class="text-[11px] text-slate-500">
+              Level: Beginner–Intermediate
+            </p>
+            <a href="contest.html?type=paid"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 text-slate-900 text-[12px] font-semibold hover:bg-amber-300">
+              Join for ₹9
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- ₹49 Pro Rush -->
+      <article
+        class="group relative overflow-hidden rounded-3xl bg-gradient-to-b from-slate-800/90 to-slate-900 border border-amber-500/60 shadow-xl hover:shadow-amber-500/40 transition-all duration-300 hover:-translate-y-1">
+        <div class="h-36 md:h-40 bg-cover bg-center"
+             style="background-image:url('https://images.pexels.com/photos/7794440/pexels-photo-7794440.jpeg?auto=compress&cs=tinysrgb&w=800');">
+        </div>
+
+        <div class="p-4 md:p-5">
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-[11px] font-semibold uppercase text-amber-300 tracking-wide">
+              Paid Contest
+            </span>
+            <span class="text-[11px] text-amber-300">
+              High stakes • Pro
+            </span>
+          </div>
+
+          <h3 class="text-lg md:text-xl font-bold text-slate-50 mb-1">
+            ₹49 Pro Rush
+          </h3>
+          <p class="text-[12px] text-slate-400 mb-3">
+            90 mins • 4 Medium–Hard problems • Min 125 students.
+          </p>
+
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <p class="text-[11px] uppercase text-slate-400 tracking-wide">
+                Total Prize
+              </p>
+              <p class="text-2xl md:text-3xl font-black text-amber-300 drop-shadow-sm">
+                ₹5,000
+              </p>
+            </div>
+            <div class="text-right text-[11px] text-slate-400">
+              <p>Top 20 paid</p>
+              <p>Best for serious coders</p>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mt-1">
+            <p class="text-[11px] text-slate-500">
+              Level: Intermediate–Advanced
+            </p>
+            <a href="contest.html?type=paid"
+               class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-400 text-slate-900 text-[12px] font-semibold hover:bg-amber-300">
+              Join for ₹49
+            </a>
+          </div>
+        </div>
+      </article>
+
+    </div>
   </section>
 
   <!-- Premium Tab -->
@@ -286,12 +493,12 @@
 const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // [web:50]
 const emailSpan = document.getElementById('user-email');
 
 // Page load par current user check
 (async () => {
-  const { data, error } = await supabaseClient.auth.getUser();
+  const { data, error } = await supabaseClient.auth.getUser(); // [web:50]
   if (error || !data.user) {
     window.location.href = 'index.html';
     return;
@@ -329,7 +536,7 @@ tabButtons.forEach(btn => {
   });
 });
 
-// --------- Dashboard stats from leaderboard ----------
+// Dashboard stats
 async function loadDashboardStats() {
   const totalEl = document.getElementById('stat-total-contests');
   const bestScoreEl = document.getElementById('stat-best-score');
@@ -337,13 +544,13 @@ async function loadDashboardStats() {
   if (!totalEl || !bestScoreEl || !bestRankEl) return;
 
   try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser(); // [web:50]
     if (!user) return;
 
     const { data, error } = await supabaseClient
       .from('leaderboard')
       .select('score, rank')
-      .eq('user_id', user.id);  // current user ke saare contests[web:378]
+      .eq('user_id', user.id);
 
     if (error || !data) return;
 
@@ -361,7 +568,6 @@ async function loadDashboardStats() {
     console.error('Dashboard stats error:', e);
   }
 }
-// --------------------------------------------------------
 
 // Global Top 10 Leaderboard
 async function loadGlobalLeaderboard() {
@@ -369,13 +575,13 @@ async function loadGlobalLeaderboard() {
   if (!container) return;
 
   try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser(); // [web:50]
 
     const { data, error } = await supabaseClient
       .from('leaderboard')
       .select('contest_id, user_id, score, rank')
       .order('score', { ascending: false })
-      .limit(10);   // top 10[web:378]
+      .limit(10);
 
     if (error) {
       console.error('Leaderboard error:', error);
@@ -437,7 +643,7 @@ async function loadGlobalLeaderboard() {
   }
 }
 
-// Contest-wise leaderboard
+// Contest dropdown
 function initContestDropdown() {
   const select = document.getElementById('contest-select');
   if (!select || typeof CONTESTS === 'undefined') return;
@@ -465,7 +671,7 @@ async function loadContestLeaderboard(contestId) {
   if (!container) return;
 
   try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser(); // [web:50]
 
     const { data, error } = await supabaseClient
       .from('leaderboard')
@@ -537,7 +743,7 @@ async function loadMyContestHistory() {
   if (!container) return;
 
   try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
+    const { data: { user } } = await supabaseClient.auth.getUser(); // [web:50]
     if (!user) {
       container.innerHTML = `<p class="text-[11px] text-slate-400">Please login again.</p>`;
       return;
@@ -548,7 +754,7 @@ async function loadMyContestHistory() {
       .select('contest_id, score, rank, created_at')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
-      .limit(10);   // last 10 contests[web:378]
+      .limit(10);
 
     if (error) {
       console.error('My history error:', error);
