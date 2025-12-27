@@ -12,7 +12,7 @@ const CONTESTS = [
     totalPrize: 1000,
     maxWinners: 1,
     payouts: [
-      { fromRank: 1, toRank: 1, amount: 1000 }   // 1st = 1000
+      { fromRank: 1, toRank: 1, amount: 1000 }
     ]
   },
 
@@ -25,7 +25,7 @@ const CONTESTS = [
     totalPrize: 2500,
     maxWinners: 1,
     payouts: [
-      { fromRank: 1, toRank: 1, amount: 2500 }   // 1st = 2500
+      { fromRank: 1, toRank: 1, amount: 2500 }
     ]
   },
 
@@ -139,11 +139,7 @@ const CONTESTS = [
   }
 ];
 
-
-// ====== NEW: ENTRY_CONFIG (entryFee -> contest config) ======
-// Isse contest.html me selected amount (₹9, ₹49, ₹99, ₹149, ₹199) se
-// direct correct contest + payouts mil jayenge.
-
+// Normal mapping (9,49,99,149,199)
 const ENTRY_CONFIG = {
   9:   CONTESTS.find(c => c.id === "paid-9"),
   49:  CONTESTS.find(c => c.id === "paid-49"),
@@ -151,3 +147,7 @@ const ENTRY_CONFIG = {
   149: CONTESTS.find(c => c.id === "paid-149"),
   199: CONTESTS.find(c => c.id === "paid-199"),
 };
+
+// Extra configs for 99 Top‑100
+const ENTRY_CONFIG_99_TOP10  = CONTESTS.find(c => c.id === "paid-99");
+const ENTRY_CONFIG_99_TOP100 = CONTESTS.find(c => c.id === "paid-99-top100");
