@@ -6,15 +6,20 @@
   <title>CodeRush Contest – Details</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
     .razorpay-payment-button,
-    .rzp-button { display: none !important; }
+    .rzp-button {
+      display: none !important;
+    }
   </style>
 </head>
 
 <body class="min-h-screen text-slate-100 bg-slate-950
              bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.20),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.20),_transparent_55%)]">
 
+<!-- Navbar -->
 <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-30">
   <nav class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3 text-xs">
     <div class="flex items-center gap-2">
@@ -37,10 +42,12 @@
 <main class="max-w-5xl mx-auto px-4 py-5 md:py-7 text-xs md:text-sm
              bg-slate-900/80 border border-slate-800/70 rounded-2xl shadow-[0_0_32px_rgba(15,23,42,0.95)] mt-4 mb-8">
 
+  <!-- Loading -->
   <div id="loading" class="flex items-center justify-center py-12">
     <div class="animate-spin h-8 w-8 border-4 border-emerald-400 border-t-transparent rounded-full"></div>
   </div>
 
+  <!-- Main content -->
   <section id="contest-content" class="hidden">
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
 
@@ -52,6 +59,7 @@
           <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
         </div>
 
+        <!-- Contest details -->
         <section id="contest-details"
                  class="space-y-3 text-sm text-slate-200 bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
           <h2 class="text-sm font-semibold mb-1">Contest details</h2>
@@ -84,11 +92,13 @@
           <span id="contest-prize" class="text-amber-300 text-right"></span>
         </div>
 
+        <!-- Free button -->
         <button id="free-register-btn"
                 class="w-full mb-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-[11px] font-semibold">
           Register for free
         </button>
 
+        <!-- Paid contest -->
         <div id="paid-contest-section" class="hidden">
           <div class="mb-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-400/30 rounded-xl">
             <h3 class="font-bold mb-3 text-orange-300">Choose Entry Amount</h3>
@@ -114,6 +124,7 @@
           </div>
         </div>
 
+        <!-- Success / already registered -->
         <div id="successMsg" class="hidden bg-green-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-green-400/50">
           <p class="font-bold text-sm text-green-800 mb-1">Payment Successful!</p>
           <p class="text-[11px] text-green-700 mb-1">₹<span id="paidAmount">99</span> का payment successful.</p>
@@ -131,6 +142,7 @@
       </div>
     </div>
 
+    <!-- Format / scoring / eligibility -->
     <section class="grid md:grid-cols-3 gap-4 mb-6">
       <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
         <h3 class="font-semibold mb-1 text-xs">Format</h3>
@@ -146,6 +158,7 @@
       </div>
     </section>
 
+    <!-- Rules / languages -->
     <section class="grid md:grid-cols-2 gap-4 text-[11px] md:text-xs">
       <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
         <h3 class="font-semibold mb-2 text-xs">Rules</h3>
@@ -168,12 +181,57 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Static text for free/paid
 const contests = {
-  free: { /* same as before */ },
-  paid: { /* same as before */ }
+  free: {
+    short: "Free Daily Rush",
+    badge: "Featured • Free",
+    title: "Free Daily Rush – 3 Problems in 60 Minutes",
+    subtitle: "Best daily habit builder. Solve 3 hand‑picked DSA problems with live leaderboard and CodeRush rating update.",
+    time: "Everyday • 8:00 PM IST (India time)",
+    duration: "Duration: 60 minutes • 3 problems • Mixed difficulty",
+    level: "Level: Beginner to Intermediate",
+    prize: "No entry fee • virtual rewards & badges",
+    format: "3 problems: 1 Easy, 1 Medium, 1 slightly tricky Medium. All problems are from CodeRush curated sets.",
+    scoring: "Score = sum of problem scores – penalties for wrong submissions. Faster correct submissions get slightly higher weight.",
+    eligibility: "Open for all registered CodeRush users. Ideal for college students and working professionals.",
+    rules: [
+      "Multiple submissions allowed; last correct submission counts.",
+      "Cheating, code sharing or using multiple accounts can lead to disqualification.",
+      "Ties are broken by total time and then by earliest correct submissions."
+    ],
+    langs: [
+      "Supported languages: C++, Java, Python (more coming soon).",
+      "You must write and submit code on CodeRush problem page.",
+      "Internet connection and modern browser required."
+    ]
+  },
+  paid: {
+    short: "Paid Mega Contest",
+    badge: "Pro • Paid",
+    title: "Paid Mega Contest – High Rated DSA Challenge",
+    subtitle: "Serious 2‑hour contest with tough DSA questions and cash prizes for the top leaderboard positions.",
+    time: "Every Sunday • 7:00 PM IST (India time)",
+    duration: "Duration: 120 minutes • 4 problems • Medium–Hard",
+    level: "Level: Intermediate to Advanced",
+    prize: "Entry fee via Razorpay • cash prizes + goodies",
+    format: "4 problems focusing on core DSA: DP, graphs, greedy, advanced arrays. Problems are unique to this contest.",
+    scoring: "Each problem has fixed score. Wrong submissions may incur small penalty. Final rank based on total score, then total time.",
+    eligibility: "Open for Indian users (18+) with valid payment method. Students & working professionals both can participate.",
+    rules: [
+      "One account per participant; sharing solutions during contest is strictly prohibited.",
+      "Refunds only if contest is cancelled due to technical reasons.",
+      "Winners may need to complete basic KYC for prize distribution."
+    ],
+    langs: [
+      "Supported languages: C++, Java, Python.",
+      "Submissions and judging happen on CodeRush online judge.",
+      "Stable internet and latest Chrome/Edge recommended."
+    ]
+  }
 };
-// (abbreviated for space – tum apna existing free/paid object yahi chipkao)
 
+// URL params
 const pageParams = new URLSearchParams(window.location.search);
 let selectedAmount = Number(pageParams.get("amount")) || 99;
 const variant = pageParams.get("variant") || "top10";
@@ -204,14 +262,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("contest-eligibility").textContent = c.eligibility;
 
   const rulesUl = document.getElementById("contest-rules");
-  c.rules.forEach(r => {
+  c.rules.forEach((r) => {
     const li = document.createElement("li");
     li.textContent = r;
     rulesUl.appendChild(li);
   });
 
   const langsUl = document.getElementById("contest-langs");
-  c.langs.forEach(r => {
+  c.langs.forEach((r) => {
     const li = document.createElement("li");
     li.textContent = r;
     langsUl.appendChild(li);
@@ -235,9 +293,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// Razorpay buttons same as tumne rakhe
-const buttonIdsTop10 = { 199:"pl_Rt0dtv8GdORMh6",149:"pl_Rt0bZgbs4Ry3Io",49:"pl_Rt0aENCzk6VBW6",9:"pl_Rt0YF2KK1nRmrO",99:"pl_Rt0ToHijWYJDr6" };
-const buttonIdsTop100 = { 199:"pl_Rt0dtv8GdORMh6",149:"pl_Rt0bZgbs4Ry3Io",49:"pl_Rt0aENCzk6VBW6",9:"pl_Rt0YF2KK1nRmrO",99:"pl_RwlDC6dl5SVEpC" };
+// Razorpay button IDs
+const buttonIdsTop10 = {
+  199: "pl_Rt0dtv8GdORMh6",
+  149: "pl_Rt0bZgbs4Ry3Io",
+  49:  "pl_Rt0aENCzk6VBW6",
+  9:   "pl_Rt0YF2KK1nRmrO",
+  99:  "pl_Rt0ToHijWYJDr6"
+};
+
+const buttonIdsTop100 = {
+  199: "pl_Rt0dtv8GdORMh6",
+  149: "pl_Rt0bZgbs4Ry3Io",
+  49:  "pl_Rt0aENCzk6VBW6",
+  9:   "pl_Rt0YF2KK1nRmrO",
+  99:  "pl_RwlDC6dl5SVEpC"
+};
+
 const buttonIds = variant === "top100" ? buttonIdsTop100 : buttonIdsTop10;
 
 function renderPayButton(amount) {
@@ -256,7 +328,10 @@ function renderPayButton(amount) {
 
 function loadPaymentButton(amount) {
   const paymentId = buttonIds[amount];
-  if (!paymentId) { alert("Invalid amount selection"); return; }
+  if (!paymentId) {
+    alert("Invalid amount selection");
+    return;
+  }
   const form = document.getElementById("payment-form");
   form.innerHTML = "";
   const script = document.createElement("script");
@@ -267,12 +342,10 @@ function loadPaymentButton(amount) {
   document.getElementById("razorpay-container").classList.remove("hidden");
 }
 
-// IMPORTANT: yahan variant ke hisaab se 99 ka config pick ho raha hai
+// 99 ke liye variant ke hisaab se config pick karo
 function getConfigForAmount(amount) {
-  if (amount === 99) {
-    return (typeof ENTRY_CONFIG_99_TOP10 !== "undefined" && typeof ENTRY_CONFIG_99_TOP100 !== "undefined")
-      ? (variant === "top100" ? ENTRY_CONFIG_99_TOP100 : ENTRY_CONFIG_99_TOP10)
-      : (ENTRY_CONFIG[99] || null);
+  if (amount === 99 && typeof ENTRY_CONFIG_99_TOP10 !== "undefined" && typeof ENTRY_CONFIG_99_TOP100 !== "undefined") {
+    return variant === "top100" ? ENTRY_CONFIG_99_TOP100 : ENTRY_CONFIG_99_TOP10;
   }
   return typeof ENTRY_CONFIG !== "undefined" ? ENTRY_CONFIG[amount] : null;
 }
@@ -287,7 +360,7 @@ function renderContestDetails(amount) {
 
   const ul = document.getElementById("detail-payouts");
   ul.innerHTML = "";
-  config.payouts.forEach(p => {
+  config.payouts.forEach((p) => {
     if (p.fromRank === p.toRank) {
       const li = document.createElement("li");
       li.textContent = `Rank ${p.fromRank}: ₹${p.amount}`;
@@ -310,11 +383,11 @@ function renderContestDetails(amount) {
 
 function updateSelectedEntry(amount) {
   selectedAmount = amount;
-  document.querySelectorAll(".entry-btn").forEach(btn => {
+  document.querySelectorAll(".entry-btn").forEach((btn) => {
     const a = Number(btn.dataset.amount);
     if (a === amount) {
-      btn.classList.remove("hidden","border-slate-600","text-slate-100");
-      btn.classList.add("border-emerald-400","bg-emerald-500/10","text-emerald-200");
+      btn.classList.remove("hidden", "border-slate-600", "text-slate-100");
+      btn.classList.add("border-emerald-400", "bg-emerald-500/10", "text-emerald-200");
     } else {
       btn.classList.add("hidden");
     }
@@ -325,10 +398,10 @@ function updateSelectedEntry(amount) {
 
 function setupEntryButtons() {
   const allowedAmount = selectedAmount;
-  document.querySelectorAll(".entry-btn").forEach(btn => {
+  document.querySelectorAll(".entry-btn").forEach((btn) => {
     btn.replaceWith(btn.cloneNode(true));
   });
-  document.querySelectorAll(".entry-btn").forEach(btn => {
+  document.querySelectorAll(".entry-btn").forEach((btn) => {
     const a = Number(btn.dataset.amount);
     if (a === allowedAmount) {
       btn.classList.remove("hidden");
@@ -340,12 +413,56 @@ function setupEntryButtons() {
   updateSelectedEntry(allowedAmount);
 }
 
-// Supabase helpers (same as tumhare)
-async function registerInSupabase(amount = "99") { /* ... */ }
-async function handleRazorpaySuccess(amount) { /* ... */ }
-async function checkRegistrationStatus(type) { /* ... */ }
-async function registerFreeContest() { /* ... */ }
-function showSuccessMessage() { /* ... */ }
+// Supabase helpers
+function showSuccessMessage() {
+  document.getElementById("successMsg").classList.remove("hidden");
+  document.getElementById("razorpay-container").style.display = "none";
+}
+
+async function registerInSupabase(amount = "99") {
+  const { data, error } = await supabaseClient.auth.getUser();
+  if (!error && data.user) {
+    await supabaseClient.from("contest_registrations").insert({
+      user_id: data.user.id,
+      contest_type: "paid",
+      amount_paid: parseInt(amount),
+      payment_status: "success"
+    });
+  }
+}
+
+async function handleRazorpaySuccess(amount) {
+  await registerInSupabase(amount);
+  showSuccessMessage();
+}
+
+async function checkRegistrationStatus(type) {
+  const { data, error } = await supabaseClient.auth.getUser();
+  if (!error && data.user && type === "paid") {
+    const { data: reg } = await supabaseClient
+      .from("contest_registrations")
+      .select("*")
+      .eq("user_id", data.user.id)
+      .eq("contest_type", "paid")
+      .single();
+    if (reg) {
+      document.getElementById("registeredBadge").classList.remove("hidden");
+      document.getElementById("razorpay-container").style.display = "none";
+    }
+  }
+}
+
+async function registerFreeContest() {
+  const { data, error } = await supabaseClient.auth.getUser();
+  if (!error && data.user) {
+    await supabaseClient.from("contest_registrations").insert({
+      user_id: data.user.id,
+      contest_type: "free",
+      payment_status: "free"
+    });
+    alert("Free Daily Rush के लिए register हो गए!");
+  }
+}
 </script>
 
 </body>
