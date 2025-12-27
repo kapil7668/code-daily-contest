@@ -44,41 +44,14 @@
   <!-- Main content -->
   <section id="contest-content" class="hidden">
     <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
-
-      <!-- LEFT: contest heading + details -->
-      <div class="flex-1 space-y-4">
-        <div>
-          <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
-          <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
-          <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
-        </div>
-
-        <!-- Detailed contest info (from ENTRY_CONFIG) -->
-        <section id="contest-details"
-                 class="space-y-3 text-sm text-slate-200 bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
-          <h2 class="text-sm font-semibold mb-1">Contest details</h2>
-
-          <p class="text-[11px] text-slate-300">
-            Selected entry: <span id="detail-entry-fee" class="font-semibold text-slate-100"></span> •
-            Min participants: <span id="detail-min-participants" class="font-semibold text-slate-100"></span> •
-            Total prize: <span id="detail-total-prize" class="font-semibold text-amber-300"></span>
-          </p>
-
-          <div class="mt-2">
-            <h3 class="text-[11px] uppercase tracking-wide text-slate-400 mb-1">Prize breakdown</h3>
-            <ul id="detail-payouts" class="text-[11px] text-slate-200 space-y-1">
-              <!-- JS se li items -->
-            </ul>
-          </div>
-
-          <p class="text-[11px] text-slate-400">
-            Prize distribution contest khatam hone ke 24–48 ghante andar UPI / bank ke through ki jayegi.
-          </p>
-        </section>
+      <div>
+        <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
+        <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
+        <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
       </div>
 
-      <!-- RIGHT side info + payment -->
-      <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-3 min-w-[260px] md:max-w-xs">
+      <!-- Right side info card -->
+      <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-3 min-w-[260px]">
         <h2 class="text-[11px] font-semibold mb-2 text-slate-200">When & duration</h2>
         <p id="contest-time" class="text-slate-300 text-[11px] mb-1"></p>
         <p id="contest-duration" class="text-slate-400 text-[11px] mb-3"></p>
@@ -96,36 +69,23 @@
 
         <!-- Paid contest section -->
         <div id="paid-contest-section" class="hidden">
-          <div class="mb-4 p-3 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-400/30 rounded-xl">
-            <h3 class="font-bold mb-3 text-orange-300 text-xs">Choose Entry Amount</h3>
+          <div class="mb-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-400/30 rounded-xl">
+            <h3 class="font-bold mb-3 text-orange-300">Choose Entry Amount</h3>
 
             <!-- Amount choices -->
             <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-              <button data-amount="9"  class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">
-                ₹9
-              </button>
-              <button data-amount="49" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">
-                ₹49
-              </button>
-              <button data-amount="99" class="entry-btn px-3 py-2 rounded-lg border border-emerald-400 bg-emerald-500/10 text-emerald-200 text-sm">
-                ₹99
-              </button>
-              <button data-amount="149" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">
-                ₹149
-              </button>
-              <button data-amount="199" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">
-                ₹199
-              </button>
+              <button data-amount="9"  class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹9</button>
+              <button data-amount="49" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹49</button>
+              <button data-amount="99" class="entry-btn px-3 py-2 rounded-lg border border-emerald-400 bg-emerald-500/10 text-emerald-200 text-sm">₹99</button>
+              <button data-amount="149" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹149</button>
+              <button data-amount="199" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹199</button>
             </div>
 
             <!-- Single Pay button -->
-            <div id="pay-area" class="mt-2">
-              <!-- JS yaha Pay ₹X button dalega -->
-            </div>
+            <div id="pay-area" class="mt-1"></div>
 
-            <!-- Razorpay embed container (hidden until Pay click) -->
-            <div id="razorpay-container"
-                 class="hidden mt-3 bg-gradient-to-r from-emerald-500/20 to-green-500/20 p-3 rounded-xl border border-emerald-400/50">
+            <!-- Razorpay button container -->
+            <div id="razorpay-container" class="hidden bg-gradient-to-r from-emerald-500/20 to-green-500/20 p-3 rounded-xl border-2 border-emerald-400/50 mt-3">
               <div class="text-center mb-2">
                 <div class="inline-flex items-center gap-2 bg-emerald-500/20 px-3 py-1 rounded-full text-emerald-300 text-[11px] font-medium">
                   Secure payment via Razorpay
@@ -140,11 +100,11 @@
         <div id="successMsg" class="hidden bg-green-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-green-400/50">
           <p class="font-bold text-sm text-green-800 mb-1">Payment Successful!</p>
           <p class="text-[11px] text-green-700 mb-1">₹<span id="paidAmount">99</span> का payment successful.</p>
-          <p class="text-[11px] text-green-600 font-medium">Contest में register ho gaye! Dashboard &gt; Contests check karein.</p>
+          <p class="text-[11px] text-green-600 font-medium">Contest में register हो गए! Dashboard &gt; Contests check करें.</p>
         </div>
 
         <div id="registeredBadge" class="hidden bg-blue-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-blue-400/50">
-          <span class="font-bold text-blue-800 text-[12px]">✓ Already registered for this contest</span>
+          <span class="font-bold text-blue-800 text-[12px]">✓ Already registered for Mega Contest</span>
         </div>
 
         <button id="secondary-btn"
@@ -186,16 +146,13 @@
 
 <!-- Supabase + Razorpay -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="contests-config.js"></script>
-
 <script>
 const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); // [web:50]
 
-// Static meta info (same as pehle)
-const contestsMeta = {
+const contests = {
   free: {
     short: "Free Daily Rush",
     badge: "Featured • Free",
@@ -258,29 +215,29 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const params = new URLSearchParams(window.location.search);
   const type = params.get("type") === "paid" ? "paid" : "free";
-  const meta = contestsMeta[type];
+  const c = contests[type];
 
-  document.getElementById("contest-short").textContent = meta.short;
-  document.getElementById("badge").textContent = meta.badge;
-  document.getElementById("contest-title").textContent = meta.title;
-  document.getElementById("contest-subtitle").textContent = meta.subtitle;
-  document.getElementById("contest-time").textContent = meta.time;
-  document.getElementById("contest-duration").textContent = meta.duration;
-  document.getElementById("contest-level").textContent = meta.level;
-  document.getElementById("contest-prize").textContent = meta.prize;
-  document.getElementById("contest-format").textContent = meta.format;
-  document.getElementById("contest-scoring").textContent = meta.scoring;
-  document.getElementById("contest-eligibility").textContent = meta.eligibility;
+  document.getElementById("contest-short").textContent = c.short;
+  document.getElementById("badge").textContent = c.badge;
+  document.getElementById("contest-title").textContent = c.title;
+  document.getElementById("contest-subtitle").textContent = c.subtitle;
+  document.getElementById("contest-time").textContent = c.time;
+  document.getElementById("contest-duration").textContent = c.duration;
+  document.getElementById("contest-level").textContent = c.level;
+  document.getElementById("contest-prize").textContent = c.prize;
+  document.getElementById("contest-format").textContent = c.format;
+  document.getElementById("contest-scoring").textContent = c.scoring;
+  document.getElementById("contest-eligibility").textContent = c.eligibility;
 
   const rulesUl = document.getElementById("contest-rules");
-  meta.rules.forEach(r => {
+  c.rules.forEach(r => {
     const li = document.createElement("li");
     li.textContent = r;
     rulesUl.appendChild(li);
   });
 
   const langsUl = document.getElementById("contest-langs");
-  meta.langs.forEach(r => {
+  c.langs.forEach(r => {
     const li = document.createElement("li");
     li.textContent = r;
     langsUl.appendChild(li);
@@ -295,30 +252,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("free-register-btn").onclick = registerFreeContest;
     document.getElementById("paid-contest-section").style.display = "none";
   }
+
+  // Razorpay redirect success handle
+  const success = params.get("success");
+  const successAmount = params.get("amount");
+  if (type === "paid" && success === "1" && successAmount) {
+    await handleRazorpaySuccess(Number(successAmount));
+    document.getElementById('paidAmount').textContent = successAmount;
+  }
 });
 
-// ---- Contest details (LEFT) ----
-function renderContestDetails(amount) {
-  const config = ENTRY_CONFIG ? ENTRY_CONFIG[amount] : null;
-  if (!config) return;
+// ---- Razorpay + entry selection ----
 
-  document.getElementById('detail-entry-fee').textContent = `₹${config.entryFee}`;
-  document.getElementById('detail-min-participants').textContent = config.minParticipants;
-  document.getElementById('detail-total-prize').textContent = `₹${config.totalPrize}`;
-
-  const ul = document.getElementById('detail-payouts');
-  ul.innerHTML = '';
-  config.payouts.forEach(p => {
-    const li = document.createElement('li');
-    const range = p.fromRank === p.toRank
-      ? `${p.fromRank}st`.replace('1stst','1st') // simple fix
-      : `${p.fromRank}–${p.toRank}`;
-    li.textContent = `${range} place: ₹${p.amount}`;
-    ul.appendChild(li);
-  });
-}
-
-// ---- Payment (RIGHT) ----
 const buttonIds = {
   199: "pl_Rt0dtv8GdORMh6",
   149: "pl_Rt0bZgbs4Ry3Io",
@@ -338,11 +283,10 @@ function renderPayButton(amount) {
 
   document.getElementById('pay-btn').onclick = () => {
     loadPaymentButton(amount);
-    document.getElementById('paidAmount').textContent = amount;
+    document.getElementById("paidAmount").textContent = amount;
   };
 }
 
-// Razorpay embed load
 function loadPaymentButton(amount) {
   const paymentId = buttonIds[amount];
   if (!paymentId) {
@@ -362,28 +306,24 @@ function loadPaymentButton(amount) {
   document.getElementById("razorpay-container").classList.remove("hidden");
 }
 
-// Entry amount buttons
 function updateSelectedEntry(amount) {
   selectedAmount = amount;
-
-  document.querySelectorAll('.entry-btn').forEach(btn => {
+  document.querySelectorAll(".entry-btn").forEach(btn => {
     const a = Number(btn.dataset.amount);
     if (a === amount) {
-      btn.classList.remove('border-slate-600','text-slate-100');
-      btn.classList.add('border-emerald-400','bg-emerald-500/10','text-emerald-200');
+      btn.classList.remove("border-slate-600","text-slate-100");
+      btn.classList.add("border-emerald-400","bg-emerald-500/10","text-emerald-200");
     } else {
-      btn.classList.add('border-slate-600','text-slate-100');
-      btn.classList.remove('border-emerald-400','bg-emerald-500/10','text-emerald-200');
+      btn.classList.add("border-slate-600","text-slate-100");
+      btn.classList.remove("border-emerald-400","bg-emerald-500/10","text-emerald-200");
     }
   });
-
-  renderContestDetails(amount);
   renderPayButton(amount);
 }
 
 function setupEntryButtons() {
-  document.querySelectorAll('.entry-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+  document.querySelectorAll(".entry-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
       const amount = Number(btn.dataset.amount);
       updateSelectedEntry(amount);
     });
@@ -391,7 +331,8 @@ function setupEntryButtons() {
   updateSelectedEntry(selectedAmount); // default 99
 }
 
-// ---- Supabase registration helpers ----
+// ---- Supabase helpers ----
+
 function showSuccessMessage() {
   document.getElementById('successMsg').classList.remove('hidden');
   document.getElementById('razorpay-container').style.display = 'none';
@@ -407,6 +348,12 @@ async function registerInSupabase(amount = '99') {
       payment_status: 'success'
     });
   }
+}
+
+// Razorpay success handler (redirect ke baad)
+async function handleRazorpaySuccess(amount) {
+  await registerInSupabase(amount);
+  showSuccessMessage();
 }
 
 async function checkRegistrationStatus(type) {
@@ -433,7 +380,7 @@ async function registerFreeContest() {
       contest_type: 'free',
       payment_status: 'free'
     });
-    alert('Free Daily Rush के लिए register ho gaye!');
+    alert('Free Daily Rush के लिए register हो गए!');
   }
 }
 </script>
