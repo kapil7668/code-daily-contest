@@ -190,8 +190,7 @@
     </div>
 
     <div class="grid md:grid-cols-3 gap-8">
-      <!-- cards as before -->
-      <!-- ... (unchanged feature cards) ... -->
+      <!-- yaha tumhare existing feature cards aa jayenge -->
     </div>
   </section>
 </main>
@@ -224,6 +223,20 @@
           <label class="block mb-2 text-sm font-semibold text-slate-300">Password</label>
           <input id="auth-password" type="password" required placeholder="••••••••"
                  class="w-full rounded-2xl bg-slate-900/50 border border-slate-700/50 px-5 py-4 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/70 backdrop-blur-sm transition-all placeholder:text-slate-500" />
+        </div>
+
+        <!-- Extra fields only for signup -->
+        <div id="signup-extra" class="space-y-4 hidden">
+          <div>
+            <label class="block mb-2 text-sm font-semibold text-slate-300">Full name</label>
+            <input id="auth-name" type="text" placeholder="Your name"
+              class="w-full rounded-2xl bg-slate-900/50 border border-slate-700/50 px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/70 placeholder:text-slate-500" />
+          </div>
+          <div>
+            <label class="block mb-2 text-sm font-semibold text-slate-300">Mobile number</label>
+            <input id="auth-phone" type="tel" placeholder="10-digit mobile"
+              class="w-full rounded-2xl bg-slate-900/50 border border-slate-700/50 px-5 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/70 placeholder:text-slate-500" />
+          </div>
         </div>
         
         <div class="flex items-center gap-2 pt-2">
@@ -378,6 +391,9 @@ const submitText = document.getElementById('submit-text');
 const loadingSpinner = document.getElementById('loading-spinner');
 const switchText = document.getElementById('switch-text');
 const switchAuth = document.getElementById('switch-auth');
+const extraBox = document.getElementById('signup-extra');
+const nameInput = document.getElementById('auth-name');
+const phoneInput = document.getElementById('auth-phone');
 
 let currentMode = 'login';
 
@@ -391,6 +407,7 @@ function setMode(mode) {
     switchText.textContent = 'Already have an account?';
     switchAuth.textContent = 'Sign in';
     submitText.textContent = 'Create Account';
+    extraBox.classList.remove('hidden');
   } else {
     authTitle.textContent = 'Sign in to CodeRush';
     tabSignup.className = 'flex-1 py-3.5 bg-transparent text-slate-400 backdrop-blur-sm';
@@ -398,6 +415,7 @@ function setMode(mode) {
     switchText.textContent = "Don't have an account?";
     switchAuth.textContent = 'Sign up';
     submitText.textContent = 'Sign In';
+    extraBox.classList.add('hidden');
   }
 }
 
@@ -412,6 +430,7 @@ function closeModal() {
   document.body.style.overflow = '';
   modal.classList.add('hidden');
   form.reset();
+  extraBox.classList.add('hidden');
 }
 
 document.getElementById('open-login').onclick = () => openModal('login');
@@ -433,9 +452,16 @@ form.addEventListener('submit', async (e) => {
   
   const email = emailInput.value.trim();
   const password = passInput.value.trim();
+  const fullName = nameInput ? nameInput.value.trim() : '';
+  const phone = phoneInput ? phoneInput.value.trim() : '';
   
   if (!email || !password) {
     showError('Please fill all fields');
+    return;
+  }
+
+  if (currentMode === 'signup' && (!fullName || !phone)) {
+    showError('Please enter name and mobile number');
     return;
   }
 
@@ -453,14 +479,29 @@ form.addEventListener('submit', async (e) => {
         options: {
           emailRedirectTo: window.location.origin + '/dashboard.html'
         }
-      });
+      }); [web:94]
+
+      if (result.error) {
+        showError(result.error.message);
+        return;
+      }
+
+      const user = result.data.user;
+      if (user) {
+        await supabaseClient
+          .from('user_profiles')
+          .upsert({
+            id: user.id,
+            full_name: fullName,
+            phone: phone
+          }); [web:110][web:163]
+      }
     } else {
       result = await supabaseClient.auth.signInWithPassword({ email, password });
-    }
-
-    if (result.error) {
-      showError(result.error.message);
-      return;
+      if (result.error) {
+        showError(result.error.message);
+        return;
+      }
     }
 
     setTimeout(() => {
