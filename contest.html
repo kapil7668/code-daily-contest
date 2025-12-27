@@ -6,7 +6,14 @@
   <title>CodeRush Contest – Details</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    /* Razorpay ke embedded blue button ko hide karo */
+    .razorpay-payment-button,
+    .rzp-button {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -342,11 +349,19 @@ function renderContestDetails(amount) {
 
   const ul = document.getElementById('detail-payouts');
   ul.innerHTML = '';
+
   config.payouts.forEach(p => {
-    const range = p.fromRank === p.toRank ? `Rank ${p.fromRank}` : `Rank ${p.fromRank}–${p.toRank}`;
-    const li = document.createElement('li');
-    li.textContent = `${range}: ₹${p.amount}`;
-    ul.appendChild(li);
+    if (p.fromRank === p.toRank) {
+      const li = document.createElement('li');
+      li.textContent = `Rank ${p.fromRank}: ₹${p.amount}`;
+      ul.appendChild(li);
+    } else {
+      for (let r = p.fromRank; r <= p.toRank; r++) {
+        const li = document.createElement('li');
+        li.textContent = `Rank ${r}: ₹${p.amount}`;
+        ul.appendChild(li);
+      }
+    }
   });
 }
 
