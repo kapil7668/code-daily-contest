@@ -79,8 +79,9 @@
 <script>
   // Supabase client
   const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); [web:430]
+  const SUPABASE_ANON_KEY =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // Admin email – sirf isi se login hone par page chalega
   const ADMIN_EMAIL = 'kapilrajputana35@gmail.com';
@@ -96,12 +97,12 @@
 
   // amount formatting
   const fmtAmount = a =>
-    a ? `₹${Number(a).toLocaleString('en-IN')}` : '₹0'; [web:469]
+    a ? `₹${Number(a).toLocaleString('en-IN')}` : '₹0';
 
   // -------- ADMIN ACCESS CHECK --------
   (async () => {
     try {
-      const { data } = await supabaseClient.auth.getUser(); // current user [web:430]
+      const { data } = await supabaseClient.auth.getUser(); // current user
 
       if (!data || !data.user) {
         alert('Please sign in as admin to view this page.');
@@ -153,7 +154,8 @@
       const id = contestSelect.value;
       if (!id) {
         contestMeta.textContent = 'No contest selected.';
-        winnersBody.innerHTML = `<p class="text-[11px] text-slate-400">Select a contest to load winners.</p>`;
+        winnersBody.innerHTML =
+          `<p class="text-[11px] text-slate-400">Select a contest to load winners.</p>`;
         copyCsvBtn.disabled = true;
         refreshBtn.disabled = true;
         lastWinnersData = [];
@@ -192,11 +194,13 @@
     const contest = findContestById(contestId);
     if (!contest) {
       contestMeta.textContent = 'Invalid contest selected.';
-      winnersBody.innerHTML = `<p class="text-[11px] text-red-400">Invalid contest configuration.</p>`;
+      winnersBody.innerHTML =
+        `<p class="text-[11px] text-red-400">Invalid contest configuration.</p>`;
       return;
     }
 
-    winnersBody.innerHTML = `<p class="text-[11px] text-slate-400">Loading winners...</p>`;
+    winnersBody.innerHTML =
+      `<p class="text-[11px] text-slate-400">Loading winners...</p>`;
     copyCsvBtn.disabled = true;
     refreshBtn.disabled = true;
 
@@ -208,16 +212,18 @@
         .from('leaderboard')
         .select('user_id, score, rank, created_at')
         .eq('contest_id', contestId)
-        .order('score', { ascending: false }); [web:430]
+        .order('score', { ascending: false });
 
       if (error) {
         console.error('Load winners error:', error);
-        winnersBody.innerHTML = `<p class="text-[11px] text-red-400">Failed to load leaderboard.</p>`;
+        winnersBody.innerHTML =
+          `<p class="text-[11px] text-red-400">Failed to load leaderboard.</p>`;
         return;
       }
 
       if (!data || data.length === 0) {
-        winnersBody.innerHTML = `<p class="text-[11px] text-slate-400">No participants yet for this contest.</p>`;
+        winnersBody.innerHTML =
+          `<p class="text-[11px] text-slate-400">No participants yet for this contest.</p>`;
         lastWinnersData = [];
         return;
       }
@@ -288,7 +294,8 @@
       `;
     } catch (e) {
       console.error('Winners render error:', e);
-      winnersBody.innerHTML = `<p class="text-[11px] text-red-400">Error loading winners.</p>`;
+      winnersBody.innerHTML =
+        `<p class="text-[11px] text-red-400">Error loading winners.</p>`;
     }
   }
 
@@ -305,7 +312,7 @@
         prize_amount: amount,
         rank,
         is_paid: false
-      }); [web:430]
+      });
 
     if (error) {
       alert('Failed to create payout');
@@ -325,10 +332,10 @@
       .from('payouts')
       .select('id, user_id, contest_id, prize_amount, rank, is_paid, created_at')
       .order('created_at', { ascending: false })
-      .limit(50); [web:483]
+      .limit(50);
 
     if (contestId) {
-      query = query.eq('contest_id', contestId); [web:488]
+      query = query.eq('contest_id', contestId);
     }
 
     const { data, error } = await query;
@@ -391,7 +398,7 @@
     const { error } = await supabaseClient
       .from('payouts')
       .update({ is_paid: true })
-      .eq('id', id); [web:459]
+      .eq('id', id);
 
     if (error) {
       alert('Failed to update payout');
