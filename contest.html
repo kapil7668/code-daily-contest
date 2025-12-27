@@ -104,7 +104,7 @@
           <div class="mb-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-400/30 rounded-xl">
             <h3 class="font-bold mb-3 text-orange-300">Choose Entry Amount</h3>
 
-            <!-- Amount choices -->
+            <!-- Amount choices (JS se hide/lock honge) -->
             <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
               <button data-amount="9"  class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹9</button>
               <button data-amount="49" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹49</button>
@@ -235,7 +235,10 @@ const contests = {
   }
 };
 
-let selectedAmount = 99;
+// URL params se fixed amount + variant lo
+const pageParams = new URLSearchParams(window.location.search);
+let selectedAmount = Number(pageParams.get("amount")) || 99;
+const variant = pageParams.get("variant") || "top10";
 
 document.addEventListener('DOMContentLoaded', async () => {
   const { data, error } = await supabaseClient.auth.getUser(); // [web:50]
@@ -247,8 +250,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('loading').style.display = 'none';
   document.getElementById('contest-content').classList.remove('hidden');
 
-  const params = new URLSearchParams(window.location.search);
-  const type = params.get("type") === "paid" ? "paid" : "free";
+  const type = pageParams.get("type") === "paid" ? "paid" : "free";
   const c = contests[type];
 
   document.getElementById("contest-short").textContent = c.short;
@@ -287,8 +289,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById("paid-contest-section").style.display = "none";
   }
 
-  const success = params.get("success");
-  const successAmount = params.get("amount");
+  const success = pageParams.get("success");
+  const successAmount = pageParams.get("amount");
   if (type === "paid" && success === "1" && successAmount) {
     await handleRazorpaySuccess(Number(successAmount));
     document.getElementById('paidAmount').textContent = successAmount;
@@ -297,13 +299,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // ---- Razorpay + entry selection ----
 
-const buttonIds = {
+// Top-10 wale contest ke Razorpay buttons
+const buttonIdsTop10 = {
   199: "pl_Rt0dtv8GdORMh6",
   149: "pl_Rt0bZgbs4Ry3Io",
   49:  "pl_Rt0aENCzk6VBW6",
   9:   "pl_Rt0YF2KK1nRmrO",
-  99:  "pl_Rt0ToHijWYJDr6"
-}; // [web:55]
+  99:  "pl_Rt0ToHijWYJDr6"      // Top 10
+};
+
+// Top-100 wale contest ke Razorpay buttons
+const buttonIdsTop100 = {
+  199: "pl_Rt0dtv8GdORMh6",
+  149: "pl_Rt0bZgbs4Ry3Io",
+  49:  "pl_Rt0aENCzk6VBW6",
+  9:   "pl_Rt0YF2KK1nRmrO",
+  99:  "pl_RwlDC6dl5SVEpC"      // Top 100
+};
+
+// Variant ke hisaab se actual object
+const buttonIds = variant === "top100" ? buttonIdsTop100 : buttonIdsTop10; // [web:138]
 
 function renderPayButton(amount) {
   const payArea = document.getElementById('pay-area');
@@ -370,11 +385,12 @@ function updateSelectedEntry(amount) {
   document.querySelectorAll(".entry-btn").forEach(btn => {
     const a = Number(btn.dataset.amount);
     if (a === amount) {
+      btn.classList.remove("hidden");
       btn.classList.remove("border-slate-600","text-slate-100");
       btn.classList.add("border-emerald-400","bg-emerald-500/10","text-emerald-200");
     } else {
-      btn.classList.add("border-slate-600","text-slate-100");
-      btn.classList.remove("border-emerald-400","bg-emerald-500/10","text-emerald-200");
+      // baaki sab hide
+      btn.classList.add("hidden");
     }
   });
   renderContestDetails(amount);
@@ -382,13 +398,24 @@ function updateSelectedEntry(amount) {
 }
 
 function setupEntryButtons() {
+  const allowedAmount = selectedAmount;
+
   document.querySelectorAll(".entry-btn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const amount = Number(btn.dataset.amount);
-      updateSelectedEntry(amount);
-    });
+    const a = Number(btn.dataset.amount);
+    btn.replaceWith(btn.cloneNode(true)); // remove old listeners (safety)
   });
-  updateSelectedEntry(selectedAmount); // default 99
+
+  document.querySelectorAll(".entry-btn").forEach(btn => {
+    const a = Number(btn.dataset.amount);
+    if (a === allowedAmount) {
+      btn.classList.remove("hidden");
+      btn.addEventListener("click", () => updateSelectedEntry(a));
+    } else {
+      btn.classList.add("hidden");
+    }
+  });
+
+  updateSelectedEntry(allowedAmount);
 }
 
 // ---- Supabase helpers ----
