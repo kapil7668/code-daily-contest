@@ -128,7 +128,7 @@
         <div id="successMsg" class="hidden bg-green-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-green-400/50">
           <p class="font-bold text-sm text-green-800 mb-1">Payment Successful!</p>
           <p class="text-[11px] text-green-700 mb-1">₹<span id="paidAmount">99</span> का payment successful.</p>
-          <p class="text-[11px] text-green-600 font-medium">Contest में register हो गए! Dashboard &gt; Contests check करें.</p>
+          <p class="text-[11px] text-green-600 font-medium">Contest में register हो गए! Exam abhi start ho raha hai.</p>
         </div>
 
         <div id="registeredBadge" class="hidden bg-blue-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-blue-400/50">
@@ -433,6 +433,11 @@ async function registerInSupabase(amount = "99") {
 async function handleRazorpaySuccess(amount) {
   await registerInSupabase(amount);
   showSuccessMessage();
+
+  // paid contest registration ke turant baad exam page
+  setTimeout(() => {
+    window.location.href = `exam.html?type=paid&amount=${amount}`;
+  }, 1500);
 }
 
 async function checkRegistrationStatus(type) {
@@ -459,7 +464,9 @@ async function registerFreeContest() {
       contest_type: "free",
       payment_status: "free"
     });
-    alert("Free Daily Rush के लिए register हो गए!");
+
+    // free contest me register hote hi exam
+    window.location.href = "exam.html?type=free";
   }
 }
 </script>
