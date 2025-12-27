@@ -170,7 +170,7 @@
 const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); [web:525]
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const contests = {
   free: {
@@ -222,7 +222,7 @@ const contests = {
 };
 
 // URL params
-const pageParams = new URLSearchParams(window.location.search); [web:519]
+const pageParams = new URLSearchParams(window.location.search);
 let selectedAmount = Number(pageParams.get("amount")) || 99;
 const variant = pageParams.get("variant") || "top10";
 
