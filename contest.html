@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// Razorpay button IDs
+// Razorpay button IDs – inko apne dashboard ke IDs se match kara lo
 const buttonIdsTop10 = {
   199: "pl_Rt0dtv8GdORMh6",
   149: "pl_Rt0bZgbs4Ry3Io",
@@ -320,10 +320,13 @@ function renderPayButton(amount) {
       Pay ₹${amount}
     </button>
   `;
-  document.getElementById("pay-btn").onclick = () => {
-    loadPaymentButton(amount);
-    document.getElementById("paidAmount").textContent = amount;
-  };
+  const payBtn = document.getElementById("pay-btn");
+  if (payBtn) {
+    payBtn.onclick = () => {
+      loadPaymentButton(amount);
+      document.getElementById("paidAmount").textContent = amount;
+    };
+  }
 }
 
 function loadPaymentButton(amount) {
@@ -434,7 +437,6 @@ async function handleRazorpaySuccess(amount) {
   await registerInSupabase(amount);
   showSuccessMessage();
 
-  // paid contest registration ke turant baad exam page
   setTimeout(() => {
     window.location.href = `exam.html?type=paid&amount=${amount}`;
   }, 1500);
@@ -465,7 +467,6 @@ async function registerFreeContest() {
       payment_status: "free"
     });
 
-    // free contest me register hote hi exam
     window.location.href = "exam.html?type=free";
   }
 }
