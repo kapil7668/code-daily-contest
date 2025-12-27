@@ -132,7 +132,7 @@
         </div>
 
         <div id="registeredBadge" class="hidden bg-blue-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-blue-400/50">
-          <span class="font-bold text-blue-800 text-[12px]">✓ Already registered for Mega Contest</span>
+          <span class="font-bold text-blue-800 text-[12px]">✓ Already registered for this contest</span>
         </div>
 
         <button id="secondary-btn"
@@ -374,7 +374,6 @@ function renderContestDetails(amount) {
     }
   });
 
-  // Subtitle tweak for Top‑100
   if (amount === 99 && variant === "top100") {
     document.getElementById("contest-subtitle").textContent =
       "Weekend mega contest with Top 100 cash prize winners.";
@@ -444,7 +443,7 @@ async function checkRegistrationStatus(type) {
       .select("*")
       .eq("user_id", data.user.id)
       .eq("contest_type", "paid")
-      .single();
+      .maybeSingle();
     if (reg) {
       document.getElementById("registeredBadge").classList.remove("hidden");
       document.getElementById("razorpay-container").style.display = "none";
