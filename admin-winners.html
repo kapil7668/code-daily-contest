@@ -80,7 +80,7 @@
   // Supabase client
   const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); [web:430]
 
   // Admin email – sirf isi se login hone par page chalega
   const ADMIN_EMAIL = 'kapilrajputana35@gmail.com';
@@ -94,10 +94,14 @@
 
   let lastWinnersData = []; // CSV ke लिए cache
 
+  // amount formatting
+  const fmtAmount = a =>
+    a ? `₹${Number(a).toLocaleString('en-IN')}` : '₹0'; [web:469]
+
   // -------- ADMIN ACCESS CHECK --------
   (async () => {
     try {
-      const { data } = await supabaseClient.auth.getUser(); // current user
+      const { data } = await supabaseClient.auth.getUser(); // current user [web:430]
 
       if (!data || !data.user) {
         alert('Please sign in as admin to view this page.');
@@ -153,14 +157,19 @@
         copyCsvBtn.disabled = true;
         refreshBtn.disabled = true;
         lastWinnersData = [];
+        loadPayouts(); // clear / reload payouts
         return;
       }
       loadWinners(id);
+      loadPayouts(); // same contest ke payouts
     });
 
     refreshBtn.addEventListener('click', () => {
       const id = contestSelect.value;
-      if (id) loadWinners(id);
+      if (id) {
+        loadWinners(id);
+        loadPayouts();
+      }
     });
 
     copyCsvBtn.addEventListener('click', () => {
@@ -191,14 +200,15 @@
     copyCsvBtn.disabled = true;
     refreshBtn.disabled = true;
 
-    contestMeta.textContent = `Contest: ${contest.title} • Entry ₹${contest.entryFee} • Total prize ₹${contest.totalPrize} • Max winners: ${contest.maxWinners}`;
+    contestMeta.textContent =
+      `Contest: ${contest.title} • Entry ₹${contest.entryFee} • Total prize ₹${contest.totalPrize} • Max winners: ${contest.maxWinners}`;
 
     try {
       const { data, error } = await supabaseClient
         .from('leaderboard')
         .select('user_id, score, rank, created_at')
         .eq('contest_id', contestId)
-        .order('score', { ascending: false });
+        .order('score', { ascending: false }); [web:430]
 
       if (error) {
         console.error('Load winners error:', error);
@@ -212,8 +222,9 @@
         return;
       }
 
-      // Rank fallback + prize mapping
-      const sorted = [...data].sort((a, b) => b.score - a.score || new Date(a.created_at) - new Date(b.created_at));
+      const sorted = [...data].sort(
+        (a, b) => b.score - a.score || new Date(a.created_at) - new Date(b.created_at)
+      );
       const winners = sorted.map((row, index) => {
         const rank = row.rank || index + 1;
         const prize = getPayoutForRank(contest, rank);
@@ -230,13 +241,14 @@
       refreshBtn.disabled = false;
 
       if (!winners.length) {
-        winnersBody.innerHTML = `<p class="text-[11px] text-slate-400">No winners configured for this contest (maxWinners = 0).</p>`;
+        winnersBody.innerHTML =
+          `<p class="text-[11px] text-slate-400">No winners configured for this contest (maxWinners = 0).</p>`;
         return;
       }
 
       const rowsHtml = winners.map(w => {
         const displayId = w.user_id ? w.user_id.slice(0, 6) + '...' : 'User';
-        const prizeText = w.prize > 0 ? `₹${w.prize}` : '-';
+        const prizeText = w.prize > 0 ? fmtAmount(w.prize) : '-';
 
         return `
           <tr class="border-t border-slate-800 hover:bg-slate-800/60">
@@ -293,7 +305,7 @@
         prize_amount: amount,
         rank,
         is_paid: false
-      });
+      }); [web:430]
 
     if (error) {
       alert('Failed to create payout');
@@ -307,11 +319,19 @@
   async function loadPayouts() {
     if (!payoutsTable) return;
 
-    const { data, error } = await supabaseClient
+    const contestId = contestSelect?.value || null;
+
+    let query = supabaseClient
       .from('payouts')
       .select('id, user_id, contest_id, prize_amount, rank, is_paid, created_at')
       .order('created_at', { ascending: false })
-      .limit(50);
+      .limit(50); [web:483]
+
+    if (contestId) {
+      query = query.eq('contest_id', contestId); [web:488]
+    }
+
+    const { data, error } = await query;
 
     if (error) {
       payoutsTable.textContent = 'Failed to load payouts.';
@@ -329,9 +349,11 @@
         <td class="px-3 py-1.5">${p.contest_id}</td>
         <td class="px-3 py-1.5">${p.rank ?? '-'}</td>
         <td class="px-3 py-1.5">${p.user_id ? p.user_id.slice(0,6) + '...' : '-'}</td>
-        <td class="px-3 py-1.5 text-right">₹${p.prize_amount}</td>
+        <td class="px-3 py-1.5 text-right">${fmtAmount(p.prize_amount)}</td>
         <td class="px-3 py-1.5">${p.is_paid ? 'paid' : 'pending'}</td>
-        <td class="px-3 py-1.5 text-[11px]">${new Date(p.created_at).toLocaleDateString('en-IN')}</td>
+        <td class="px-3 py-1.5 text-[11px]">
+          ${new Date(p.created_at).toLocaleDateString('en-IN')}
+        </td>
         <td class="px-3 py-1.5">
           ${p.is_paid ? '' : `
             <button class="px-2 py-1 text-[11px] rounded bg-emerald-500 text-slate-900"
@@ -369,7 +391,7 @@
     const { error } = await supabaseClient
       .from('payouts')
       .update({ is_paid: true })
-      .eq('id', id);
+      .eq('id', id); [web:459]
 
     if (error) {
       alert('Failed to update payout');
