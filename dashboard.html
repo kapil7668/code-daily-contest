@@ -6,7 +6,9 @@
   <title>CodeRush Dashboard – Practice & Contests</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    * {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
   </style>
 </head>
 
@@ -108,7 +110,7 @@
               3 problems • 60 mins • Live leaderboard.
             </p>
             <p class="text-slate-400 text-[11px]">
-              Today • 8:00 PM IST
+              Join anytime • Results after min entries
             </p>
           </div>
           <button
@@ -127,7 +129,7 @@
               Tough DSA set with cash prizes for top performers.
             </p>
             <p class="text-slate-400 text-[11px]">
-              Sunday • 7:00 PM IST
+              Instant start • Results after min participants
             </p>
           </div>
           <button
@@ -203,14 +205,12 @@
 
   <!-- Problems Tab -->
   <section id="tab-problems" class="tab-page hidden">
-    <!-- tumhara existing problems content as-is -->
-    <!-- ... -->
+    <!-- yaha pe tum apna problems content rakh sakte ho -->
   </section>
 
   <!-- Contests Tab (cards with big prize) -->
   <section id="tab-contests" class="tab-page hidden">
-    <!-- tumhara existing contests cards section as-is -->
-    <!-- ... -->
+    <!-- yaha pe tumhare large gradient contest cards ka section aayega -->
   </section>
 
   <!-- Premium Tab -->
@@ -222,6 +222,11 @@
 
 <!-- Supabase + dashboard logic -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+
+<!-- config pehle, taaki CONTESTS available ho -->
+<script src="contests-config.js"></script>
+<script src="contests-list.js"></script>
+
 <script>
 const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
@@ -547,7 +552,5 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<script src="contests-config.js"></script>
-<script src="contests-list.js"></script>
 </body>
 </html>
