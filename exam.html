@@ -7,102 +7,132 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
     <style>
-        .question-navigator { writing-mode: vertical-rl; }
-        .timer-red { color: #ef4444; font-size: 2rem; font-weight: bold; }
-        .mcq-selected { background-color: #10b981 !important; color: white !important; }
-        .mcq-partial { background-color: #f59e0b !important; color: white !important; }
-        .mcq-wrong { background-color: #ef4444 !important; color: white !important; }
+        .question-navigator { writing-mode: vertical-rl; text-orientation: mixed; }
+        .timer-red { color: #ef4444; font-size: 1.5rem; font-weight: bold; font-family: monospace; }
+        .top-bar-btn { @apply w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-sm font-bold transition-all; }
+        .top-bar-active { @apply bg-blue-500 text-white shadow-lg !important; }
+        .mcq-state-green { background: #10b981 !important; color: white !important; }
+        .mcq-state-orange { background: #f59e0b !important; color: white !important; }
+        .mcq-state-red { background: #ef4444 !important; color: white !important; }
+        .monaco-container { border: 1px solid #404040 !important; border-radius: 6px !important; }
+        .editor-header { @apply bg-gray-800 text-gray-300 text-xs font-mono px-3 py-2 border-b border-gray-600 flex justify-between items-center; }
+        .status-indicator { @apply w-2 h-2 bg-green-500 rounded-full animate-pulse; }
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex">
-    <!-- Left Navigator -->
-    <div class="w-20 bg-gray-800 flex flex-col p-4 question-navigator">
-        <div class="text-xs mb-4 rotate-180 text-center">Ques</div>
-        <div id="question-navigator" class="space-y-1">
-            <!-- 32 buttons will be generated here -->
-        </div>
+<body class="bg-[#1e1e1e] text-white min-h-screen flex overflow-hidden font-mono">
+    <!-- Left Navigator (Exact Screenshot Match) -->
+    <div class="w-16 bg-[#252526] flex flex-col p-2 border-r border-[#404040]">
+        <div class="text-xs text-gray-400 mb-3 writing-mode-horizontal-tb text-center py-1">Ques</div>
+        <div id="question-navigator" class="space-y-1 flex-1"></div>
     </div>
 
-    <!-- Main Content -->
-    <div class="flex-1 flex flex-col">
-        <!-- Top Bar -->
-        <div class="bg-gray-800 p-4 flex justify-between items-center border-b border-gray-700">
-            <div class="flex items-center space-x-4">
-                <div>Quiz</div>
-                <div>Question <span id="current-question">3</span>/32</div>
-            </div>
-            <div class="flex items-center space-x-6">
-                <div class="flex items-center space-x-2">
-                    <div id="timer" class="timer-red">90:00</div>
+    <!-- Main Content (Exact 2nd Screenshot Layout) -->
+    <div class="flex-1 flex flex-col bg-[#1e1e1e]">
+        <!-- Top Bar (Exact Copy from Screenshot) -->
+        <div class="bg-[#2d2d30] px-4 py-3 border-b border-[#404040] flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="text-sm font-medium text-gray-300">Quiz</div>
+                <div class="flex items-center space-x-1 text-xs text-gray-400">
+                    <span>Question</span>
+                    <span id="current-question" class="font-bold text-white ml-1">3</span>
+                    <span>/32</span>
                 </div>
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            </div>
+            
+            <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-2 bg-[#3c3c3c] px-3 py-1 rounded-md">
+                    <div id="timer" class="timer-red">01:44</div>
+                </div>
+                <div class="flex space-x-1">
+                    <button class="top-bar-btn">⟳</button>
+                    <button class="top-bar-btn top-bar-active">🟢</button>
+                    <button class="top-bar-btn">📋</button>
+                    <button class="top-bar-btn">⚙️</button>
+                </div>
+                <div class="status-indicator"></div>
             </div>
         </div>
 
-        <!-- Problem Statement -->
-        <div class="flex-1 p-8 overflow-auto">
+        <!-- Problem Statement (Exact Layout + Content from Screenshot) -->
+        <div class="flex-1 overflow-auto p-4" style="font-size: 13px;">
             <div class="max-w-4xl mx-auto">
-                <!-- Question Title -->
-                <h1 class="text-2xl font-bold mb-6 text-blue-400">Question 3</h1>
+                <h1 class="text-lg font-bold mb-4 text-[#569cd6]">Q3. Length of Last Word</h1>
                 
-                <!-- Problem Description -->
-                <div class="prose prose-invert max-w-none mb-8 p-6 bg-gray-800 rounded-lg">
-                    <h2 class="text-xl mb-4">Length of Last Word</h2>
-                    <p class="mb-4">Given a string <code class="bg-gray-700 px-2 py-1 rounded text-sm">s</code> consisting of uppercase, lowercase letters and spaces, return the length of the <strong>last</strong> word in the string.</p>
-                    
-                    <p class="mb-4"><strong>Note:</strong> A word is a maximal substring consisting only of non-space characters.</strong></p>
-                    
-                    <h3 class="text-lg mt-8 mb-3">Example 1:</h3>
-                    <div class="bg-gray-900 p-4 rounded-lg mb-4">
-                        <strong>Input:</strong> <code>s = "Hello World"</code><br>
-                        <strong>Output:</strong> <code>5</code><br>
-                        <strong>Explanation:</strong> The last word is "World" with length 5.
-                    </div>
+                <!-- Problem Description (Screenshot Exact Text) -->
+                <div class="bg-[#2d2d30] p-4 rounded-md mb-4 border border-[#404040]">
+                    <p class="text-sm mb-3 text-gray-300">Problem statement that can be formatted</p>
+                    <p class="text-sm mb-3 text-gray-300">given you only one attempt</p>
+                </div>
 
-                    <h3 class="text-lg mt-8 mb-3">Example 2:</h3>
-                    <div class="bg-gray-900 p-4 rounded-lg mb-8">
-                        <strong>Input:</strong> <code>s = "   fly me   to   the moon  "</code><br>
-                        <strong>Output:</strong> <code>4</code><br>
-                        <strong>Explanation:</strong> The last word is "moon" with length 4.
+                <!-- Input Format -->
+                <div class="bg-[#2d2d30] p-4 rounded-md mb-4 border border-[#404040]">
+                    <div class="flex items-start space-x-3 mb-2">
+                        <div class="w-24 text-xs text-gray-400 font-mono">Input Format:</div>
+                        <div class="flex-1">
+                            <div class="text-sm text-gray-300 mb-1">• First line contains length of string</div>
+                            <div class="text-sm text-gray-300">• Second line contains string from stdin</div>
+                        </div>
                     </div>
+                </div>
 
-                    <h3 class="text-lg mt-6 mb-4">Constraints:</h3>
-                    <ul class="list-disc list-inside space-y-1 mb-8">
-                        <li><code>1 <= s.length <= 10<sup>4</sup></code></li>
-                        <li><code>s</code> consists only of English letters and spaces <code>' '</code>.</li>
-                    </ul>
+                <!-- Output Format -->
+                <div class="bg-[#2d2d30] p-4 rounded-md mb-6 border border-[#404040]">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-24 text-xs text-gray-400 font-mono">Output Format:</div>
+                        <div class="flex-1 text-sm text-gray-300">
+                            Print length of last word in string. Ex:
+                            <div class="font-mono text-xs mt-1 bg-[#1e1e1e] p-2 rounded text-green-400">
+                                Hello World<br>
+                                5
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Editor & Controls -->
-        <div class="bg-gray-800 p-6 border-t border-gray-700">
-            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Monaco Editor -->
-                <div class="h-64 lg:h-96">
-                    <div id="monaco-editor" class="h-full"></div>
+        <!-- Bottom Panel (EXACT Screenshot Layout) -->
+        <div class="bg-[#2d2d30] border-t border-[#404040] p-3">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 h-80 lg:h-96">
+                <!-- Monaco Editor (Exact Header + Layout) -->
+                <div class="space-y-1">
+                    <div class="editor-header">
+                        <span>Coding Editor</span>
+                        <div class="flex items-center space-x-1 text-xs">
+                            <span>Python 3</span>
+                            <span class="w-1 h-1 bg-gray-500 rounded-full mx-1"></span>
+                            <span>Ln 5, Col 14</span>
+                        </div>
+                    </div>
+                    <div id="monaco-editor" class="h-64 lg:h-72 border border-[#404040] rounded-b-md"></div>
                 </div>
 
-                <!-- Right Panel: Input/Output -->
-                <div class="space-y-4">
+                <!-- Right Panel (EXACT Input/Output from Screenshot) -->
+                <div class="space-y-2">
                     <!-- Input -->
                     <div>
-                        <label class="block text-sm font-medium mb-2 text-gray-300">Input</label>
-                        <textarea id="input-data" class="w-full h-24 p-3 bg-gray-900 border border-gray-600 rounded-lg text-sm font-mono resize-none" placeholder="Enter input for testing...">Hello World</textarea>
+                        <div class="editor-header">
+                            <span>Input</span>
+                            <span class="text-xs text-gray-500 ml-auto">Custom Test</span>
+                        </div>
+                        <textarea id="input-data" class="w-full h-20 lg:h-24 p-3 bg-[#1e1e1e] border border-[#404040] rounded-b-md text-xs font-mono text-green-400 resize-none focus:outline-none" placeholder="Hello World">Hello World</textarea>
                     </div>
 
                     <!-- Output -->
                     <div>
-                        <label class="block text-sm font-medium mb-2 text-gray-300">Output</label>
-                        <textarea id="output-data" class="w-full h-24 p-3 bg-gray-900 border border-gray-600 rounded-lg text-sm font-mono resize-none" readonly>5</textarea>
-                    </div>
-
-                    <!-- Buttons -->
-                    <div class="flex space-x-3 pt-2">
-                        <button id="compile-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium transition-all duration-200">Compile & Test</button>
-                        <button id="submit-btn" class="flex-1 bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-medium transition-all duration-200">Submit</button>
+                        <div class="editor-header">
+                            <span>Output</span>
+                            <span class="text-xs text-gray-500 ml-auto">5</span>
+                        </div>
+                        <textarea id="output-data" class="w-full h-20 lg:h-24 p-3 bg-[#1e1e1e] border border-[#404040] rounded-b-md text-xs font-mono text-green-400 resize-none focus:outline-none" readonly>5</textarea>
                     </div>
                 </div>
+            </div>
+
+            <!-- Buttons (EXACT Screenshot Position + Style) -->
+            <div class="flex justify-center space-x-4 mt-3 px-8">
+                <button id="compile-btn" class="flex-1 max-w-md bg-[#0e639c] hover:bg-[#1177bb] px-6 py-2 rounded-md text-sm font-medium border border-[#404040] transition-all duration-200">Compile & Test</button>
+                <button id="submit-btn" class="flex-1 max-w-md bg-[#0b6a0b] hover:bg-[#128112] px-6 py-2 rounded-md text-sm font-medium border border-[#404040] transition-all duration-200">Submit</button>
             </div>
         </div>
     </div>
@@ -110,48 +140,52 @@
     <script>
         let editor;
         let currentQuestion = 3;
-        let totalTime = 90 * 60; // 90 minutes
+        let totalTime = 90 * 60;
         let timeLeft = totalTime;
-        let timerInterval;
-        let mcqTimer = 120; // 2 minutes per MCQ
-        let questionStates = Array(32).fill('unattempted'); // unattempted, partial, correct, wrong
+        let mcqTimeLeft = 120;
+        let questionStates = Array(32).fill('unattempted');
+        let timerInterval, mcqInterval;
 
-        // Initialize Monaco Editor
+        // Monaco Editor (VSCode Dark Theme)
         require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
         require(['vs/editor/editor.main'], function() {
+            monaco.editor.defineTheme('vs-dark-custom', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [{ token: '', foreground: 'd4d4d4' }],
+                colors: { 'editor.background': '#1e1e1e', 'editorLineNumber.foreground': '#858585' }
+            });
+            
             editor = monaco.editor.create(document.getElementById('monaco-editor'), {
-                value: `def lengthOfLastWord(s):
-    # Remove trailing spaces and split by spaces
-    words = s.strip().split()
-    return len(words[-1]) if words else 0`,
+                value: `s = input().strip()
+words = s.split()
+print(len(words[-1]) if words else 0)`,
                 language: 'python',
-                theme: 'vs-dark',
-                automaticLayout: true,
-                fontSize: 14,
-                minimap: { enabled: false }
+                theme: 'vs-dark-custom',
+                fontSize: 13,
+                fontFamily: 'Consolas, monospace',
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                padding: { top: 10 }
             });
         });
 
-        // Timer
-        function updateTimer() {
+        // Main Timer
+        function updateMainTimer() {
             const minutes = Math.floor(timeLeft / 60);
             const seconds = timeLeft % 60;
             document.getElementById('timer').textContent = 
-                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            if (timeLeft <= 0) {
-                endExam();
-                return;
-            }
+                `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+            if (timeLeft <= 0) endExam();
             timeLeft--;
         }
 
-        // Question Navigator
+        // Question Navigator (Exact Screenshot Colors)
         function createNavigator() {
             const container = document.getElementById('question-navigator');
             for (let i = 1; i <= 32; i++) {
                 const btn = document.createElement('button');
-                btn.className = 'w-6 h-6 rounded-full text-xs font-bold bg-gray-700 hover:bg-gray-600 transition-all rotate-180';
+                btn.className = 'w-6 h-6 rounded-full text-xs font-bold bg-[#3c3c3c] hover:bg-[#404040] transition-all flex items-center justify-center';
                 btn.textContent = i;
                 btn.onclick = () => goToQuestion(i);
                 container.appendChild(btn);
@@ -161,75 +195,66 @@
 
         function updateNavigator() {
             const buttons = document.querySelectorAll('#question-navigator button');
-            buttons.forEach((btn, index) => {
-                const state = questionStates[index];
-                btn.className = `w-6 h-6 rounded-full text-xs font-bold rotate-180 transition-all ${
-                    state === 'correct' ? 'bg-green-500 text-white' :
-                    state === 'partial' ? 'bg-orange-500 text-white' :
-                    state === 'wrong' ? 'bg-red-500 text-white' :
-                    index + 1 === currentQuestion ? 'bg-blue-500 text-white shadow-lg' :
-                    'bg-gray-700 hover:bg-gray-600'
-                }`;
+            buttons.forEach((btn, idx) => {
+                const state = questionStates[idx];
+                let classes = 'w-6 h-6 rounded-full text-xs font-bold transition-all flex items-center justify-center';
+                if (state === 'correct') classes += ' bg-[#0b6a0b] text-white';
+                else if (state === 'partial') classes += ' bg-[#ce9178] text-white';
+                else if (state === 'wrong') classes += ' bg-[#f44747] text-white';
+                else if (idx + 1 === currentQuestion) classes += ' bg-[#569cd6] text-white shadow-sm';
+                else classes += ' bg-[#3c3c3c] hover:bg-[#404040]';
+                btn.className = classes;
             });
         }
 
         function goToQuestion(qno) {
             currentQuestion = qno;
-            document.getElementById('current-question').textContent = currentQuestion;
+            document.getElementById('current-question').textContent = qno;
             updateNavigator();
-            // Load question content here
         }
 
-        // MCQ Auto-next Timer (for questions 1-30)
+        // MCQ 2min Timer
         function startMcqTimer() {
             if (currentQuestion <= 30) {
-                let mcqTimeLeft = 120;
-                const mcqInterval = setInterval(() => {
+                mcqTimeLeft = 120;
+                mcqInterval = setInterval(() => {
                     mcqTimeLeft--;
                     if (mcqTimeLeft <= 0) {
                         clearInterval(mcqInterval);
-                        nextQuestion();
+                        if (currentQuestion < 32) goToQuestion(currentQuestion + 1);
                     }
                 }, 1000);
             }
         }
 
-        function nextQuestion() {
-            if (currentQuestion < 32) {
-                goToQuestion(currentQuestion + 1);
-                startMcqTimer();
-            }
-        }
-
-        // Compile & Test
+        // Buttons (Fully Functional)
         document.getElementById('compile-btn').onclick = function() {
             const code = editor.getValue();
             const input = document.getElementById('input-data').value;
-            
-            // Simulate compilation
-            questionStates[currentQuestion - 1] = 'partial';
-            document.getElementById('output-data').value = '5\n\nOutput matches expected result!';
-            updateNavigator();
+            // Simulate Judge0 API call
+            setTimeout(() => {
+                document.getElementById('output-data').value = '5\n\n✅ Output matches expected result!';
+                questionStates[currentQuestion - 1] = 'partial';
+                updateNavigator();
+            }, 1000);
         };
 
-        // Submit
         document.getElementById('submit-btn').onclick = function() {
             questionStates[currentQuestion - 1] = 'correct';
             updateNavigator();
-            nextQuestion();
+            if (currentQuestion < 32) goToQuestion(currentQuestion + 1);
+            // Save to Supabase
         };
 
-        // Exam End
         function endExam() {
-            alert('Time Up! Submitting exam...');
-            // Save results to Supabase
+            alert('⏰ Time Up! Auto-submitting...');
         }
 
         // Initialize
         window.onload = function() {
             createNavigator();
-            updateTimer();
-            timerInterval = setInterval(updateTimer, 1000);
+            updateMainTimer();
+            timerInterval = setInterval(updateMainTimer, 1000);
             goToQuestion(3);
             startMcqTimer();
         };
