@@ -6,8 +6,15 @@
   <title>Contest Exam – CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
   <style>
     * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    .mcq-mode .coding-editor { display: none !important; }
+    .coding-mode .mcq-options { display: none !important; }
+    .question-nav-btn { transition: all 0.2s; }
+    .question-nav-btn.active { background: #10b981 !important; color: white !important; }
+    .question-nav-btn.correct { background: #059669 !important; color: white !important; }
+    .question-nav-btn.attempted { background: #f59e0b !important; color: white !important; }
   </style>
 </head>
 
@@ -17,19 +24,28 @@
 <main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10
              bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
 
-  <!-- Top bar: contest info + timer -->
+  <!-- Top bar: contest info + dual timers -->
   <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
     <div>
       <p id="contest-type-badge" class="text-[11px] uppercase tracking-wide text-emerald-400 mb-1"></p>
       <h1 id="contest-title" class="text-lg md:text-xl font-semibold mb-1">Loading contest...</h1>
+      <p id="phase-indicator" class="text-[11px] text-slate-400">MCQ Phase (30 Questions)</p>
       <p id="contest-meta" class="text-[11px] text-slate-400"></p>
     </div>
 
     <div class="flex items-center gap-4">
+      <!-- Main Timer (90 min total) -->
       <div class="text-right">
-        <p class="text-[11px] text-slate-400">Time remaining</p>
-        <p id="timer" class="text-xl font-semibold text-emerald-400">--:--:--</p>
+        <p class="text-[11px] text-slate-400" id="main-timer-label">Exam Time</p>
+        <p id="main-timer" class="text-xl font-semibold text-emerald-400">01:30:00</p>
       </div>
+      
+      <!-- Question Timer (2 min MCQ / 15 min Coding) -->
+      <div class="text-right">
+        <p class="text-[11px] text-slate-400" id="question-timer-label">Question Time</p>
+        <p id="question-timer" class="text-lg font-semibold text-orange-400">02:00</p>
+      </div>
+      
       <button id="finish-btn"
         class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
         Finish & submit
@@ -37,342 +53,339 @@
     </div>
   </header>
 
-  <!-- Layout: questions list + current question -->
-  <section class="grid md:grid-cols-[220px,1fr] gap-4 mt-4">
-    <!-- Question list -->
-    <aside class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs">
-      <h2 class="text-[12px] font-semibold mb-2">Questions</h2>
-      <div id="questions-list" class="space-y-1"></div>
+  <!-- 2-Column Layout: Navigator + Question -->
+  <section class="grid md:grid-cols-[80px,1fr] gap-4 mt-4 h-[70vh]">
+    
+    <!-- Question Navigator (32 buttons: 30 MCQ + 2 Coding) -->
+    <aside id="question-navigator" class="bg-slate-900/80 border border-slate-800 rounded-2xl p-2 text-xs order-2 md:order-1">
+      <div class="text-[10px] font-semibold mb-2 text-center text-slate-400 rotate-[-90deg]">Questions</div>
+      <div id="questions-nav" class="space-y-1 max-h-[60vh] overflow-y-auto"></div>
     </aside>
 
-    <!-- Question viewer -->
-    <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs flex flex-col">
-      <div class="mb-2 flex items-center justify-between">
+    <!-- Current Question Area -->
+    <section id="question-area" class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 text-xs flex flex-col order-1 md:order-2">
+      
+      <!-- Question Header -->
+      <div class="mb-3 flex items-center justify-between">
         <div>
-          <p id="question-label" class="text-[11px] text-slate-400 mb-0.5">Question</p>
-          <h2 id="question-title" class="text-sm font-semibold">Loading...</h2>
+          <p id="question-label" class="text-[11px] text-slate-400 mb-0.5">Question 1/32</p>
+          <h2 id="question-title" class="text-sm font-semibold text-slate-200">Loading...</h2>
         </div>
         <div id="question-tags" class="text-[11px] text-right text-slate-400"></div>
       </div>
 
-      <div id="question-statement" class="text-[12px] text-slate-200 mb-3"></div>
+      <!-- Question Statement -->
+      <div id="question-statement" class="text-[12px] text-slate-200 mb-4 prose prose-sm max-w-none"></div>
 
-      <label class="text-[11px] text-slate-300 mb-1">Your answer / code</label>
-      <textarea id="answer-input"
-        class="flex-1 min-h-[180px] w-full bg-slate-950/70 border border-slate-800 rounded-xl px-3 py-2 text-[12px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-        placeholder="Type your solution here..."></textarea>
-
-      <div class="mt-3 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <button id="save-answer-btn"
-            class="px-3 py-1.5 rounded-lg border border-emerald-500 text-emerald-300 text-[11px] font-semibold">
-            Save answer
-          </button>
-          <!-- Run / Debug button -->
-          <button id="run-debug-btn"
-            class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px]">
-            Run / Debug
-          </button>
+      <!-- MCQ Interface -->
+      <div id="mcq-interface" class="space-y-3 mb-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <label class="flex items-center space-x-2 text-[12px]">
+            <input type="radio" name="mcq-answer" value="A" class="w-4 h-4 text-emerald-500">
+            <span id="option-A" class="ml-2">Option A</span>
+          </label>
+          <label class="flex items-center space-x-2 text-[12px]">
+            <input type="radio" name="mcq-answer" value="B" class="w-4 h-4 text-emerald-500">
+            <span id="option-B" class="ml-2">Option B</span>
+          </label>
+          <label class="flex items-center space-x-2 text-[12px]">
+            <input type="radio" name="mcq-answer" value="C" class="w-4 h-4 text-emerald-500">
+            <span id="option-C" class="ml-2">Option C</span>
+          </label>
+          <label class="flex items-center space-x-2 text-[12px]">
+            <input type="radio" name="mcq-answer" value="D" class="w-4 h-4 text-emerald-500">
+            <span id="option-D" class="ml-2">Option D</span>
+          </label>
         </div>
+      </div>
 
-        <div class="flex gap-2">
-          <button id="prev-btn"
-            class="px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-200">
-            Previous
-          </button>
-          <button id="next-btn"
-            class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-900 text-[11px] font-semibold">
-            Next
-          </button>
+      <!-- Coding Interface (Monaco Editor) -->
+      <div id="coding-interface" class="flex-1 mb-4 coding-editor">
+        <div class="bg-slate-800 p-2 rounded-lg mb-2 flex justify-between items-center text-[11px]">
+          <span>Code Editor</span>
+          <span>Python 3</span>
         </div>
+        <div id="monaco-editor" class="h-48 md:h-64 border border-slate-700 rounded-lg"></div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-2 pt-2">
+        <button id="save-answer-btn" class="px-4 py-2 rounded-lg border border-emerald-500 text-emerald-400 text-[12px] font-medium">
+          Save Answer
+        </button>
+        <button id="run-debug-btn" class="px-4 py-2 rounded-lg border border-slate-600 text-slate-300 text-[12px]">
+          Run / Test
+        </button>
+        <button id="prev-btn" class="px-4 py-2 rounded-lg border border-slate-700 text-[12px] text-slate-300">
+          Previous
+        </button>
+        <button id="next-btn" class="px-4 py-2 rounded-lg bg-emerald-500 text-slate-900 text-[12px] font-semibold">
+          Next →
+        </button>
       </div>
     </section>
   </section>
+
 </main>
 
 <script src="contests-config.js"></script>
 <script>
-  // ====== Supabase client ======
+  // ====== Supabase ======
   const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ====== Helpers ======
-  function getContestIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("contestId");
-  }
-
-  function findContestById(id) {
-    return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
-  }
-
-  // Yahan tum apne actual questions hook kar sakte ho; abhi simple demo
-  const QUESTION_BANK = {
-    default: [
-      { id: 'q1', title: 'Question 1', statement: 'Implement some logic for Q1.', level: 'Easy', topic: 'Arrays' },
-      { id: 'q2', title: 'Question 2', statement: 'Implement some logic for Q2.', level: 'Medium', topic: 'Strings' },
-      { id: 'q3', title: 'Question 3', statement: 'Implement some logic for Q3.', level: 'Hard', topic: 'DP' }
+  // ====== CONTEST-SPECIFIC QUESTIONS (30 MCQ + 2 Coding per contest) ======
+  const CONTEST_QUESTIONS = {
+    'contest_easy': [
+      // 30 MCQ Questions
+      ...Array.from({length: 30}, (_, i) => ({
+        id: `mcq_${i+1}`,
+        title: `MCQ Q${i+1}`,
+        statement: `MCQ Question ${i+1}: Basic programming concept question with 4 options (+4/-1 scoring).`,
+        type: 'mcq',
+        options: ['Option A', 'Option B', 'Option C', 'Option D'],
+        correct: 'A',
+        timeLimit: 120, // 2 minutes
+        score: 4
+      })),
+      // 2 Coding Questions
+      {
+        id: 'code_1',
+        title: 'Coding Q1: Two Sum',
+        statement: `Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target. You may assume that each input would have exactly one solution.`,
+        type: 'coding',
+        timeLimit: 900, // 15 minutes
+        score: 20,
+        difficulty: 'Medium'
+      },
+      {
+        id: 'code_2', 
+        title: 'Coding Q2: Longest Substring Without Repeating',
+        statement: `Given a string s, find the length of the longest substring without repeating characters.`,
+        type: 'coding',
+        timeLimit: 900, // 15 minutes
+        score: 25,
+        difficulty: 'Hard'
+      }
+    ],
+    'contest_medium': [
+      // Same structure - 30 MCQ + 2 harder coding
+      ...Array.from({length: 30}, (_, i) => ({
+        id: `mcq_${i+1}`,
+        title: `MCQ Q${i+1}`,
+        statement: `Medium MCQ Question ${i+1}: Intermediate concepts.`,
+        type: 'mcq',
+        options: ['Option A', 'Option B', 'Option C', 'Option D'],
+        correct: 'B',
+        timeLimit: 120,
+        score: 4
+      })),
+      {
+        id: 'code_1',
+        title: 'Coding Q1: Merge Intervals',
+        statement: `Given an array of intervals where intervals[i] = [starti, endi], merge all overlapping intervals.`,
+        type: 'coding',
+        timeLimit: 900,
+        score: 25,
+        difficulty: 'Medium'
+      },
+      {
+        id: 'code_2',
+        title: 'Coding Q2: Word Ladder',
+        statement: `A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence...`,
+        type: 'coding',
+        timeLimit: 900,
+        score: 30,
+        difficulty: 'Hard'
+      }
+    ],
+    // Add more contests...
+    'contest_hard': [
+      // Similar structure with harder questions
     ]
   };
 
-  function pickQuestionsForContest(contestId) {
-    // Abhi ke liye default list; baad me contest ke hisaab se change kar sakte ho
-    return QUESTION_BANK.default;
-  }
-
-  // ====== Exam state ======
+  // ====== Exam State ======
   let contestId = null;
   let contestConfig = null;
   let questions = [];
   let currentIndex = 0;
-  let timerInterval = null;
+  let mainTimer = 90 * 60; // 90 minutes total
+  let questionTimer = 120; // 2 min default
   let examLocked = false;
+  let editor = null;
+  let mainTimerInterval, questionTimerInterval;
+  let mcqAnswers = {};
 
-  function getAnswerStorageKey(questionId) {
-    return `answer_${contestId}_${questionId}`;
+  // ====== Monaco Editor ======
+  function initMonaco() {
+    require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+    require(['vs/editor/editor.main'], function() {
+      editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+        value: '# Write your code here\n',
+        language: 'python',
+        theme: 'vs-dark',
+        fontSize: 12,
+        minimap: { enabled: false },
+        automaticLayout: true
+      });
+    });
   }
 
-  async function checkAlreadyFinished() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      window.location.href = 'index.html';
-      return true;
-    }
-
-    const { data, error } = await supabaseClient
-      .from('leaderboard')
-      .select('score')
-      .eq('user_id', user.id)
-      .eq('contest_id', contestId)
-      .maybeSingle(); // ek row ya null[web:55]
-
-    if (error) {
-      console.warn('Leaderboard check error:', error);
-      return false;
-    }
-
-    if (data) {
-      window.location.href = `results.html?contestId=${contestId}`;
-      return true;
-    }
-    return false;
-  }
-
-  // ====== Timer ======
-  function startTimer(totalSeconds = 60 * 60) {
-    let remaining = totalSeconds;
-    const timerEl = document.getElementById('timer');
-
-    function render() {
-      const h = String(Math.floor(remaining / 3600)).padStart(2, '0');
-      const m = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
-      const s = String(remaining % 60).padStart(2, '0');
-      timerEl.textContent = `${h}:${m}:${s}`;
-    }
-
-    render();
-
-    timerInterval = setInterval(() => {
-      remaining--;
-      if (remaining <= 0) {
-        clearInterval(timerInterval);
-        timerEl.textContent = '00:00:00';
-        autoSubmitExam();
-        return;
-      }
-      render();
+  // ====== Timers ======
+  function startMainTimer() {
+    const mainTimerEl = document.getElementById('main-timer');
+    mainTimerInterval = setInterval(() => {
+      mainTimer--;
+      const h = Math.floor(mainTimer / 3600);
+      const m = Math.floor((mainTimer % 3600) / 60);
+      const s = mainTimer % 60;
+      mainTimerEl.textContent = `${h}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+      
+      if (mainTimer <= 0) autoSubmitExam();
     }, 1000);
   }
 
-  // ====== UI render ======
-  function renderContestHeader() {
-    const typeBadge = document.getElementById('contest-type-badge');
-    const titleEl = document.getElementById('contest-title');
-    const metaEl = document.getElementById('contest-meta');
-
-    if (!contestConfig) return;
-
-    typeBadge.textContent = contestConfig.type === 'free' ? 'Free contest' : 'Paid contest';
-    typeBadge.classList.toggle('text-emerald-400', contestConfig.type === 'free');
-    typeBadge.classList.toggle('text-amber-400', contestConfig.type === 'paid');
-
-    titleEl.textContent = contestConfig.title || 'Contest';
-
-    metaEl.textContent =
-      `Entry ${contestConfig.entryFee === 0 ? 'Free' : '₹' + contestConfig.entryFee} • ` +
-      `Total prize ₹${contestConfig.totalPrize} • ` +
-      `Top ${contestConfig.maxWinners} students get rewards`;
+  function startQuestionTimer() {
+    const questionTimerEl = document.getElementById('question-timer');
+    questionTimerInterval = setInterval(() => {
+      questionTimer--;
+      const m = Math.floor(questionTimer / 60);
+      const s = questionTimer % 60;
+      questionTimerEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+      
+      if (questionTimer <= 0) {
+        clearInterval(questionTimerInterval);
+        nextQuestionAuto();
+      }
+    }, 1000);
   }
 
-  function renderQuestionsList() {
-    const list = document.getElementById('questions-list');
-    list.innerHTML = '';
-
-    questions.forEach((q, index) => {
+  // ====== Question Navigation ======
+  function renderQuestionNavigator() {
+    const nav = document.getElementById('questions-nav');
+    nav.innerHTML = '';
+    
+    questions.forEach((q, i) => {
       const btn = document.createElement('button');
-      btn.className =
-        'w-full text-left px-3 py-1.5 rounded-lg border text-[11px] mb-1 ' +
-        (index === currentIndex
-          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
-          : 'bg-slate-900 border-slate-700 text-slate-200');
-      btn.textContent = `Q${index + 1} • ${q.level || ''}`;
-      btn.onclick = () => {
-        if (examLocked) return;
-        saveCurrentAnswer();
-        currentIndex = index;
-        renderCurrentQuestion();
-        renderQuestionsList();
-      };
-      list.appendChild(btn);
+      btn.className = `question-nav-btn w-full h-8 rounded-lg text-xs font-medium border mb-1 bg-slate-800 border-slate-700 hover:bg-slate-700 transition-all ${i === currentIndex ? 'active' : ''}`;
+      btn.textContent = `${i+1}`;
+      btn.onclick = () => goToQuestion(i);
+      nav.appendChild(btn);
     });
   }
 
-  function renderCurrentQuestion() {
-    const q = questions[currentIndex];
-    if (!q) return;
-
-    document.getElementById('question-label').textContent = `Question ${currentIndex + 1}`;
-    document.getElementById('question-title').textContent = q.title || '';
-    document.getElementById('question-statement').textContent = q.statement || '';
-
-    document.getElementById('question-tags').textContent =
-      `${q.level || ''}${q.topic ? ' • ' + q.topic : ''}`;
-
-    const saved = localStorage.getItem(getAnswerStorageKey(q.id)) || '';
-    document.getElementById('answer-input').value = saved;
+  function goToQuestion(index) {
+    saveCurrentAnswer();
+    currentIndex = index;
+    loadCurrentQuestion();
+    renderQuestionNavigator();
+    startQuestionTimer();
   }
 
-  // ====== Answers ======
-  async function saveAnswer(questionId, value) {
-    localStorage.setItem(getAnswerStorageKey(questionId), value || '');
-
-    try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (!user) return;
-
-      const { error } = await supabaseClient
-        .from('submissions')
-        .insert({
-          user_id: user.id,
-          contest_id: contestId,
-          question_id: questionId,
-          code: value || '',
-          language: 'text'
-        });
-
-      if (error) console.error('Save submission error:', error);
-    } catch (e) {
-      console.error('Save submission exception:', e);
+  function nextQuestionAuto() {
+    if (currentIndex < questions.length - 1) {
+      goToQuestion(currentIndex + 1);
     }
   }
 
+  // ====== Render Current Question ======
+  function loadCurrentQuestion() {
+    const q = questions[currentIndex];
+    if (!q) return;
+
+    // Update header
+    document.getElementById('question-label').textContent = `Question ${currentIndex + 1}/32`;
+    document.getElementById('question-title').textContent = q.title;
+    document.getElementById('question-statement').innerHTML = q.statement.replace(/\n/g, '<br>');
+    document.getElementById('question-tags').textContent = q.type === 'mcq' ? 'MCQ • 2 min' : `Coding • 15 min`;
+    
+    // Update phase indicator
+    const phase = currentIndex < 30 ? 'MCQ Phase' : 'Coding Phase';
+    document.getElementById('phase-indicator').textContent = `${phase} (${currentIndex + 1}/32)`;
+
+    // Show/hide interfaces
+    document.body.className = q.type === 'mcq' ? 'mcq-mode' : 'coding-mode';
+    
+    if (q.type === 'mcq') {
+      // Load MCQ options
+      ['A','B','C','D'].forEach((opt, i) => {
+        document.getElementById(`option-${opt}`).textContent = q.options[i];
+      });
+      
+      // Load saved answer
+      const saved = localStorage.getItem(`mcq_${contestId}_${q.id}`);
+      if (saved) {
+        document.querySelector(`input[value="${saved}"]`).checked = true;
+      }
+    } else {
+      // Load coding solution
+      const saved = localStorage.getItem(`code_${contestId}_${q.id}`);
+      if (editor && saved) {
+        editor.setValue(saved);
+      }
+    }
+    
+    // Reset question timer based on type
+    questionTimer = q.timeLimit;
+  }
+
+  // ====== Save Answers ======
   function saveCurrentAnswer() {
     const q = questions[currentIndex];
-    if (!q) return;
-    const value = document.getElementById('answer-input').value;
-    saveAnswer(q.id, value);
-  }
-
-  async function saveAllAnswers() {
-    for (const q of questions) {
-      const key = getAnswerStorageKey(q.id);
-      const currentValue = document.getElementById('answer-input').value;
-      const finalValue = (q.id === questions[currentIndex].id)
-        ? currentValue
-        : (localStorage.getItem(key) || '');
-      await saveAnswer(q.id, finalValue);
+    if (q.type === 'mcq') {
+      const selected = document.querySelector('input[name="mcq-answer"]:checked');
+      if (selected) {
+        mcqAnswers[q.id] = selected.value;
+        localStorage.setItem(`mcq_${contestId}_${q.id}`, selected.value);
+      }
+    } else if (editor) {
+      localStorage.setItem(`code_${contestId}_${q.id}`, editor.getValue());
     }
   }
 
-  // ====== Finish / Auto submit ======
-  async function autoSubmitExam() {
-    if (examLocked) return;
-    examLocked = true;
-
-    document.getElementById('finish-btn').disabled = true;
-    document.getElementById('finish-btn').textContent = 'Submitting...';
-    document.getElementById('finish-btn').classList.add('opacity-60', 'cursor-not-allowed');
-
-    await saveAllAnswers();
-
-    let fallbackScore = 0;
-    questions.forEach(q => {
-      const val = localStorage.getItem(getAnswerStorageKey(q.id)) || '';
-      if (val.trim().length > 0) fallbackScore += 100;
-    });
-
-    window.location.href = `results.html?contestId=${contestId}&score=${fallbackScore}`;
-  }
-
-  async function finishExamClick() {
-    const ok = confirm('Kya aap exam finish karna chahte hain? Baad me questions edit nahi kar paoge.');
-    if (!ok) return;
-    await autoSubmitExam();
+  // ====== Contest Questions Loader ======
+  function getContestQuestions(contestId) {
+    return CONTEST_QUESTIONS[contestId] || CONTEST_QUESTIONS['contest_easy'];
   }
 
   // ====== Init ======
-  async function initExamPage() {
-    contestId = getContestIdFromUrl();
-    contestConfig = findContestById(contestId);
-
-    if (!contestId || !contestConfig) {
-      alert('Invalid contest.');
-      window.location.href = 'dashboard.html';
+  async function initExam() {
+    contestId = new URLSearchParams(window.location.search).get('contestId');
+    contestConfig = CONTESTS?.find(c => c.id === contestId);
+    
+    if (!contestConfig) {
+      alert('Invalid contest');
       return;
     }
 
-    const already = await checkAlreadyFinished();
-    if (already) return;
-
-    questions = pickQuestionsForContest(contestId);
-    currentIndex = 0;
-
-    renderContestHeader();
-    renderQuestionsList();
-    renderCurrentQuestion();
-
-    startTimer(60 * 60); // 1 hour
+    questions = getContestQuestions(contestId);
+    initMonaco();
+    
+    renderQuestionNavigator();
+    loadCurrentQuestion();
+    startMainTimer();
+    startQuestionTimer();
   }
 
-  // ====== Events ======
-  document.getElementById('save-answer-btn').addEventListener('click', () => {
-    if (examLocked) return;
+  // ====== Event Listeners ======
+  document.addEventListener('DOMContentLoaded', initExam);
+
+  document.getElementById('save-answer-btn').onclick = saveCurrentAnswer;
+  document.getElementById('next-btn').onclick = () => {
     saveCurrentAnswer();
-    alert('Answer saved!');
-  });
-
-  document.getElementById('run-debug-btn').addEventListener('click', () => {
-    if (examLocked) return;
-    // Abhi ke liye dummy: sirf local save + alert
+    if (currentIndex < questions.length - 1) goToQuestion(currentIndex + 1);
+  };
+  document.getElementById('prev-btn').onclick = () => {
     saveCurrentAnswer();
-    alert('Code run/debug feature abhi dummy hai. Baad me actual judge se connect karenge.');
+    if (currentIndex > 0) goToQuestion(currentIndex - 1);
+  };
+
+  document.querySelectorAll('input[name="mcq-answer"]').forEach(radio => {
+    radio.onchange = saveCurrentAnswer;
   });
-
-  document.getElementById('prev-btn').addEventListener('click', () => {
-    if (examLocked) return;
-    saveCurrentAnswer();
-    if (currentIndex > 0) {
-      currentIndex--;
-      renderCurrentQuestion();
-      renderQuestionsList();
-    }
-  });
-
-  document.getElementById('next-btn').addEventListener('click', () => {
-    if (examLocked) return;
-    saveCurrentAnswer();
-    if (currentIndex < questions.length - 1) {
-      currentIndex++;
-      renderCurrentQuestion();
-      renderQuestionsList();
-    }
-  });
-
-  document.getElementById('finish-btn').addEventListener('click', finishExamClick);
-
-  document.addEventListener('DOMContentLoaded', initExamPage);
 </script>
 
 </body>
-</html> 
+</html>
