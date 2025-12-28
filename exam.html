@@ -1,263 +1,378 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeRush Exam - Question 3</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
-    <style>
-        .question-navigator { writing-mode: vertical-rl; text-orientation: mixed; }
-        .timer-red { color: #ef4444; font-size: 1.5rem; font-weight: bold; font-family: monospace; }
-        .top-bar-btn { @apply w-8 h-8 rounded-full bg-gray-700 hover:bg-gray-600 flex items-center justify-center text-sm font-bold transition-all; }
-        .top-bar-active { @apply bg-blue-500 text-white shadow-lg !important; }
-        .mcq-state-green { background: #10b981 !important; color: white !important; }
-        .mcq-state-orange { background: #f59e0b !important; color: white !important; }
-        .mcq-state-red { background: #ef4444 !important; color: white !important; }
-        .monaco-container { border: 1px solid #404040 !important; border-radius: 6px !important; }
-        .editor-header { @apply bg-gray-800 text-gray-300 text-xs font-mono px-3 py-2 border-b border-gray-600 flex justify-between items-center; }
-        .status-indicator { @apply w-2 h-2 bg-green-500 rounded-full animate-pulse; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contest Exam – CodeRush</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  </style>
 </head>
-<body class="bg-[#1e1e1e] text-white min-h-screen flex overflow-hidden font-mono">
-    <!-- Left Navigator (Exact Screenshot Match) -->
-    <div class="w-16 bg-[#252526] flex flex-col p-2 border-r border-[#404040]">
-        <div class="text-xs text-gray-400 mb-3 writing-mode-horizontal-tb text-center py-1">Ques</div>
-        <div id="question-navigator" class="space-y-1 flex-1"></div>
+
+<body class="min-h-screen text-slate-100 bg-slate-950
+             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
+
+<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10
+             bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
+
+  <!-- Top bar: contest info + timer -->
+  <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+    <div>
+      <p id="contest-type-badge" class="text-[11px] uppercase tracking-wide text-emerald-400 mb-1"></p>
+      <h1 id="contest-title" class="text-lg md:text-xl font-semibold mb-1">Loading contest...</h1>
+      <p id="contest-meta" class="text-[11px] text-slate-400"></p>
     </div>
 
-    <!-- Main Content (Exact 2nd Screenshot Layout) -->
-    <div class="flex-1 flex flex-col bg-[#1e1e1e]">
-        <!-- Top Bar (Exact Copy from Screenshot) -->
-        <div class="bg-[#2d2d30] px-4 py-3 border-b border-[#404040] flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="text-sm font-medium text-gray-300">Quiz</div>
-                <div class="flex items-center space-x-1 text-xs text-gray-400">
-                    <span>Question</span>
-                    <span id="current-question" class="font-bold text-white ml-1">3</span>
-                    <span>/32</span>
-                </div>
-            </div>
-            
-            <div class="flex items-center space-x-3">
-                <div class="flex items-center space-x-2 bg-[#3c3c3c] px-3 py-1 rounded-md">
-                    <div id="timer" class="timer-red">01:44</div>
-                </div>
-                <div class="flex space-x-1">
-                    <button class="top-bar-btn">⟳</button>
-                    <button class="top-bar-btn top-bar-active">🟢</button>
-                    <button class="top-bar-btn">📋</button>
-                    <button class="top-bar-btn">⚙️</button>
-                </div>
-                <div class="status-indicator"></div>
-            </div>
-        </div>
-
-        <!-- Problem Statement (Exact Layout + Content from Screenshot) -->
-        <div class="flex-1 overflow-auto p-4" style="font-size: 13px;">
-            <div class="max-w-4xl mx-auto">
-                <h1 class="text-lg font-bold mb-4 text-[#569cd6]">Q3. Length of Last Word</h1>
-                
-                <!-- Problem Description (Screenshot Exact Text) -->
-                <div class="bg-[#2d2d30] p-4 rounded-md mb-4 border border-[#404040]">
-                    <p class="text-sm mb-3 text-gray-300">Problem statement that can be formatted</p>
-                    <p class="text-sm mb-3 text-gray-300">given you only one attempt</p>
-                </div>
-
-                <!-- Input Format -->
-                <div class="bg-[#2d2d30] p-4 rounded-md mb-4 border border-[#404040]">
-                    <div class="flex items-start space-x-3 mb-2">
-                        <div class="w-24 text-xs text-gray-400 font-mono">Input Format:</div>
-                        <div class="flex-1">
-                            <div class="text-sm text-gray-300 mb-1">• First line contains length of string</div>
-                            <div class="text-sm text-gray-300">• Second line contains string from stdin</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Output Format -->
-                <div class="bg-[#2d2d30] p-4 rounded-md mb-6 border border-[#404040]">
-                    <div class="flex items-start space-x-3">
-                        <div class="w-24 text-xs text-gray-400 font-mono">Output Format:</div>
-                        <div class="flex-1 text-sm text-gray-300">
-                            Print length of last word in string. Ex:
-                            <div class="font-mono text-xs mt-1 bg-[#1e1e1e] p-2 rounded text-green-400">
-                                Hello World<br>
-                                5
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Bottom Panel (EXACT Screenshot Layout) -->
-        <div class="bg-[#2d2d30] border-t border-[#404040] p-3">
-            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 h-80 lg:h-96">
-                <!-- Monaco Editor (Exact Header + Layout) -->
-                <div class="space-y-1">
-                    <div class="editor-header">
-                        <span>Coding Editor</span>
-                        <div class="flex items-center space-x-1 text-xs">
-                            <span>Python 3</span>
-                            <span class="w-1 h-1 bg-gray-500 rounded-full mx-1"></span>
-                            <span>Ln 5, Col 14</span>
-                        </div>
-                    </div>
-                    <div id="monaco-editor" class="h-64 lg:h-72 border border-[#404040] rounded-b-md"></div>
-                </div>
-
-                <!-- Right Panel (EXACT Input/Output from Screenshot) -->
-                <div class="space-y-2">
-                    <!-- Input -->
-                    <div>
-                        <div class="editor-header">
-                            <span>Input</span>
-                            <span class="text-xs text-gray-500 ml-auto">Custom Test</span>
-                        </div>
-                        <textarea id="input-data" class="w-full h-20 lg:h-24 p-3 bg-[#1e1e1e] border border-[#404040] rounded-b-md text-xs font-mono text-green-400 resize-none focus:outline-none" placeholder="Hello World">Hello World</textarea>
-                    </div>
-
-                    <!-- Output -->
-                    <div>
-                        <div class="editor-header">
-                            <span>Output</span>
-                            <span class="text-xs text-gray-500 ml-auto">5</span>
-                        </div>
-                        <textarea id="output-data" class="w-full h-20 lg:h-24 p-3 bg-[#1e1e1e] border border-[#404040] rounded-b-md text-xs font-mono text-green-400 resize-none focus:outline-none" readonly>5</textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Buttons (EXACT Screenshot Position + Style) -->
-            <div class="flex justify-center space-x-4 mt-3 px-8">
-                <button id="compile-btn" class="flex-1 max-w-md bg-[#0e639c] hover:bg-[#1177bb] px-6 py-2 rounded-md text-sm font-medium border border-[#404040] transition-all duration-200">Compile & Test</button>
-                <button id="submit-btn" class="flex-1 max-w-md bg-[#0b6a0b] hover:bg-[#128112] px-6 py-2 rounded-md text-sm font-medium border border-[#404040] transition-all duration-200">Submit</button>
-            </div>
-        </div>
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <p class="text-[11px] text-slate-400">Time remaining</p>
+        <p id="timer" class="text-xl font-semibold text-emerald-400">--:--:--</p>
+      </div>
+      <button id="finish-btn"
+        class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
+        Finish & submit
+      </button>
     </div>
+  </header>
 
-    <script>
-        let editor;
-        let currentQuestion = 3;
-        let totalTime = 90 * 60;
-        let timeLeft = totalTime;
-        let mcqTimeLeft = 120;
-        let questionStates = Array(32).fill('unattempted');
-        let timerInterval, mcqInterval;
+  <!-- Layout: questions list + current question -->
+  <section class="grid md:grid-cols-[220px,1fr] gap-4 mt-4">
+    <!-- Question list -->
+    <aside class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs">
+      <h2 class="text-[12px] font-semibold mb-2">Questions</h2>
+      <div id="questions-list" class="space-y-1"></div>
+    </aside>
 
-        // Monaco Editor (VSCode Dark Theme)
-        require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
-        require(['vs/editor/editor.main'], function() {
-            monaco.editor.defineTheme('vs-dark-custom', {
-                base: 'vs-dark',
-                inherit: true,
-                rules: [{ token: '', foreground: 'd4d4d4' }],
-                colors: { 'editor.background': '#1e1e1e', 'editorLineNumber.foreground': '#858585' }
-            });
-            
-            editor = monaco.editor.create(document.getElementById('monaco-editor'), {
-                value: `s = input().strip()
-words = s.split()
-print(len(words[-1]) if words else 0)`,
-                language: 'python',
-                theme: 'vs-dark-custom',
-                fontSize: 13,
-                fontFamily: 'Consolas, monospace',
-                minimap: { enabled: false },
-                scrollBeyondLastLine: false,
-                padding: { top: 10 }
-            });
+    <!-- Question viewer -->
+    <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs flex flex-col">
+      <div class="mb-2 flex items-center justify-between">
+        <div>
+          <p id="question-label" class="text-[11px] text-slate-400 mb-0.5">Question</p>
+          <h2 id="question-title" class="text-sm font-semibold">Loading...</h2>
+        </div>
+        <div id="question-tags" class="text-[11px] text-right text-slate-400"></div>
+      </div>
+
+      <div id="question-statement" class="text-[12px] text-slate-200 mb-3"></div>
+
+      <label class="text-[11px] text-slate-300 mb-1">Your answer / code</label>
+      <textarea id="answer-input"
+        class="flex-1 min-h-[180px] w-full bg-slate-950/70 border border-slate-800 rounded-xl px-3 py-2 text-[12px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+        placeholder="Type your solution here..."></textarea>
+
+      <div class="mt-3 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <button id="save-answer-btn"
+            class="px-3 py-1.5 rounded-lg border border-emerald-500 text-emerald-300 text-[11px] font-semibold">
+            Save answer
+          </button>
+          <!-- Run / Debug button -->
+          <button id="run-debug-btn"
+            class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px]">
+            Run / Debug
+          </button>
+        </div>
+
+        <div class="flex gap-2">
+          <button id="prev-btn"
+            class="px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-200">
+            Previous
+          </button>
+          <button id="next-btn"
+            class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-900 text-[11px] font-semibold">
+            Next
+          </button>
+        </div>
+      </div>
+    </section>
+  </section>
+</main>
+
+<script src="contests-config.js"></script>
+<script>
+  // ====== Supabase client ======
+  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // ====== Helpers ======
+  function getContestIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("contestId");
+  }
+
+  function findContestById(id) {
+    return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
+  }
+
+  // Yahan tum apne actual questions hook kar sakte ho; abhi simple demo
+  const QUESTION_BANK = {
+    default: [
+      { id: 'q1', title: 'Question 1', statement: 'Implement some logic for Q1.', level: 'Easy', topic: 'Arrays' },
+      { id: 'q2', title: 'Question 2', statement: 'Implement some logic for Q2.', level: 'Medium', topic: 'Strings' },
+      { id: 'q3', title: 'Question 3', statement: 'Implement some logic for Q3.', level: 'Hard', topic: 'DP' }
+    ]
+  };
+
+  function pickQuestionsForContest(contestId) {
+    // Abhi ke liye default list; baad me contest ke hisaab se change kar sakte ho
+    return QUESTION_BANK.default;
+  }
+
+  // ====== Exam state ======
+  let contestId = null;
+  let contestConfig = null;
+  let questions = [];
+  let currentIndex = 0;
+  let timerInterval = null;
+  let examLocked = false;
+
+  function getAnswerStorageKey(questionId) {
+    return `answer_${contestId}_${questionId}`;
+  }
+
+  async function checkAlreadyFinished() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      window.location.href = 'index.html';
+      return true;
+    }
+
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('score')
+      .eq('user_id', user.id)
+      .eq('contest_id', contestId)
+      .maybeSingle(); // ek row ya null[web:55]
+
+    if (error) {
+      console.warn('Leaderboard check error:', error);
+      return false;
+    }
+
+    if (data) {
+      window.location.href = `results.html?contestId=${contestId}`;
+      return true;
+    }
+    return false;
+  }
+
+  // ====== Timer ======
+  function startTimer(totalSeconds = 60 * 60) {
+    let remaining = totalSeconds;
+    const timerEl = document.getElementById('timer');
+
+    function render() {
+      const h = String(Math.floor(remaining / 3600)).padStart(2, '0');
+      const m = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      timerEl.textContent = `${h}:${m}:${s}`;
+    }
+
+    render();
+
+    timerInterval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        timerEl.textContent = '00:00:00';
+        autoSubmitExam();
+        return;
+      }
+      render();
+    }, 1000);
+  }
+
+  // ====== UI render ======
+  function renderContestHeader() {
+    const typeBadge = document.getElementById('contest-type-badge');
+    const titleEl = document.getElementById('contest-title');
+    const metaEl = document.getElementById('contest-meta');
+
+    if (!contestConfig) return;
+
+    typeBadge.textContent = contestConfig.type === 'free' ? 'Free contest' : 'Paid contest';
+    typeBadge.classList.toggle('text-emerald-400', contestConfig.type === 'free');
+    typeBadge.classList.toggle('text-amber-400', contestConfig.type === 'paid');
+
+    titleEl.textContent = contestConfig.title || 'Contest';
+
+    metaEl.textContent =
+      `Entry ${contestConfig.entryFee === 0 ? 'Free' : '₹' + contestConfig.entryFee} • ` +
+      `Total prize ₹${contestConfig.totalPrize} • ` +
+      `Top ${contestConfig.maxWinners} students get rewards`;
+  }
+
+  function renderQuestionsList() {
+    const list = document.getElementById('questions-list');
+    list.innerHTML = '';
+
+    questions.forEach((q, index) => {
+      const btn = document.createElement('button');
+      btn.className =
+        'w-full text-left px-3 py-1.5 rounded-lg border text-[11px] mb-1 ' +
+        (index === currentIndex
+          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300'
+          : 'bg-slate-900 border-slate-700 text-slate-200');
+      btn.textContent = `Q${index + 1} • ${q.level || ''}`;
+      btn.onclick = () => {
+        if (examLocked) return;
+        saveCurrentAnswer();
+        currentIndex = index;
+        renderCurrentQuestion();
+        renderQuestionsList();
+      };
+      list.appendChild(btn);
+    });
+  }
+
+  function renderCurrentQuestion() {
+    const q = questions[currentIndex];
+    if (!q) return;
+
+    document.getElementById('question-label').textContent = `Question ${currentIndex + 1}`;
+    document.getElementById('question-title').textContent = q.title || '';
+    document.getElementById('question-statement').textContent = q.statement || '';
+
+    document.getElementById('question-tags').textContent =
+      `${q.level || ''}${q.topic ? ' • ' + q.topic : ''}`;
+
+    const saved = localStorage.getItem(getAnswerStorageKey(q.id)) || '';
+    document.getElementById('answer-input').value = saved;
+  }
+
+  // ====== Answers ======
+  async function saveAnswer(questionId, value) {
+    localStorage.setItem(getAnswerStorageKey(questionId), value || '');
+
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabaseClient
+        .from('submissions')
+        .insert({
+          user_id: user.id,
+          contest_id: contestId,
+          question_id: questionId,
+          code: value || '',
+          language: 'text'
         });
 
-        // Main Timer
-        function updateMainTimer() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = 
-                `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-            if (timeLeft <= 0) endExam();
-            timeLeft--;
-        }
+      if (error) console.error('Save submission error:', error);
+    } catch (e) {
+      console.error('Save submission exception:', e);
+    }
+  }
 
-        // Question Navigator (Exact Screenshot Colors)
-        function createNavigator() {
-            const container = document.getElementById('question-navigator');
-            for (let i = 1; i <= 32; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'w-6 h-6 rounded-full text-xs font-bold bg-[#3c3c3c] hover:bg-[#404040] transition-all flex items-center justify-center';
-                btn.textContent = i;
-                btn.onclick = () => goToQuestion(i);
-                container.appendChild(btn);
-            }
-            updateNavigator();
-        }
+  function saveCurrentAnswer() {
+    const q = questions[currentIndex];
+    if (!q) return;
+    const value = document.getElementById('answer-input').value;
+    saveAnswer(q.id, value);
+  }
 
-        function updateNavigator() {
-            const buttons = document.querySelectorAll('#question-navigator button');
-            buttons.forEach((btn, idx) => {
-                const state = questionStates[idx];
-                let classes = 'w-6 h-6 rounded-full text-xs font-bold transition-all flex items-center justify-center';
-                if (state === 'correct') classes += ' bg-[#0b6a0b] text-white';
-                else if (state === 'partial') classes += ' bg-[#ce9178] text-white';
-                else if (state === 'wrong') classes += ' bg-[#f44747] text-white';
-                else if (idx + 1 === currentQuestion) classes += ' bg-[#569cd6] text-white shadow-sm';
-                else classes += ' bg-[#3c3c3c] hover:bg-[#404040]';
-                btn.className = classes;
-            });
-        }
+  async function saveAllAnswers() {
+    for (const q of questions) {
+      const key = getAnswerStorageKey(q.id);
+      const currentValue = document.getElementById('answer-input').value;
+      const finalValue = (q.id === questions[currentIndex].id)
+        ? currentValue
+        : (localStorage.getItem(key) || '');
+      await saveAnswer(q.id, finalValue);
+    }
+  }
 
-        function goToQuestion(qno) {
-            currentQuestion = qno;
-            document.getElementById('current-question').textContent = qno;
-            updateNavigator();
-        }
+  // ====== Finish / Auto submit ======
+  async function autoSubmitExam() {
+    if (examLocked) return;
+    examLocked = true;
 
-        // MCQ 2min Timer
-        function startMcqTimer() {
-            if (currentQuestion <= 30) {
-                mcqTimeLeft = 120;
-                mcqInterval = setInterval(() => {
-                    mcqTimeLeft--;
-                    if (mcqTimeLeft <= 0) {
-                        clearInterval(mcqInterval);
-                        if (currentQuestion < 32) goToQuestion(currentQuestion + 1);
-                    }
-                }, 1000);
-            }
-        }
+    document.getElementById('finish-btn').disabled = true;
+    document.getElementById('finish-btn').textContent = 'Submitting...';
+    document.getElementById('finish-btn').classList.add('opacity-60', 'cursor-not-allowed');
 
-        // Buttons (Fully Functional)
-        document.getElementById('compile-btn').onclick = function() {
-            const code = editor.getValue();
-            const input = document.getElementById('input-data').value;
-            // Simulate Judge0 API call
-            setTimeout(() => {
-                document.getElementById('output-data').value = '5\n\n✅ Output matches expected result!';
-                questionStates[currentQuestion - 1] = 'partial';
-                updateNavigator();
-            }, 1000);
-        };
+    await saveAllAnswers();
 
-        document.getElementById('submit-btn').onclick = function() {
-            questionStates[currentQuestion - 1] = 'correct';
-            updateNavigator();
-            if (currentQuestion < 32) goToQuestion(currentQuestion + 1);
-            // Save to Supabase
-        };
+    let fallbackScore = 0;
+    questions.forEach(q => {
+      const val = localStorage.getItem(getAnswerStorageKey(q.id)) || '';
+      if (val.trim().length > 0) fallbackScore += 100;
+    });
 
-        function endExam() {
-            alert('⏰ Time Up! Auto-submitting...');
-        }
+    window.location.href = `results.html?contestId=${contestId}&score=${fallbackScore}`;
+  }
 
-        // Initialize
-        window.onload = function() {
-            createNavigator();
-            updateMainTimer();
-            timerInterval = setInterval(updateMainTimer, 1000);
-            goToQuestion(3);
-            startMcqTimer();
-        };
-    </script>
+  async function finishExamClick() {
+    const ok = confirm('Kya aap exam finish karna chahte hain? Baad me questions edit nahi kar paoge.');
+    if (!ok) return;
+    await autoSubmitExam();
+  }
+
+  // ====== Init ======
+  async function initExamPage() {
+    contestId = getContestIdFromUrl();
+    contestConfig = findContestById(contestId);
+
+    if (!contestId || !contestConfig) {
+      alert('Invalid contest.');
+      window.location.href = 'dashboard.html';
+      return;
+    }
+
+    const already = await checkAlreadyFinished();
+    if (already) return;
+
+    questions = pickQuestionsForContest(contestId);
+    currentIndex = 0;
+
+    renderContestHeader();
+    renderQuestionsList();
+    renderCurrentQuestion();
+
+    startTimer(60 * 60); // 1 hour
+  }
+
+  // ====== Events ======
+  document.getElementById('save-answer-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    saveCurrentAnswer();
+    alert('Answer saved!');
+  });
+
+  document.getElementById('run-debug-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    // Abhi ke liye dummy: sirf local save + alert
+    saveCurrentAnswer();
+    alert('Code run/debug feature abhi dummy hai. Baad me actual judge se connect karenge.');
+  });
+
+  document.getElementById('prev-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    saveCurrentAnswer();
+    if (currentIndex > 0) {
+      currentIndex--;
+      renderCurrentQuestion();
+      renderQuestionsList();
+    }
+  });
+
+  document.getElementById('next-btn').addEventListener('click', () => {
+    if (examLocked) return;
+    saveCurrentAnswer();
+    if (currentIndex < questions.length - 1) {
+      currentIndex++;
+      renderCurrentQuestion();
+      renderQuestionsList();
+    }
+  });
+
+  document.getElementById('finish-btn').addEventListener('click', finishExamClick);
+
+  document.addEventListener('DOMContentLoaded', initExamPage);
+</script>
+
 </body>
-</html>
+</html> 
