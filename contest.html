@@ -9,10 +9,7 @@
     * {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    .razorpay-payment-button,
-    .rzp-button {
-      display: none !important;
-    }
+    /* CSS HIDE REMOVED - BUTTONS VISIBLE HAINGE */
   </style>
 </head>
 
@@ -181,6 +178,38 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// COMPLETE PRIZE CONFIGS - TOP10 vs TOP100
+const prizeConfigs = {
+  top10: {
+    9: { entryFee: 9, minParticipants: 50, totalPrize: 250, payouts: [{fromRank:1,toRank:1,amount:100}, {fromRank:2,toRank:2,amount:50}, {fromRank:3,toRank:3,amount:25}] },
+    49: { entryFee: 49, minParticipants: 75, totalPrize: 1000, payouts: [{fromRank:1,toRank:1,amount:400}, {fromRank:2,toRank:3,amount:100}, {fromRank:4,toRank:10,amount:25}] },
+    99: { entryFee: 99, minParticipants: 100, totalPrize: 2000, payouts: [{fromRank:1,toRank:1,amount:800}, {fromRank:2,toRank:2,amount:400}, {fromRank:3,toRank:3,amount:200}, {fromRank:4,toRank:10,amount:50}] },
+    149: { entryFee: 149, minParticipants: 150, totalPrize: 3500, payouts: [{fromRank:1,toRank:1,amount:1500}, {fromRank:2,toRank:5,amount:300}] },
+    199: { entryFee: 199, minParticipants: 200, totalPrize: 5000, payouts: [{fromRank:1,toRank:1,amount:2500}, {fromRank:2,toRank:3,amount:500}, {fromRank:4,toRank:10,amount:100}] }
+  },
+  top100: {
+    99: { entryFee: 99, minParticipants: 200, totalPrize: 5000, payouts: [{fromRank:1,toRank:1,amount:1000}, {fromRank:2,toRank:10,amount:200}, {fromRank:11,toRank:100,amount:25}] }
+  }
+};
+
+// RAZORPAY BUTTON IDs - TOP10 vs TOP100
+const buttonIds = {
+  top10: {
+    9: "pl_Rt0YF2KK1nRmrO",
+    49: "pl_Rt0aENCzk6VBW6",
+    99: "pl_Rt0ToHijWYJDr6",
+    149: "pl_Rt0bZgbs4Ry3Io",
+    199: "pl_Rt0dtv8GdORMh6"
+  },
+  top100: {
+    9: "pl_Rt0YF2KK1nRmrO",
+    49: "pl_Rt0aENCzk6VBW6",
+    99: "pl_RwlDC6dl5SVEpC",  // Different ID for Top100
+    149: "pl_Rt0bZgbs4Ry3Io",
+    199: "pl_Rt0dtv8GdORMh6"
+  }
+};
+
 // Static text for free/paid
 const contests = {
   free: {
@@ -249,6 +278,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   const type = pageParams.get("type") === "paid" ? "paid" : "free";
   const c = contests[type];
 
+  // Update title based on variant
+  if (type === "paid" && variant === "top100") {
+    c.title = "Paid Mega Top100 – Cash Prizes for Top 100";
+    c.subtitle = "Weekend mega contest with Top 100 cash prize winners.";
+  }
+
   document.getElementById("contest-short").textContent = c.short;
   document.getElementById("badge").textContent = c.badge;
   document.getElementById("contest-title").textContent = c.title;
@@ -293,31 +328,37 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// Razorpay button IDs – inko apne dashboard ke IDs se match kara lo
-const buttonIdsTop10 = {
-  199: "pl_Rt0dtv8GdORMh6",
-  149: "pl_Rt0bZgbs4Ry3Io",
-  49:  "pl_Rt0aENCzk6VBW6",
-  9:   "pl_Rt0YF2KK1nRmrO",
-  99:  "pl_Rt0ToHijWYJDr6"
-};
+// FIXED: SAARRE ENTRY BUTTONS SHOW + Top10/Top100 support
+function setupEntryButtons() {
+  document.querySelectorAll(".entry-btn").forEach((btn) => {
+    btn.classList.remove("hidden");  // ALL BUTTONS VISIBLE
+    btn.addEventListener("click", () => updateSelectedEntry(Number(btn.dataset.amount)));
+  });
+  updateSelectedEntry(selectedAmount);
+}
 
-const buttonIdsTop100 = {
-  199: "pl_Rt0dtv8GdORMh6",
-  149: "pl_Rt0bZgbs4Ry3Io",
-  49:  "pl_Rt0aENCzk6VBW6",
-  9:   "pl_Rt0YF2KK1nRmrO",
-  99:  "pl_RwlDC6dl5SVEpC"
-};
-
-const buttonIds = variant === "top100" ? buttonIdsTop100 : buttonIdsTop10;
+function updateSelectedEntry(amount) {
+  selectedAmount = amount;
+  document.querySelectorAll(".entry-btn").forEach((btn) => {
+    const a = Number(btn.dataset.amount);
+    if (a === amount) {
+      btn.classList.add("border-emerald-400", "bg-emerald-500/20", "text-emerald-200", "ring-2", "ring-emerald-400/50");
+      btn.classList.remove("border-slate-600", "text-slate-100");
+    } else {
+      btn.classList.remove("border-emerald-400", "bg-emerald-500/20", "text-emerald-200", "ring-2", "ring-emerald-400/50");
+      btn.classList.add("border-slate-600", "text-slate-100");
+    }
+  });
+  renderContestDetails(amount);
+  renderPayButton(amount);
+}
 
 function renderPayButton(amount) {
   const payArea = document.getElementById("pay-area");
   payArea.innerHTML = `
     <button id="pay-btn"
-      class="w-full px-6 py-2.5 rounded-xl bg-emerald-500 text-slate-900 font-semibold text-xs md:text-sm hover:bg-emerald-400">
-      Pay ₹${amount}
+      class="w-full px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-green-500 text-slate-900 font-bold text-sm hover:from-emerald-600 hover:to-green-600 shadow-lg transform hover:scale-[1.02] transition-all duration-200">
+      💳 Pay ₹${amount} → Join Contest
     </button>
   `;
   const payBtn = document.getElementById("pay-btn");
@@ -330,11 +371,14 @@ function renderPayButton(amount) {
 }
 
 function loadPaymentButton(amount) {
-  const paymentId = buttonIds[amount];
+  const currentVariant = pageParams.get("variant") || "top10";
+  const paymentId = buttonIds[currentVariant][amount];
+  
   if (!paymentId) {
-    alert("Invalid amount selection");
+    alert(`₹${amount} payment button not configured for ${currentVariant}. Check Razorpay dashboard.`);
     return;
   }
+  
   const form = document.getElementById("payment-form");
   form.innerHTML = "";
   const script = document.createElement("script");
@@ -345,17 +389,17 @@ function loadPaymentButton(amount) {
   document.getElementById("razorpay-container").classList.remove("hidden");
 }
 
-// 99 ke liye variant ke hisaab se config pick karo
 function getConfigForAmount(amount) {
-  if (amount === 99 && typeof ENTRY_CONFIG_99_TOP10 !== "undefined" && typeof ENTRY_CONFIG_99_TOP100 !== "undefined") {
-    return variant === "top100" ? ENTRY_CONFIG_99_TOP100 : ENTRY_CONFIG_99_TOP10;
-  }
-  return typeof ENTRY_CONFIG !== "undefined" ? ENTRY_CONFIG[amount] : null;
+  const currentVariant = pageParams.get("variant") || "top10";
+  return prizeConfigs[currentVariant]?.[amount] || prizeConfigs.top10[amount];
 }
 
 function renderContestDetails(amount) {
   const config = getConfigForAmount(amount);
-  if (!config) return;
+  if (!config) {
+    document.getElementById("detail-entry-fee").textContent = `₹${amount}`;
+    return;
+  }
 
   document.getElementById("detail-entry-fee").textContent = `₹${config.entryFee}`;
   document.getElementById("detail-min-participants").textContent = config.minParticipants;
@@ -376,43 +420,6 @@ function renderContestDetails(amount) {
       }
     }
   });
-
-  if (amount === 99 && variant === "top100") {
-    document.getElementById("contest-subtitle").textContent =
-      "Weekend mega contest with Top 100 cash prize winners.";
-  }
-}
-
-function updateSelectedEntry(amount) {
-  selectedAmount = amount;
-  document.querySelectorAll(".entry-btn").forEach((btn) => {
-    const a = Number(btn.dataset.amount);
-    if (a === amount) {
-      btn.classList.remove("hidden", "border-slate-600", "text-slate-100");
-      btn.classList.add("border-emerald-400", "bg-emerald-500/10", "text-emerald-200");
-    } else {
-      btn.classList.add("hidden");
-    }
-  });
-  renderContestDetails(amount);
-  renderPayButton(amount);
-}
-
-function setupEntryButtons() {
-  const allowedAmount = selectedAmount;
-  document.querySelectorAll(".entry-btn").forEach((btn) => {
-    btn.replaceWith(btn.cloneNode(true));
-  });
-  document.querySelectorAll(".entry-btn").forEach((btn) => {
-    const a = Number(btn.dataset.amount);
-    if (a === allowedAmount) {
-      btn.classList.remove("hidden");
-      btn.addEventListener("click", () => updateSelectedEntry(a));
-    } else {
-      btn.classList.add("hidden");
-    }
-  });
-  updateSelectedEntry(allowedAmount);
 }
 
 // Supabase helpers
@@ -427,8 +434,10 @@ async function registerInSupabase(amount = "99") {
     await supabaseClient.from("contest_registrations").insert({
       user_id: data.user.id,
       contest_type: "paid",
+      contest_variant: pageParams.get("variant") || "top10",
       amount_paid: parseInt(amount),
-      payment_status: "success"
+      payment_status: "success",
+      timestamp: new Date().toISOString()
     });
   }
 }
@@ -438,18 +447,21 @@ async function handleRazorpaySuccess(amount) {
   showSuccessMessage();
 
   setTimeout(() => {
-    window.location.href = `exam.html?type=paid&amount=${amount}`;
+    const variantParam = pageParams.get("variant") || "top10";
+    window.location.href = `exam.html?type=paid&amount=${amount}&variant=${variantParam}`;
   }, 1500);
 }
 
 async function checkRegistrationStatus(type) {
   const { data, error } = await supabaseClient.auth.getUser();
   if (!error && data.user && type === "paid") {
+    const variantParam = pageParams.get("variant") || "top10";
     const { data: reg } = await supabaseClient
       .from("contest_registrations")
       .select("*")
       .eq("user_id", data.user.id)
       .eq("contest_type", "paid")
+      .eq("contest_variant", variantParam)
       .maybeSingle();
     if (reg) {
       document.getElementById("registeredBadge").classList.remove("hidden");
