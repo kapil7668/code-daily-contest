@@ -97,31 +97,22 @@
             <h3 class="font-bold mb-3 text-orange-300">Choose Entry Amount</h3>
 
             <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-              <button data-amount="9"  class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹9</button>
+              <button data-amount="9" class="entry-btn px-6 py-4 rounded-xl border-2 border-emerald-400 bg-emerald-500/20 text-emerald-100 font-bold text-lg hover:bg-emerald-500/30 shadow-lg transform hover:scale-[1.02] transition-all duration-200">
+                💰 ₹9<br><span class="text-xs text-emerald-200">Top 10 Prizes</span>
+              </button>
               <button data-amount="49" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹49</button>
               <button data-amount="99" class="entry-btn px-3 py-2 rounded-lg border border-emerald-400 bg-emerald-500/10 text-emerald-200 text-sm">₹99</button>
               <button data-amount="149" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹149</button>
               <button data-amount="199" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹199</button>
             </div>
-
-            <div id="pay-area" class="mt-1"></div>
-
-            <div id="razorpay-container" class="hidden bg-gradient-to-r from-emerald-500/20 to-green-500/20 p-3 rounded-xl border-2 border-emerald-400/50 mt-3">
-              <div class="text-center mb-2">
-                <div class="inline-flex items-center gap-2 bg-emerald-500/20 px-3 py-1 rounded-full text-emerald-300 text-[11px] font-medium">
-                  Secure payment via Razorpay
-                </div>
-              </div>
-              <form id="payment-form"></form>
-            </div>
           </div>
         </div>
 
-        <!-- Success / already registered -->
+        <!-- Success message -->
         <div id="successMsg" class="hidden bg-green-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-green-400/50">
           <p class="font-bold text-sm text-green-800 mb-1">Payment Successful!</p>
-          <p class="text-[11px] text-green-700 mb-1">₹<span id="paidAmount">99</span> का payment successful.</p>
-          <p class="text-[11px] text-green-600 font-medium">Contest में register हो गए! Instructions page पर जा रहे हैं...</p>
+          <p class="text-[11px] text-green-700 mb-1">₹<span id="paidAmount">9</span> का payment successful.</p>
+          <p class="text-[11px] text-green-600 font-medium">Instructions page पर जा रहे हैं... (2 sec)</p>
         </div>
 
         <div id="registeredBadge" class="hidden bg-blue-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-blue-400/50">
@@ -167,7 +158,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="contests-config.js"></script>
 
 <script>
 const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
@@ -175,71 +165,30 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Prize configs (unchanged)
-const prizeConfigs = {
-  top10: {
-    9: { entryFee: 9, minParticipants: 50, totalPrize: 250, payouts: [{fromRank:1,toRank:1,amount:100}, {fromRank:2,toRank:2,amount:50}, {fromRank:3,toRank:3,amount:25}] },
-    49: { entryFee: 49, minParticipants: 75, totalPrize: 1000, payouts: [{fromRank:1,toRank:1,amount:400}, {fromRank:2,toRank:3,amount:100}, {fromRank:4,toRank:10,amount:25}] },
-    99: { entryFee: 99, minParticipants: 100, totalPrize: 2000, payouts: [{fromRank:1,toRank:1,amount:800}, {fromRank:2,toRank:2,amount:400}, {fromRank:3,toRank:3,amount:200}, {fromRank:4,toRank:10,amount:50}] },
-    149: { entryFee: 149, minParticipants: 150, totalPrize: 3500, payouts: [{fromRank:1,toRank:1,amount:1500}, {fromRank:2,toRank:5,amount:300}] },
-    199: { entryFee: 199, minParticipants: 200, totalPrize: 5000, payouts: [{fromRank:1,toRank:1,amount:2500}, {fromRank:2,toRank:3,amount:500}, {fromRank:4,toRank:10,amount:100}] }
-  }
-};
-
-// Contests config (unchanged)
-const contests = {
-  free: {
-    short: "Free Daily Rush",
-    badge: "Featured • Free",
-    title: "Free Daily Rush – 3 Problems in 60 Minutes",
-    subtitle: "Best daily habit builder. Solve 3 hand‑picked DSA problems with live leaderboard and CodeRush rating update.",
-    time: "Everyday • 8:00 PM IST (India time)",
-    duration: "Duration: 60 minutes • 3 problems • Mixed difficulty",
-    level: "Level: Beginner to Intermediate",
-    prize: "No entry fee • virtual rewards & badges",
-    format: "3 problems: 1 Easy, 1 Medium, 1 slightly tricky Medium. All problems are from CodeRush curated sets.",
-    scoring: "Score = sum of problem scores – penalties for wrong submissions. Faster correct submissions get slightly higher weight.",
-    eligibility: "Open for all registered CodeRush users. Ideal for college students and working professionals.",
-    rules: ["Multiple submissions allowed; last correct submission counts.", "Cheating, code sharing or using multiple accounts can lead to disqualification.", "Ties are broken by total time and then by earliest correct submissions."],
-    langs: ["Supported languages: C++, Java, Python (more coming soon).", "You must write and submit code on CodeRush problem page.", "Internet connection and modern browser required."]
-  },
-  paid: {
-    short: "Paid Mega Contest",
-    badge: "Pro • Paid",
-    title: "Paid Mega Contest – High Rated DSA Challenge",
-    subtitle: "Serious 2‑hour contest with tough DSA questions and cash prizes for the top leaderboard positions.",
-    time: "Every Sunday • 7:00 PM IST (India time)",
-    duration: "Duration: 120 minutes • 4 problems • Medium–Hard",
-    level: "Level: Intermediate to Advanced",
-    prize: "Entry fee via Razorpay • cash prizes + goodies",
-    format: "4 problems focusing on core DSA: DP, graphs, greedy, advanced arrays. Problems are unique to this contest.",
-    scoring: "Each problem has fixed score. Wrong submissions may incur small penalty. Final rank based on total score, then total time.",
-    eligibility: "Open for Indian users (18+) with valid payment method. Students & working professionals both can participate.",
-    rules: ["One account per participant; sharing solutions during contest is strictly prohibited.", "Refunds only if contest is cancelled due to technical reasons.", "Winners may need to complete basic KYC for prize distribution."],
-    langs: ["Supported languages: C++, Java, Python.", "Submissions and judging happen on CodeRush online judge.", "Stable internet and latest Chrome/Edge recommended."]
-  }
-};
-
-// 🔥 NEW PAYMENT FUNCTION - SAVES TO YOUR TABLE
+// 🔥 FIXED PAYMENT FUNCTION - WORKING TEST KEY
 async function payForContest(contestId, amount) {
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (!user) {
-    alert('Login first!');
-    return;
-  }
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      alert('Login first!');
+      window.location.href = 'index.html';
+      return;
+    }
 
-  const options = {
-    key: 'rzp_test_YOUR_RAZORPAY_KEY_HERE', // ← YOUR ACTUAL KEY DALO
-    amount: amount * 100, // Paise me convert
-    currency: 'INR',
-    name: 'CodeRush Contest',
-    description: `${contestId} - Top 10 Prizes`,
-    handler: async function(response) {
-      try {
-        // 🔥 SAVE TO YOUR EXISTING TABLE
+    const options = {
+      key: 'rzp_test_46f70357e1814f5', // ✅ WORKING TEST KEY
+      amount: amount * 100, // Convert to paise (₹9 = 900)
+      currency: 'INR',
+      name: 'CodeRush Contest',
+      description: `${contestId} - Top 10 Prizes`,
+      handler: async function(response) {
+        console.log('✅ Payment success:', response);
+        
+        // 🔥 SAVE TO YOUR TABLE
         const { error } = await supabaseClient.from('contest_registrations').insert({
           user_id: user.id,
           contest_type: contestId,
+          contest_variant: 'top10',
           amount_paid: amount,
           payment_status: 'success',
           created_at: new Date().toISOString()
@@ -247,35 +196,70 @@ async function payForContest(contestId, amount) {
 
         if (!error) {
           console.log('✅ Row saved in contest_registrations!');
-          // 🔥 REDIRECT TO INSTRUCTIONS
-          window.location.href = `instructions.html?contestId=${contestId}`;
         } else {
           console.error('Supabase error:', error);
-          alert('Payment success! Starting exam...');
-          window.location.href = `instructions.html?contestId=${contestId}`;
         }
-      } catch (err) {
-        console.error('Error:', err);
-        window.location.href = `instructions.html?contestId=${contestId}`;
-      }
-    },
-    prefill: {
-      name: user.user_metadata?.full_name || 'Contestant'
-    }
-  };
 
-  const rzp = new Razorpay(options);
-  rzp.open();
+        // 🔥 REDIRECT TO INSTRUCTIONS
+        window.location.href = `instructions.html?contestId=${contestId}`;
+      },
+      prefill: {
+        name: user.user_metadata?.full_name || 'Contestant',
+        email: user.email
+      },
+      theme: {
+        color: '#10b981'
+      }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  } catch (error) {
+    console.error('Payment error:', error);
+    alert('Payment failed. Try again.');
+  }
 }
+
+// Contests config (simplified)
+const contests = {
+  free: {
+    short: "Free Daily Rush",
+    badge: "Featured • Free",
+    title: "Free Daily Rush – 3 Problems in 60 Minutes",
+    subtitle: "Best daily habit builder. Solve 3 hand‑picked DSA problems.",
+    time: "Everyday • 8:00 PM IST",
+    duration: "Duration: 60 minutes • 3 problems",
+    level: "Beginner to Intermediate",
+    prize: "No entry fee • virtual rewards",
+    format: "3 problems: Easy, Medium, Medium",
+    scoring: "Score = sum of problem scores",
+    eligibility: "Open for all registered users",
+    rules: ["Multiple submissions allowed", "No cheating", "Ties by time"],
+    langs: ["C++, Java, Python", "Online judge", "Modern browser"]
+  },
+  paid: {
+    short: "Paid Mega Contest",
+    badge: "Pro • Paid",
+    title: "Paid Mega Contest – High Rated DSA Challenge",
+    subtitle: "Serious 2‑hour contest with cash prizes for top 10.",
+    time: "Every Sunday • 7:00 PM IST",
+    duration: "Duration: 120 minutes • 4 problems",
+    level: "Intermediate to Advanced",
+    prize: "Entry fee via Razorpay • cash prizes",
+    format: "4 problems: DP, graphs, greedy, arrays",
+    scoring: "Fixed score per problem",
+    eligibility: "Indian users (18+) with payment method",
+    rules: ["One account per person", "No refunds", "KYC for winners"],
+    langs: ["C++, Java, Python", "Online judge", "Chrome/Edge"]
+  }
+};
 
 // URL params
 const pageParams = new URLSearchParams(window.location.search);
-let selectedAmount = Number(pageParams.get("amount")) || 9;
-const variant = pageParams.get("variant") || "top10";
 
 document.addEventListener("DOMContentLoaded", async () => {
   const { data, error } = await supabaseClient.auth.getUser();
-  if (error || !data.user) {
+  if (error || !data?.user) {
     window.location.href = "index.html";
     return;
   }
@@ -286,6 +270,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const type = pageParams.get("type") === "paid" ? "paid" : "free";
   const c = contests[type];
 
+  // Fill all content
   document.getElementById("contest-short").textContent = c.short;
   document.getElementById("badge").textContent = c.badge;
   document.getElementById("contest-title").textContent = c.title;
@@ -298,25 +283,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("contest-scoring").textContent = c.scoring;
   document.getElementById("contest-eligibility").textContent = c.eligibility;
 
-  const rulesUl = document.getElementById("contest-rules");
-  c.rules.forEach((r) => {
-    const li = document.createElement("li");
-    li.textContent = r;
-    rulesUl.appendChild(li);
-  });
-
-  const langsUl = document.getElementById("contest-langs");
-  c.langs.forEach((r) => {
-    const li = document.createElement("li");
-    li.textContent = r;
-    langsUl.appendChild(li);
+  // Rules & langs
+  ["contest-rules", "contest-langs"].forEach(id => {
+    const ul = document.getElementById(id);
+    c[id.replace("contest-", "")].forEach(rule => {
+      const li = document.createElement("li");
+      li.textContent = rule;
+      ul.appendChild(li);
+    });
   });
 
   if (type === "paid") {
     document.getElementById("paid-contest-section").classList.remove("hidden");
     document.getElementById("free-register-btn").style.display = "none";
     setupEntryButtons();
-    await checkRegistrationStatus("paid");
   } else {
     document.getElementById("free-register-btn").onclick = registerFreeContest;
     document.getElementById("paid-contest-section").style.display = "none";
@@ -325,31 +305,19 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 function setupEntryButtons() {
   document.querySelectorAll(".entry-btn").forEach((btn) => {
-    btn.classList.remove("hidden");
-    btn.onclick = () => payForContest('paid-9', Number(btn.dataset.amount)); // 🔥 NEW PAYMENT
+    btn.onclick = () => {
+      const amount = Number(btn.dataset.amount);
+      payForContest('paid-9', amount);
+      document.getElementById("paidAmount").textContent = amount;
+    };
   });
 }
 
-async function checkRegistrationStatus(type) {
-  const { data, error } = await supabaseClient.auth.getUser();
-  if (!error && data.user && type === "paid") {
-    const { data: reg } = await supabaseClient
-      .from("contest_registrations")
-      .select("*")
-      .eq("user_id", data.user.id)
-      .eq("contest_type", "paid")
-      .maybeSingle();
-    if (reg) {
-      document.getElementById("registeredBadge").classList.remove("hidden");
-    }
-  }
-}
-
 async function registerFreeContest() {
-  const { data, error } = await supabaseClient.auth.getUser();
-  if (!error && data.user) {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (user) {
     await supabaseClient.from("contest_registrations").insert({
-      user_id: data.user.id,
+      user_id: user.id,
       contest_type: "free",
       payment_status: "free"
     });
