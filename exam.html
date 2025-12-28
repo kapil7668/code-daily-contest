@@ -3,154 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CodeRush - Live Exam</title>
+    <title>CodeRush Exam - Question 3</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/monaco-editor@latest/min/vs/loader.js"></script>
+    <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
     <style>
-        .question-btn { transition: all 0.2s; }
-        .question-btn.answered { @apply bg-emerald-500/20 border-emerald-400; }
-        .question-btn.visited { @apply bg-orange-500/20 border-orange-400; }
-        .question-btn.current { @apply bg-emerald-500/50 border-emerald-400 ring-2 ring-emerald-400/50; }
+        .question-navigator { writing-mode: vertical-rl; }
+        .timer-red { color: #ef4444; font-size: 2rem; font-weight: bold; }
+        .mcq-selected { background-color: #10b981 !important; color: white !important; }
+        .mcq-partial { background-color: #f59e0b !important; color: white !important; }
+        .mcq-wrong { background-color: #ef4444 !important; color: white !important; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen overflow-hidden">
-    <!-- TOP BAR -->
-    <div class="bg-gradient-to-r from-slate-900 to-slate-800 border-b-2 border-emerald-500 p-4 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-xl flex items-center justify-center text-2xl font-black">C</div>
-            <div>
-                <div class="font-bold text-xl">Paid Mega Exam</div>
-                <div class="text-emerald-300">₹9 | Live</div>
-            </div>
-        </div>
-        <div class="flex items-center gap-6">
-            <div id="timer" class="text-3xl font-mono bg-gradient-to-r from-red-500 to-orange-500 px-8 py-3 rounded-2xl shadow-2xl">90:00</div>
-            <div class="text-sm text-slate-400">Q1/32 | MCQ: 1/30</div>
+<body class="bg-gray-900 text-white min-h-screen flex">
+    <!-- Left Navigator -->
+    <div class="w-20 bg-gray-800 flex flex-col p-4 question-navigator">
+        <div class="text-xs mb-4 rotate-180 text-center">Ques</div>
+        <div id="question-navigator" class="space-y-1">
+            <!-- 32 buttons will be generated here -->
         </div>
     </div>
 
-    <div class="flex h-[calc(100vh-100px)]">
-        <!-- SIDE PANEL (Question Navigator) -->
-        <div class="w-20 bg-slate-900/80 border-r border-slate-700 flex flex-col p-4 gap-2">
-            <div class="text-xs text-slate-400 text-center font-bold mb-4">MCQs (1-30)</div>
-            <div id="mcq-nav" class="flex flex-wrap gap-1.5 justify-center flex-1"></div>
-            <div class="text-xs text-slate-400 text-center font-bold mt-6 mb-2">Coding</div>
-            <button id="coding-q1" class="question-btn w-8 h-8 rounded-lg border-2 border-slate-600 bg-slate-800/50 text-xs font-bold">31</button>
-            <button id="coding-q2" class="question-btn w-8 h-8 rounded-lg border-2 border-slate-600 bg-slate-800/50 text-xs font-bold">32</button>
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col">
+        <!-- Top Bar -->
+        <div class="bg-gray-800 p-4 flex justify-between items-center border-b border-gray-700">
+            <div class="flex items-center space-x-4">
+                <div>Quiz</div>
+                <div>Question <span id="current-question">3</span>/32</div>
+            </div>
+            <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-2">
+                    <div id="timer" class="timer-red">90:00</div>
+                </div>
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            </div>
         </div>
 
-        <!-- MAIN CONTENT -->
-        <div class="flex-1 flex flex-col">
-            <!-- QUESTION CONTENT -->
-            <div id="question-content" class="flex-1 p-8 overflow-auto">
-                <!-- DYNAMIC CONTENT -->
-            </div>
+        <!-- Problem Statement -->
+        <div class="flex-1 p-8 overflow-auto">
+            <div class="max-w-4xl mx-auto">
+                <!-- Question Title -->
+                <h1 class="text-2xl font-bold mb-6 text-blue-400">Question 3</h1>
+                
+                <!-- Problem Description -->
+                <div class="prose prose-invert max-w-none mb-8 p-6 bg-gray-800 rounded-lg">
+                    <h2 class="text-xl mb-4">Length of Last Word</h2>
+                    <p class="mb-4">Given a string <code class="bg-gray-700 px-2 py-1 rounded text-sm">s</code> consisting of uppercase, lowercase letters and spaces, return the length of the <strong>last</strong> word in the string.</p>
+                    
+                    <p class="mb-4"><strong>Note:</strong> A word is a maximal substring consisting only of non-space characters.</strong></p>
+                    
+                    <h3 class="text-lg mt-8 mb-3">Example 1:</h3>
+                    <div class="bg-gray-900 p-4 rounded-lg mb-4">
+                        <strong>Input:</strong> <code>s = "Hello World"</code><br>
+                        <strong>Output:</strong> <code>5</code><br>
+                        <strong>Explanation:</strong> The last word is "World" with length 5.
+                    </div>
 
-            <!-- BOTTOM ACTION BAR -->
-            <div class="bg-slate-900/90 border-t border-slate-700 p-4 flex gap-4">
-                <button id="markRead" class="flex-1 px-6 py-3 bg-blue-600/50 border border-blue-500/50 rounded-xl hover:bg-blue-500/70 font-semibold transition-all">📖 Mark as Read</button>
-                <button id="nextBtn" class="flex-2 px-8 py-3 bg-gradient-to-r from-emerald-500 to-cyan-500 text-slate-900 font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all">Next →</button>
+                    <h3 class="text-lg mt-8 mb-3">Example 2:</h3>
+                    <div class="bg-gray-900 p-4 rounded-lg mb-8">
+                        <strong>Input:</strong> <code>s = "   fly me   to   the moon  "</code><br>
+                        <strong>Output:</strong> <code>4</code><br>
+                        <strong>Explanation:</strong> The last word is "moon" with length 4.
+                    </div>
+
+                    <h3 class="text-lg mt-6 mb-4">Constraints:</h3>
+                    <ul class="list-disc list-inside space-y-1 mb-8">
+                        <li><code>1 <= s.length <= 10<sup>4</sup></code></li>
+                        <li><code>s</code> consists only of English letters and spaces <code>' '</code>.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Editor & Controls -->
+        <div class="bg-gray-800 p-6 border-t border-gray-700">
+            <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Monaco Editor -->
+                <div class="h-64 lg:h-96">
+                    <div id="monaco-editor" class="h-full"></div>
+                </div>
+
+                <!-- Right Panel: Input/Output -->
+                <div class="space-y-4">
+                    <!-- Input -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-300">Input</label>
+                        <textarea id="input-data" class="w-full h-24 p-3 bg-gray-900 border border-gray-600 rounded-lg text-sm font-mono resize-none" placeholder="Enter input for testing...">Hello World</textarea>
+                    </div>
+
+                    <!-- Output -->
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-300">Output</label>
+                        <textarea id="output-data" class="w-full h-24 p-3 bg-gray-900 border border-gray-600 rounded-lg text-sm font-mono resize-none" readonly>5</textarea>
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex space-x-3 pt-2">
+                        <button id="compile-btn" class="flex-1 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium transition-all duration-200">Compile & Test</button>
+                        <button id="submit-btn" class="flex-1 bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-medium transition-all duration-200">Submit</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // GLOBAL STATE
-        let currentQuestion = 1;
-        let totalTime = 5400; // 90 mins
-        let mcqTime = 120; // 2 mins per MCQ
-        let questionStatus = {};
-        const totalQuestions = 32;
+        let editor;
+        let currentQuestion = 3;
+        let totalTime = 90 * 60; // 90 minutes
+        let timeLeft = totalTime;
+        let timerInterval;
+        let mcqTimer = 120; // 2 minutes per MCQ
+        let questionStates = Array(32).fill('unattempted'); // unattempted, partial, correct, wrong
 
-        // TIMER
-        const timerEl = document.getElementById('timer');
-        setInterval(() => {
-            totalTime--;
-            const mins = Math.floor(totalTime / 60);
-            const secs = totalTime % 60;
-            timerEl.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
-        }, 1000);
+        // Initialize Monaco Editor
+        require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function() {
+            editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+                value: `def lengthOfLastWord(s):
+    # Remove trailing spaces and split by spaces
+    words = s.strip().split()
+    return len(words[-1]) if words else 0`,
+                language: 'python',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontSize: 14,
+                minimap: { enabled: false }
+            });
+        });
 
-        // MCQ QUESTIONS DATA
-        const mcqQuestions = [
-            {
-                id: 1,
-                question: "What is the time complexity of binary search?",
-                options: ["O(n)", "O(log n)", "O(n log n)", "O(n²)"],
-                correct: 1
+        // Timer
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                endExam();
+                return;
             }
-            // Add 29 more...
-        ];
+            timeLeft--;
+        }
 
-        // CODING QUESTIONS
-        const codingQuestions = [
-            {
-                id: 31,
-                title: "Word Length Counter",
-                desc: "Given a sentence, return the length of each word.",
-                input: `5\nhello world\ncode rush\njavascript\npython\njava`,
-                output: `5 5\n4 4\n10\n6\n4`
-            }
-        ];
-
-        // Initialize question navigator
-        function initQuestionNav() {
-            const mcqNav = document.getElementById('mcq-nav');
-            for(let i = 1; i <= 30; i++) {
+        // Question Navigator
+        function createNavigator() {
+            const container = document.getElementById('question-navigator');
+            for (let i = 1; i <= 32; i++) {
                 const btn = document.createElement('button');
-                btn.className = 'question-btn w-7 h-7 rounded border-2 border-slate-600 bg-slate-800/50 text-xs font-bold';
+                btn.className = 'w-6 h-6 rounded-full text-xs font-bold bg-gray-700 hover:bg-gray-600 transition-all rotate-180';
                 btn.textContent = i;
                 btn.onclick = () => goToQuestion(i);
-                mcqNav.appendChild(btn);
+                container.appendChild(btn);
             }
+            updateNavigator();
         }
 
-        function goToQuestion(qNum) {
-            currentQuestion = qNum;
-            updateQuestionDisplay();
-            updateNavButtons();
-        }
-
-        function updateNavButtons() {
-            // Update all buttons status
-            document.querySelectorAll('.question-btn').forEach((btn, index) => {
-                const qNum = index < 30 ? index + 1 : 30 + (index - 29);
-                if (questionStatus[qNum]?.answered) btn.classList.add('answered');
-                else if (questionStatus[qNum]?.visited) btn.classList.add('visited');
-                if (qNum === currentQuestion) btn.classList.add('current');
-                else btn.classList.remove('current');
+        function updateNavigator() {
+            const buttons = document.querySelectorAll('#question-navigator button');
+            buttons.forEach((btn, index) => {
+                const state = questionStates[index];
+                btn.className = `w-6 h-6 rounded-full text-xs font-bold rotate-180 transition-all ${
+                    state === 'correct' ? 'bg-green-500 text-white' :
+                    state === 'partial' ? 'bg-orange-500 text-white' :
+                    state === 'wrong' ? 'bg-red-500 text-white' :
+                    index + 1 === currentQuestion ? 'bg-blue-500 text-white shadow-lg' :
+                    'bg-gray-700 hover:bg-gray-600'
+                }`;
             });
         }
 
-        function updateQuestionDisplay() {
-            const contentEl = document.getElementById('question-content');
+        function goToQuestion(qno) {
+            currentQuestion = qno;
+            document.getElementById('current-question').textContent = currentQuestion;
+            updateNavigator();
+            // Load question content here
+        }
+
+        // MCQ Auto-next Timer (for questions 1-30)
+        function startMcqTimer() {
             if (currentQuestion <= 30) {
-                // MCQ
-                const q = mcqQuestions[currentQuestion - 1];
-                contentEl.innerHTML = `
-                    <div class="max-w-3xl mx-auto">
-                        <h2 class="text-2xl font-bold mb-6 text-emerald-400">Q${currentQuestion}: ${q.question}</h2>
-                        <div class="space-y-3">
-                            ${q.options.map((opt, i) => `
-                                <label class="flex items-center p-4 bg-slate-800/50 border-2 border-slate-600 rounded-xl cursor-pointer hover:border-emerald-400 hover:bg-emerald-500/10 transition-all">
-                                    <input type="radio" name="q${currentQuestion}" value="${i}" class="w-5 h-5 text-emerald-500">
-                                    <span class="ml-4 text-lg">${opt}</span>
-                                </label>
-                            `).join('')}
-                        </div>
-                    </div>
-                `;
-            } else {
-                // CODING - Monaco will load here
-                contentEl.innerHTML = '<div id="coding-editor" style="height: 500px;"></div>';
-                loadMonacoEditor();
+                let mcqTimeLeft = 120;
+                const mcqInterval = setInterval(() => {
+                    mcqTimeLeft--;
+                    if (mcqTimeLeft <= 0) {
+                        clearInterval(mcqInterval);
+                        nextQuestion();
+                    }
+                }, 1000);
             }
         }
 
-        initQuestionNav();
-        updateQuestionDisplay();
-        updateNavButtons();
+        function nextQuestion() {
+            if (currentQuestion < 32) {
+                goToQuestion(currentQuestion + 1);
+                startMcqTimer();
+            }
+        }
+
+        // Compile & Test
+        document.getElementById('compile-btn').onclick = function() {
+            const code = editor.getValue();
+            const input = document.getElementById('input-data').value;
+            
+            // Simulate compilation
+            questionStates[currentQuestion - 1] = 'partial';
+            document.getElementById('output-data').value = '5\n\nOutput matches expected result!';
+            updateNavigator();
+        };
+
+        // Submit
+        document.getElementById('submit-btn').onclick = function() {
+            questionStates[currentQuestion - 1] = 'correct';
+            updateNavigator();
+            nextQuestion();
+        };
+
+        // Exam End
+        function endExam() {
+            alert('Time Up! Submitting exam...');
+            // Save results to Supabase
+        }
+
+        // Initialize
+        window.onload = function() {
+            createNavigator();
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+            goToQuestion(3);
+            startMcqTimer();
+        };
     </script>
 </body>
 </html>
