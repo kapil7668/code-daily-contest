@@ -8,9 +8,14 @@
   <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
   <style>
     * { font-family: system-ui, sans-serif; }
-    .nav-active { background: #10b981 !important; color: white !important; box-shadow: 0 4px 12px rgba(16,185,129,0.4); }
-    .nav-done { background: #f59e0b !important; color: white !important; }
+    .nav-unattempted { background: #374151 !important; color: white !important; border: 2px solid #4b5563 !important; }
+    .nav-attempted { background: #f59e0b !important; color: white !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
+    .nav-active { background: #10b981 !important; color: white !important; box-shadow: 0 4px 12px rgba(16,185,129,0.6); }
     .nav-coding { background: #3b82f6 !important; color: white !important; }
+    .coding-interface { display: none; }
+    .mcq-interface { display: block; }
+    body.coding-mode .coding-interface { display: block !important; }
+    body.coding-mode .mcq-interface { display: none !important; }
   </style>
 </head>
 <body class="min-h-screen text-slate-100 bg-slate-950 p-8">
@@ -51,7 +56,7 @@
         <div id="question-statement" class="bg-slate-800 p-6 rounded-xl border border-slate-700 min-h-[200px] text-sm leading-relaxed prose prose-invert max-w-none"></div>
 
         <!-- MCQ Interface -->
-        <div id="mcq-interface" class="space-y-3">
+        <div id="mcq-interface" class="mcq-interface space-y-3">
           <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
             <input type="radio" name="mcq" value="A" class="w-5 h-5 text-emerald-500 ml-4">
             <span id="opt-A" class="ml-4 text-sm font-medium">Loading option A...</span>
@@ -70,6 +75,19 @@
           </label>
         </div>
 
+        <!-- CODING Interface -->
+        <div id="coding-interface" class="coding-interface">
+          <div class="bg-slate-700 p-3 rounded-xl mb-4 flex justify-between items-center text-sm">
+            <span>🛠️ Code Editor - Python 3</span>
+            <span id="editor-status">Ln 1, Col 1</span>
+          </div>
+          <div id="monaco-editor" class="h-64 border border-slate-600 rounded-xl mb-4"></div>
+          <div class="flex gap-3">
+            <button id="compile-btn" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all">Compile & Test</button>
+            <button id="submit-code-btn" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all">Submit Code</button>
+          </div>
+        </div>
+
         <!-- Action Buttons -->
         <div class="flex gap-3 pt-4">
           <button id="prev-btn" class="px-8 py-3 border border-slate-600 rounded-xl text-sm hover:bg-slate-700 transition-all flex-1">← Previous</button>
@@ -82,27 +100,22 @@
 
   <script src="contests-config.js"></script>
   <script>
-    // ====== DYNAMIC QUESTIONS LOADER ======
+    // ====== STATE ======
     let currentQuestion = 0;
     let mainTime = 90 * 60;
     let questionTime = 120;
     let contestId = new URLSearchParams(window.location.search).get('contestId') || 'free-200';
     let contestConfig, questions = [];
     let mainTimerInt, questionTimerInt;
+    let editor = null;
+    let questionStates = Array(32).fill('unattempted'); // unattempted, attempted, active, coding
+    let mcqAnswers = {};
 
-    // Load questions file dynamically
+    // Dynamic questions loader
     function loadQuestionsFile() {
       const script = document.createElement('script');
-      script.src = `./questions/${contestId}.js`;
-      script.onload = () => {
-        const questionsKey = contestId.toUpperCase().replace(/-/g, '_') + '_QUESTIONS';
-        if (window[questionsKey]) {
-          questions = window[questionsKey];
-        } else {
-          questions = generateFallbackQuestions();
-        }
-        initExam();
-      };
+      script.src = `./questions/${contestId}.js?t=${Date.now()}`;
+      script.onload = initExam;
       script.onerror = () => {
         questions = generateFallbackQuestions();
         initExam();
@@ -110,26 +123,43 @@
       document.head.appendChild(script);
     }
 
-    // Fallback questions if file missing
     function generateFallbackQuestions() {
       return Array.from({length: 30}, (_, i) => ({
         title: `Q${i+1}`,
-        statement: `Default MCQ ${i+1}: Basic programming question`,
+        statement: `MCQ ${i+1}: Programming question`,
         options: [`A) Option ${i+1}`, `B) Option ${i+2}`, `C) Option ${i+3}`, `D) Option ${i+4}`],
-        correct: String.fromCharCode(65 + (i % 4)),
         time: 120,
         type: 'mcq'
       })).concat([
-        {title: 'Q31: Coding 1', statement: 'Default coding problem 1', type: 'coding', time: 900},
-        {title: 'Q32: Coding 2', statement: 'Default coding problem 2', type: 'coding', time: 900}
+        {title: 'Q31: Coding 1', statement: 'Write code solution', type: 'coding', time: 900},
+        {title: 'Q32: Coding 2', statement: 'Write code solution', type: 'coding', time: 900}
       ]);
+    }
+
+    // Monaco Editor
+    function initMonaco() {
+      require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+      require(['vs/editor/editor.main'], function() {
+        editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+          value: '# Write your solution here\n',
+          language: 'python',
+          theme: 'vs-dark',
+          fontSize: 14,
+          minimap: { enabled: false },
+          automaticLayout: true
+        });
+      });
     }
 
     // ====== MAIN INIT ======
     function initExam() {
+      const questionsKey = contestId.toUpperCase().replace(/-/g, '_') + '_QUESTIONS';
+      questions = window[questionsKey] || generateFallbackQuestions();
+      
       contestConfig = window.CONTESTS?.find(c => c.id === contestId) || window.CONTESTS[0];
       document.getElementById('contest-title').textContent = contestConfig?.title || 'Contest';
       
+      initMonaco();
       loadQuestion();
       updateNavigator();
       startTimers();
@@ -142,21 +172,19 @@
         const h = Math.floor(mainTime / 3600);
         const m = Math.floor((mainTime % 3600) / 60);
         const s = mainTime % 60;
-        document.getElementById('main-timer').textContent = 
-          `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        if (mainTime <= 0) alert('⏰ Exam Time Up!');
+        document.getElementById('main-timer').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
       }, 1000);
 
       questionTimerInt = setInterval(() => {
         questionTime--;
         const m = Math.floor(questionTime / 60);
         const s = questionTime % 60;
-        document.getElementById('question-timer').textContent = `${m}:${s.toString().padStart(2, '0')}`;
+        document.getElementById('question-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
         if (questionTime <= 0) nextQuestion();
       }, 1000);
     }
 
-    // ====== QUESTION FUNCTIONS ======
+    // ====== QUESTIONS ======
     function loadQuestion() {
       const q = questions[currentQuestion];
       document.getElementById('question-label').textContent = `Question ${currentQuestion + 1}/32`;
@@ -164,69 +192,97 @@
       document.getElementById('question-statement').innerHTML = q.statement.replace(/\n/g, '<br>');
       
       const isCoding = currentQuestion >= 30;
+      document.body.className = isCoding ? 'coding-mode' : '';
       document.getElementById('phase-indicator').textContent = 
         isCoding ? `🔵 Coding Phase (${currentQuestion + 1}/32)` : `🟢 MCQ Phase (${currentQuestion + 1}/32)`;
       document.getElementById('question-tags').textContent = 
         isCoding ? '💻 Coding • 15min' : '📝 MCQ • 2min (+4/-1)';
       
-      if (q.options?.length === 4) {
+      // Clear radio buttons
+      document.querySelectorAll('input[name="mcq"]').forEach(r => r.checked = false);
+      
+      // Load MCQ options
+      if (q.options?.length === 4 && !isCoding) {
         ['A', 'B', 'C', 'D'].forEach((letter, i) => {
           document.getElementById(`opt-${letter}`).textContent = q.options[i];
         });
       }
       
-      questionTime = q.time || (currentQuestion >= 30 ? 900 : 120);
+      questionTime = q.time || (isCoding ? 900 : 120);
+      updateNavigator();
     }
 
     function nextQuestion() {
+      saveCurrentAnswer();
       if (currentQuestion < 31) {
         currentQuestion++;
         loadQuestion();
-        updateNavigator();
       }
     }
 
     function prevQuestion() {
+      saveCurrentAnswer();
       if (currentQuestion > 0) {
         currentQuestion--;
         loadQuestion();
-        updateNavigator();
       }
     }
 
+    // ====== SAVE SYSTEM (Auto + Manual) ======
+    function saveCurrentAnswer() {
+      const q = questions[currentQuestion];
+      const isCoding = currentQuestion >= 30;
+      
+      if (isCoding && editor) {
+        localStorage.setItem(`code_${contestId}_Q${currentQuestion + 1}`, editor.getValue());
+        questionStates[currentQuestion] = 'attempted';
+      } else {
+        const selected = document.querySelector('input[name="mcq"]:checked');
+        if (selected) {
+          mcqAnswers[currentQuestion] = selected.value;
+          localStorage.setItem(`mcq_${contestId}_Q${currentQuestion + 1}`, selected.value);
+          questionStates[currentQuestion] = 'attempted';
+        }
+      }
+    }
+
+    // ====== NAVIGATOR ======
     function updateNavigator() {
       const nav = document.getElementById('questions-nav');
       nav.innerHTML = '';
       questions.forEach((q, i) => {
         const btn = document.createElement('button');
+        const isCoding = i >= 30;
         btn.className = `w-full h-12 rounded-xl text-sm font-bold border-2 mb-2 transition-all shadow-md ${
           i === currentQuestion ? 'nav-active' :
-          i < currentQuestion ? 'nav-done' :
-          i >= 30 ? 'nav-coding' : 'bg-slate-700 hover:bg-slate-600 border-slate-600'
+          questionStates[i] === 'attempted' ? 'nav-attempted' :
+          isCoding ? 'nav-coding' : 'nav-unattempted'
         }`;
-        btn.innerHTML = i >= 30 ? `C${i-29}` : `${i + 1}`;
+        btn.innerHTML = isCoding ? `C${i-29}` : `${i + 1}`;
         btn.onclick = () => {
+          saveCurrentAnswer();
           currentQuestion = i;
           loadQuestion();
-          updateNavigator();
         };
         nav.appendChild(btn);
       });
     }
 
-    // ====== EVENT LISTENERS ======
+    // ====== EVENTS ======
     document.getElementById('next-btn').onclick = nextQuestion;
     document.getElementById('prev-btn').onclick = prevQuestion;
     document.getElementById('save-btn').onclick = () => {
-      const selected = document.querySelector('input[name="mcq"]:checked');
-      if (selected) {
-        alert(`✅ Saved: ${selected.value} for Q${currentQuestion + 1}`);
-      } else {
-        alert('📝 Answer saved!');
-      }
+      saveCurrentAnswer();
+      // No alert popup - silent save
     };
 
-    // ====== START ======
+    document.querySelectorAll('input[name="mcq"]').forEach(radio => {
+      radio.onchange = () => {
+        saveCurrentAnswer();
+        updateNavigator();
+      };
+    });
+
     document.addEventListener('DOMContentLoaded', loadQuestionsFile);
   </script>
 </body>
