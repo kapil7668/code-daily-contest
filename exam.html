@@ -82,95 +82,62 @@
 
   <script src="contests-config.js"></script>
   <script>
-    // ====== UNIQUE QUESTIONS FOR EACH CONTEST (30 MCQ + 2 Coding) ======
-    function generateContestQuestions(contestId) {
-      const mcqQuestions = [];
-      
-      // Contest-specific MCQ themes
-      const themes = {
-        'free-200': 'Basic Programming',
-        'free-500': 'Data Structures', 
-        'paid-9': 'Algorithms Speed',
-        'paid-49': 'DSA Medium',
-        'paid-99': 'Advanced DSA',
-        'paid-149': 'Elite Coding',
-        'paid-199': 'Champion Level',
-        'paid-99-top100': 'Grand League'
-      };
-      
-      const theme = themes[contestId] || 'Programming';
-      
-      // Generate 30 UNIQUE MCQs per contest
-      for(let i = 1; i <= 30; i++) {
-        const qNum = i < 10 ? `0${i}` : i;
-        mcqQuestions.push({
-          title: `Q${i}`,
-          statement: `${theme} MCQ ${qNum}: What is the output?\n\n<code>function ${['sum','max','find','sort'][i%4]}(${['a','arr','n','x'][i%4]}) {\n  // code snippet ${i}\n}</code>`,
-          options: [
-            `A) ${['0','[]','n+1','false'][i%4]}`,
-            `B) ${['n','[1,2,3]','n','true'][i%4]}`,
-            `C) ${['Error','undefined','-1','null'][i%4]}`,
-            `D) ${['Infinite loop','NaN','0','"error"'][i%4]}`
-          ],
-          correct: String.fromCharCode(65 + (i % 4)), // A,B,C,D cycle
-          time: 120,
-          type: 'mcq'
-        });
-      }
-      
-      // Contest-specific Coding problems
-      const codingProblems = {
-        'free-200': ['Two Sum', 'Palindrome Number'],
-        'free-500': ['Merge Intervals', 'Longest Palindrome'],
-        'paid-9': ['Rotate Array', 'Max Water Container'],
-        'paid-49': ['Product Except Self', 'Group Anagrams'],
-        'paid-99': ['Trapping Rain Water', 'Longest Valid Parentheses'],
-        'paid-149': ['Median of Two Sorted Arrays', 'Regular Expression Matching'],
-        'paid-199': ['Merge k Sorted Lists', 'Word Ladder II'],
-        'paid-99-top100': ['N-Queens', 'Sudoku Solver']
-      };
-      
-      return [
-        ...mcqQuestions,
-        {
-          title: 'Q31: ' + (codingProblems[contestId]?.[0] || 'Coding Challenge 1'),
-          statement: `Implement ${codingProblems[contestId]?.[0] || 'advanced algorithm'}. See detailed problem statement above.`,
-          options: [],
-          time: 900,
-          type: 'coding'
-        },
-        {
-          title: 'Q32: ' + (codingProblems[contestId]?.[1] || 'Coding Challenge 2'),
-          statement: `Solve ${codingProblems[contestId]?.[1] || 'hard problem'}. Full problem description above.`,
-          options: [],
-          time: 900,
-          type: 'coding'
-        }
-      ];
-    }
-
-    // ====== APP STATE ======
+    // ====== DYNAMIC QUESTIONS LOADER ======
     let currentQuestion = 0;
     let mainTime = 90 * 60;
     let questionTime = 120;
     let contestId = new URLSearchParams(window.location.search).get('contestId') || 'free-200';
     let contestConfig, questions = [];
+    let mainTimerInt, questionTimerInt;
+
+    // Load questions file dynamically
+    function loadQuestionsFile() {
+      const script = document.createElement('script');
+      script.src = `./questions/${contestId}.js`;
+      script.onload = () => {
+        const questionsKey = contestId.toUpperCase().replace(/-/g, '_') + '_QUESTIONS';
+        if (window[questionsKey]) {
+          questions = window[questionsKey];
+        } else {
+          questions = generateFallbackQuestions();
+        }
+        initExam();
+      };
+      script.onerror = () => {
+        questions = generateFallbackQuestions();
+        initExam();
+      };
+      document.head.appendChild(script);
+    }
+
+    // Fallback questions if file missing
+    function generateFallbackQuestions() {
+      return Array.from({length: 30}, (_, i) => ({
+        title: `Q${i+1}`,
+        statement: `Default MCQ ${i+1}: Basic programming question`,
+        options: [`A) Option ${i+1}`, `B) Option ${i+2}`, `C) Option ${i+3}`, `D) Option ${i+4}`],
+        correct: String.fromCharCode(65 + (i % 4)),
+        time: 120,
+        type: 'mcq'
+      })).concat([
+        {title: 'Q31: Coding 1', statement: 'Default coding problem 1', type: 'coding', time: 900},
+        {title: 'Q32: Coding 2', statement: 'Default coding problem 2', type: 'coding', time: 900}
+      ]);
+    }
 
     // ====== MAIN INIT ======
-    function init() {
+    function initExam() {
       contestConfig = window.CONTESTS?.find(c => c.id === contestId) || window.CONTESTS[0];
-      questions = generateContestQuestions(contestId); // UNIQUE per contest!
+      document.getElementById('contest-title').textContent = contestConfig?.title || 'Contest';
       
-      document.getElementById('contest-title').textContent = contestConfig.title;
       loadQuestion();
       updateNavigator();
       startTimers();
     }
 
     // ====== TIMERS ======
-    let mainTimer, questionTimer;
     function startTimers() {
-      mainTimer = setInterval(() => {
+      mainTimerInt = setInterval(() => {
         mainTime--;
         const h = Math.floor(mainTime / 3600);
         const m = Math.floor((mainTime % 3600) / 60);
@@ -180,21 +147,7 @@
         if (mainTime <= 0) alert('⏰ Exam Time Up!');
       }, 1000);
 
-      questionTimer = setInterval(() => {
-        questionTime--;
-        const m = Math.floor(questionTime / 60);
-        const s = questionTime % 60;
-        document.getElementById('question-timer').textContent = `${m}:${s.toString().padStart(2, '0')}`;
-        if (questionTime <= 0) {
-          nextQuestion();
-          clearInterval(questionTimer);
-          startQuestionTimer(); // Restart for next question
-        }
-      }, 1000);
-    }
-
-    function startQuestionTimer() {
-      questionTimer = setInterval(() => {
+      questionTimerInt = setInterval(() => {
         questionTime--;
         const m = Math.floor(questionTime / 60);
         const s = questionTime % 60;
@@ -216,7 +169,6 @@
       document.getElementById('question-tags').textContent = 
         isCoding ? '💻 Coding • 15min' : '📝 MCQ • 2min (+4/-1)';
       
-      // Load MCQ options (only for MCQs)
       if (q.options?.length === 4) {
         ['A', 'B', 'C', 'D'].forEach((letter, i) => {
           document.getElementById(`opt-${letter}`).textContent = q.options[i];
@@ -275,7 +227,7 @@
     };
 
     // ====== START ======
-    document.addEventListener('DOMContentLoaded', init);
+    document.addEventListener('DOMContentLoaded', loadQuestionsFile);
   </script>
 </body>
 </html>
