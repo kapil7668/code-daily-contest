@@ -1,194 +1,55 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Problems - CodeRush</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
-  <style>
-    .problem-card:hover { transform: translateY(-2px); }
-    .difficulty-easy { background: linear-gradient(90deg, #10b981, #34d399); }
-    .difficulty-medium { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-    .difficulty-hard { background: linear-gradient(90deg, #ef4444, #f87171); }
-  </style>
+    <title>Problem - Code Daily Contest</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-slate-100 min-h-screen">
-  <!-- Navbar -->
-  <header class="border-b border-slate-800/50 bg-slate-900/95 backdrop-blur-xl sticky top-0 z-50">
-    <nav class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-      <a href="dashboard.html" class="flex items-center gap-3">
-        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-black text-lg">C</div>
-        <span class="font-black text-xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">CodeRush</span>
-      </a>
-      <a href="dashboard.html" class="text-emerald-400 hover:text-emerald-300 font-semibold">Dashboard</a>
-    </nav>
-  </header>
-
-  <main class="max-w-7xl mx-auto px-4 py-12">
-    <!-- Debug Info -->
-    <div id="debug-status" class="mb-4 p-3 bg-slate-900 rounded-lg text-xs text-slate-400 hidden"></div>
-    
-    <!-- Stats -->
-    <div class="grid md:grid-cols-3 gap-4 mb-8">
-      <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800/50">
-        <div id="total-problems" class="text-3xl font-black text-emerald-400">Loading...</div>
-        <div class="text-slate-400 text-sm">Total Problems</div>
-      </div>
-    </div>
-
-    <!-- Filter & Search -->
-    <div class="flex flex-col lg:flex-row gap-4 mb-8">
-      <input id="search-input" type="text" placeholder="Search problems..." class="flex-1 bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 rounded-xl px-4 py-3 text-slate-100 focus:ring-2 focus:ring-emerald-500 focus:border-transparent">
-      <select id="difficulty-filter" class="bg-slate-900/50 backdrop-blur-xl border border-slate-800/50 rounded-xl px-4 py-3 text-slate-100">
-        <option value="">All Difficulties</option>
-        <option value="Easy">Easy</option>
-        <option value="Medium">Medium</option>
-        <option value="Hard">Hard</option>
-      </select>
-    </div>
-
-    <!-- Problems Grid -->
-    <div id="problems-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <div class="animate-pulse col-span-full"><div class="h-48 bg-slate-800 rounded-2xl"></div></div>
-    </div>
-
-    <!-- Load More -->
-    <div class="text-center mt-12">
-      <button id="load-more" class="px-8 py-4 bg-emerald-500/50 hover:bg-emerald-500 text-slate-900 font-black text-lg rounded-2xl border-2 border-emerald-500/50 hover:border-emerald-500 transition-all duration-300 hidden">Load More</button>
-    </div>
-  </main>
-
-  <script>
-    const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    let allProblems = [];
-    let displayedProblems = [];
-    let currentOffset = 0;
-    const problemsPerPage = 30;
-
-    function showStatus(message) {
-      const statusEl = document.getElementById('debug-status');
-      statusEl.textContent = message;
-      statusEl.classList.remove('hidden');
-      console.log('Status:', message);
-    }
-
-    async function loadAllProblems() {
-      try {
-        showStatus('Fetching 3306+ problems...');
-        
-        const { data, error, count } = await supabaseClient
-          .from('problems')
-          .select('Question, Difficulty, Topic_tags, Acceptance_rate, Question_Link, slug', { count: 'exact' })
-          .order('Question', { ascending: true });
-
-        if (error) throw error;
-
-        allProblems = data || [];
-        document.getElementById('total-problems').textContent = count || allProblems.length;
-        showStatus(`${allProblems.length} problems loaded!`);
-        
-        filterAndDisplayProblems();
-        
-      } catch (error) {
-        console.error('Load error:', error);
-        showStatus(`Error: ${error.message}`);
-        document.getElementById('problems-grid').innerHTML = `
-          <div class="col-span-full text-center py-20 text-red-400">
-            <div class="text-2xl mb-4">Failed to load problems</div>
-            <div class="text-sm mb-8">${error.message}</div>
-            <div class="text-xs text-slate-500">F12 → Console for details</div>
-          </div>
-        `;
-      }
-    }
-
-    function filterAndDisplayProblems() {
-      const searchTerm = document.getElementById('search-input').value.toLowerCase();
-      const difficultyFilter = document.getElementById('difficulty-filter').value;
-
-      let filtered = allProblems.filter(problem => {
-        const matchesSearch = !searchTerm || 
-          problem.Question.toLowerCase().includes(searchTerm) || 
-          problem.Topic_tags.toLowerCase().includes(searchTerm);
-        
-        const matchesDifficulty = !difficultyFilter || problem.Difficulty === difficultyFilter;
-        
-        return matchesSearch && matchesDifficulty;
-      });
-
-      displayedProblems = filtered.slice(0, problemsPerPage);
-      renderProblems(displayedProblems);
-      
-      document.getElementById('load-more').classList.toggle('hidden', filtered.length <= problemsPerPage);
-      currentOffset = problemsPerPage;
-    }
-
-    function renderProblems(problems) {
-      const grid = document.getElementById('problems-grid');
-      
-      if (!problems || problems.length === 0) {
-        grid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-400"><div class="text-xl mb-4">No problems found</div><div class="text-sm">Try adjusting your search or filter</div></div>';
-        return;
-      }
-
-      grid.innerHTML = problems.map(problem => `
-        <div class="group bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800/50 hover:border-emerald-500/50 hover:bg-slate-900/70 transition-all duration-300 problem-card overflow-hidden">
-          <div class="p-6">
-            <div class="flex items-center justify-between mb-3">
-              <div class="px-3 py-1 rounded-full text-xs font-bold text-white ${
-                problem.Difficulty === 'Easy' ? 'difficulty-easy' : 
-                problem.Difficulty === 'Medium' ? 'difficulty-medium' : 'difficulty-hard'
-              }">
-                ${problem.Difficulty || 'Easy'}
-              </div>
-              <div class="text-xs text-slate-400">${problem.Acceptance_rate || 'N/A'}</div>
+<body>
+    <div class="leetcode-container">
+        <!-- Problem Description (Left Panel) -->
+        <div class="problem-panel">
+            <h1 id="problem-title">Reverse Integer</h1>
+            <div class="description">
+                <p id="problem-description">Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-2<sup>31</sup>, 2<sup>31</sup> - 1], then return 0. Assume the environment does not allow you to store 64-bit integers (signed or unsigned).</p>
             </div>
-            <h3 class="font-bold text-lg mb-2 leading-tight group-hover:text-emerald-400 transition-colors line-clamp-2">${problem.Question}</h3>
-            <p class="text-slate-400 text-sm mb-4 line-clamp-1">${problem.Topic_tags}</p>
-            <div class="flex items-center justify-between">
-              <span class="text-xs text-slate-500">LeetCode</span>
-              <a href="problem.html?slug=${problem.Question_Link || problem.slug || 'two-sum'}" class="text-emerald-400 hover:text-emerald-300 font-medium text-sm group-hover:underline">Solve →</a>
+            <div class="examples">
+                <h3>Example 1:</h3>
+                <pre><strong>Input:</strong> x = 123<br><strong>Output:</strong> 321<br><strong>Explanation:</strong> 123 → 321</pre>
+                <h3>Example 2:</h3>
+                <pre><strong>Input:</strong> x = -123<br><strong>Output:</strong> -321<br><strong>Explanation:</strong> -123 → -321</pre>
             </div>
-          </div>
         </div>
-      `).join('');
+
+        <!-- Code Editor + Controls (Right Panel) -->
+        <div class="editor-panel">
+            <div class="editor-header">
+                <select id="language-select">
+                    <option value="javascript">JavaScript</option>
+                    <option value="python">Python 3</option>
+                    <option value="java">Java</option>
+                </select>
+                <button onclick="runCode()">Run</button>
+                <button onclick="submitSolution()" class="submit-btn">Submit</button>
+            </div>
+            <textarea id="code-editor" class="code-editor">// Write your solution here
+function reverse(x) {
+    let reversed = 0;
+    while (x !== 0) {
+        reversed = reversed * 10 + x % 10;
+        x = Math.floor(x / 10);
     }
+    return reversed;
+}</textarea>
+        </div>
 
-    // Event Listeners
-    document.getElementById('search-input').addEventListener('input', filterAndDisplayProblems);
-    document.getElementById('difficulty-filter').addEventListener('change', filterAndDisplayProblems);
-
-    document.getElementById('load-more').addEventListener('click', () => {
-      const filteredProblems = allProblems.filter(problem => {
-        const searchTerm = document.getElementById('search-input').value.toLowerCase();
-        const difficultyFilter = document.getElementById('difficulty-filter').value;
-        
-        const matchesSearch = !searchTerm || 
-          problem.Question.toLowerCase().includes(searchTerm) || 
-          problem.Topic_tags.toLowerCase().includes(searchTerm);
-        
-        const matchesDifficulty = !difficultyFilter || problem.Difficulty === difficultyFilter;
-        
-        return matchesSearch && matchesDifficulty;
-      });
-
-      const nextProblems = filteredProblems.slice(currentOffset, currentOffset + problemsPerPage);
-      displayedProblems = displayedProblems.concat(nextProblems);
-      renderProblems(displayedProblems);
-      currentOffset += problemsPerPage;
-      
-      if (currentOffset >= filteredProblems.length) {
-        document.getElementById('load-more').classList.add('hidden');
-      }
-    });
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', loadAllProblems);
-  </script>
+        <!-- Test Results (Bottom Panel) -->
+        <div class="test-results">
+            <h3 id="test-results-title">Test Results</h3>
+            <div id="test-cases">
+                <!-- Test cases load here -->
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
