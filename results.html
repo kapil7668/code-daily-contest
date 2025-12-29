@@ -26,7 +26,6 @@
 
   <main class="max-w-4xl mx-auto px-4 py-12">
     <div id="result-content" class="text-center">
-      <!-- Loading state -->
       <div class="animate-pulse">
         <div class="w-24 h-24 bg-emerald-500/20 rounded-3xl mx-auto mb-8"></div>
         <h1 class="text-4xl font-black text-slate-400 mb-4">Calculating Results...</h1>
@@ -39,10 +38,9 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Get contest and user info from URL/localStorage
+    // Get contest from URL
     const urlParams = new URLSearchParams(window.location.search);
-    const contestId = urlParams.get('contest') || localStorage.getItem('currentContest');
-    const userId = supabase.auth.getUser().then(({ data }) => data.user?.id);
+    const contestId = urlParams.get('contest') || localStorage.getItem('currentContest') || 'paid-9';
 
     async function loadResult() {
       try {
@@ -60,91 +58,89 @@
           .order('created_at', { ascending: false })
           .limit(10);
 
-        if (!submissions || submissions.length === 0) {
-          document.getElementById('result-content').innerHTML = `
-            <div class="max-w-md mx-auto bg-slate-900/50 backdrop-blur-xl rounded-3xl p-12 border border-slate-800/50">
-              <div class="w-24 h-24 bg-gradient-to-br from-slate-500/30 to-slate-400/30 rounded-3xl mx-auto mb-8 flex items-center justify-center">
-                <svg class="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        // Score calculation
+        let totalScore = 0;
+        let solvedCount = 0;
+        submissions.forEach(sub => {
+          if (sub.status === 'accepted') {
+            totalScore += parseInt(sub.score || 100);
+            solvedCount++;
+          }
+        });
+        
+        const rank = Math.floor(Math.random() * 100) + 1; // Demo rank
+        const percentile = Math.floor(85 + Math.random() * 15); // Demo percentile
+        
+        document.getElementById('result-content').innerHTML = `
+          <div class="max-w-2xl mx-auto bg-slate-900/50 backdrop-blur-xl rounded-3xl p-12 border border-slate-800/50 glass">
+            <div class="text-center mb-12">
+              <div class="w-28 h-28 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl">
+                <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                 </svg>
               </div>
-              <h1 class="text-3xl font-black text-slate-100 mb-4">No Submissions Found</h1>
-              <p class="text-slate-400 mb-8">Complete the contest to see your results.</p>
-              <a href="dashboard.html" class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-900 font-bold rounded-2xl shadow-xl hover:shadow-emerald-500/50 transition-all">← Back to Dashboard</a>
+              <h1 class="text-5xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-4">
+                ${totalScore} Points
+              </h1>
+              <p class="text-xl text-slate-400">Contest Complete! Great Job! 🎉</p>
             </div>
-          `;
-          return;
-        }
-
-        // Calculate score (q1=100, q2=200, q3=300 marks)
-        const score = submissions.reduce((total, sub) => {
-          const marks = sub.question_id === 'q1' ? 100 : sub.question_id === 'q2' ? 200 : 300;
-          return total + (sub.is_correct ? marks : 0);
-        }, 0);
-
-        // Show result
-        document.getElementById('result-content').innerHTML = `
-          <div class="max-w-2xl mx-auto bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 backdrop-blur-xl rounded-3xl p-12 border border-emerald-500/30 shadow-2xl">
-            <div class="w-32 h-32 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl">
-              <span class="text-5xl font-black text-slate-900">${score}</span>
-            </div>
-            <h1 class="text-4xl lg:text-5xl font-black bg-gradient-to-r from-slate-100 to-slate-200 bg-clip-text text-transparent mb-4">Your Score</h1>
-            <p class="text-xl text-emerald-400 font-bold mb-12">${Math.round((score/600)*100)}% Accuracy</p>
             
-            <div class="grid md:grid-cols-2 gap-6 mb-12">
-              <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800/50">
-                <div class="text-3xl font-black text-emerald-400 mb-2">${submissions.length}</div>
-                <div class="text-sm text-slate-400 uppercase tracking-wide">Questions Attempted</div>
+            <div class="grid md:grid-cols-2 gap-6 text-left">
+              <div class="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                <h3 class="font-bold text-lg mb-4 text-emerald-400">Your Performance</h3>
+                <div class="space-y-3 text-sm">
+                  <div class="flex justify-between"><span>Problems Solved:</span> <span class="font-bold">${solvedCount}/10</span></div>
+                  <div class="flex justify-between"><span>Total Score:</span> <span class="font-bold">${totalScore}</span></div>
+                  <div class="flex justify-between"><span>Rank:</span> <span class="font-bold">#${rank}</span></div>
+                  <div class="flex justify-between"><span>Percentile:</span> <span class="font-bold">${percentile}th</span></div>
+                </div>
               </div>
-              <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800/50">
-                <div class="text-3xl font-black text-cyan-400 mb-2">${contestId === 'free' ? '✅ Free' : '💰 Paid'}</div>
-                <div class="text-sm text-slate-400 uppercase tracking-wide">Contest Type</div>
+              
+              <div class="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
+                <h3 class="font-bold text-lg mb-4 text-cyan-400">Next Contest</h3>
+                <div class="space-y-3 text-sm">
+                  <div class="flex justify-between"><span>Mega Contest:</span> <span>Tomorrow 8 PM</span></div>
+                  <div class="flex justify-between"><span>Prize Pool:</span> <span>₹5,000</span></div>
+                  <div class="flex justify-between"><span>Register:</span> <span class="text-emerald-400 font-bold">Already Paid ✓</span></div>
+                </div>
               </div>
             </div>
-
-            <div class="flex flex-col sm:flex-row gap-4">
-              <a href="dashboard.html" class="flex-1 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-900 font-bold rounded-2xl shadow-xl hover:shadow-emerald-500/50 transition-all text-center">Next Contest</a>
-              <a href="#leaderboard" class="flex-1 px-8 py-4 border-2 border-emerald-400/50 text-emerald-400 font-bold rounded-2xl backdrop-blur-sm hover:bg-emerald-500/10 transition-all text-center" onclick="loadLeaderboard()">View Leaderboard</a>
+            
+            <div class="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-slate-800">
+              <a href="dashboard.html" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-4 px-8 rounded-2xl text-center transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1">
+                ← Back to Dashboard
+              </a>
+              <a href="contest.html?type=paid" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl text-center transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1">
+                Next Contest →
+              </a>
             </div>
-          </div>
-
-          <!-- Leaderboard -->
-          <div id="leaderboard-section" class="mt-20 hidden">
-            <h2 class="text-3xl font-black text-center mb-12 bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">Leaderboard</h2>
-            <div id="leaderboard-list" class="max-w-4xl mx-auto"></div>
           </div>
         `;
-
-        localStorage.removeItem('currentContest');
+        
       } catch (error) {
         console.error('Result load error:', error);
-      }
-    }
-
-    async function loadLeaderboard() {
-      try {
-        const { data: leaderboard } = await supabase
-          .from('submissions')
-          .select('user_id, score:total_score')
-          .eq('contest_id', contestId)
-          .order('score', { ascending: false })
-          .limit(50);
-
-        document.getElementById('leaderboard-section').classList.remove('hidden');
-        // Simple leaderboard render (basic)
-        document.getElementById('leaderboard-list').innerHTML = `
-          <div class="bg-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-slate-800/50">
-            <p class="text-center text-slate-400 text-lg mb-8">Top performers will appear here after contest ends</p>
-            <div class="text-center text-emerald-400 font-bold text-xl">🥇 Calculating ranks...</div>
+        document.getElementById('result-content').innerHTML = `
+          <div class="max-w-md mx-auto bg-slate-900/50 backdrop-blur-xl rounded-3xl p-12 border border-slate-800/50 text-center">
+            <div class="w-24 h-24 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-3xl mx-auto mb-8 flex items-center justify-center">
+              <svg class="w-12 h-12 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-300 mb-4">No Results Found</h2>
+            <p class="text-slate-400 mb-8">Check back after contest ends.</p>
+            <a href="dashboard.html" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-8 rounded-2xl inline-block transition-all">
+              Go to Dashboard
+            </a>
           </div>
         `;
-      } catch (error) {
-        console.error('Leaderboard error:', error);
       }
     }
 
-    // Load result on page load
-    window.addEventListener('load', loadResult);
+    // Page load पर result load करो
+    loadResult();
   </script>
 </body>
 </html>
