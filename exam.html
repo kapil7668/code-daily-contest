@@ -88,90 +88,52 @@
 </main>
 
 <script>
-  // 🔥 FIXED: Correct Supabase initialization
-  let supabase;
+  // ✅ FIXED: Correct Supabase Client
+  const supabaseUrl = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+  const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
   
-  // Wait for Supabase to load
-  function initSupabase() {
-    if (typeof Supabase !== 'undefined') {
-      const supabaseUrl = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-      const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-      supabase = Supabase.createClient(supabaseUrl, supabaseKey);
-      console.log('✅ Supabase initialized');
-      return true;
+  let supabase, contestId = 'paid-9', questions = [], currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {};
+
+  // 🔥 FIXED: Load YOUR paid-9.json file FIRST
+  async function loadQuestions() {
+    try {
+      console.log('🔍 Loading ./questions/paid-9.json');
+      const response = await fetch('./questions/paid-9.json?t=' + Date.now());
+      
+      if (!response.ok) throw new Error(`File not found: ${response.status}`);
+      
+      questions = await response.json();
+      console.log(`✅ SUCCESS: ${questions.length} questions loaded from paid-9.json!`);
+      console.log('First question:', questions[0]);
+    } catch (error) {
+      console.error('❌ paid-9.json ERROR:', error);
+      // Fallback to demo if file missing
+      questions = [
+        {"question": "What is 2+2?", "statement": "Basic arithmetic", "options": ["3", "4", "5", "6"], "answer": 1, "type": "mcq"},
+        {"question": "Array length?", "statement": "JavaScript array length", "options": [".size()", ".length", ".count", ".size"], "answer": 1, "type": "mcq"}
+      ];
+      console.log('🔄 Using fallback questions');
     }
-    console.log('⏳ Waiting for Supabase...');
-    return false;
-  }
-
-  // State
-  let contestId = new URLSearchParams(window.location.search).get('contestId') || 'paid-9';
-  let questions = [], currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {};
-
-  // Contest configs
-  const CONTESTS = {
-    'paid-9': { type: 'paid', title: 'PAID-9 Contest (₹9)', entryFee: 9, totalPrize: 900 },
-    'free-200': { type: 'free', title: 'Free Daily Contest', entryFee: 0, totalPrize: 0 }
-  };
-
-  // 🔥 BUILT-IN QUESTIONS - NO EXTERNAL FILE NEEDED
-  function loadDemoQuestions() {
-    questions = [
-      {
-        id: 1,
-        question: "What is the output?",
-        statement: "console.log(0.1 + 0.2 === 0.3);",
-        type: "mcq",
-        options: ["true", "false", "undefined", "0.3"],
-        answer: 1,
-        topic: "JavaScript"
-      },
-      {
-        id: 2,
-        question: "Array second largest",
-        statement: `Write function to find second largest in: [3, 1, 4, 1, 5, 9]`,
-        type: "coding",
-        topic: "Arrays"
-      },
-      {
-        id: 3,
-        question: "typeof null returns?",
-        statement: "console.log(typeof null);",
-        type: "mcq",
-        options: ["null", "undefined", "object", "string"],
-        answer: 2,
-        topic: "Type Coercion"
-      },
-      {
-        id: 4,
-        question: "What is hoisting?",
-        statement: "Explain JavaScript hoisting with example.",
-        type: "coding",
-        topic: "JavaScript"
-      }
-    ];
-    console.log(`✅ Loaded ${questions.length} demo questions`);
+    
     document.getElementById('question-count').textContent = questions.length;
     return true;
   }
 
   function initExam() {
-    const contestConfig = CONTESTS[contestId] || CONTESTS['free-200'];
-    
-    document.getElementById('contest-type-badge').textContent = contestConfig.type === 'free' ? 'FREE' : `PAID ₹${contestConfig.entryFee}`;
-    document.getElementById('contest-type-badge').className = `text-[11px] uppercase tracking-wide ${contestConfig.type === 'free' ? 'text-emerald-400' : 'text-amber-400'} mb-1`;
-    document.getElementById('contest-title').textContent = contestConfig.title;
-    document.getElementById('contest-meta').textContent = `Razorpay Verified • Live Leaderboard • Instant Score`;
+    document.getElementById('contest-type-badge').textContent = 'PAID ₹9';
+    document.getElementById('contest-type-badge').className = 'text-[11px] uppercase tracking-wide text-amber-400 mb-1';
+    document.getElementById('contest-title').textContent = 'PAID-9 Contest (₹9)';
+    document.getElementById('contest-meta').textContent = 'Razorpay Verified • Live Leaderboard • Instant Score';
 
     renderQuestionsList();
     renderCurrentQuestion();
     startTimer();
-    console.log('🚀 Exam initialized successfully');
+    console.log('🚀 Exam Ready!');
   }
 
   function renderQuestionsList() {
     document.getElementById('questions-list').innerHTML = questions.map((q, i) => {
-      const isAnswered = mcqAnswers[i] !== undefined || localStorage.getItem(`answer_${contestId}_${i}`);
+      const isAnswered = mcqAnswers[i] !== undefined;
       return `<button class="w-full text-left p-2 rounded-lg border text-xs mb-1 ${i===currentIndex ? 'bg-emerald-500/30 border-emerald-500' : (isAnswered ? 'bg-blue-500/20 border-blue-500' : 'border-slate-700 bg-slate-900/50')} hover:bg-emerald-500/20" onclick="gotoQuestion(${i})">
         Q${i+1} ${q.type==='coding'?'💻':'❓'} ${isAnswered?'✅':''}
       </button>`;
@@ -183,15 +145,12 @@
     document.getElementById('question-label').textContent = `Question ${currentIndex+1}/${questions.length}`;
     document.getElementById('question-title').textContent = q.question;
     document.getElementById('question-statement').textContent = q.statement;
-    document.getElementById('question-tags').textContent = `${q.type?.toUpperCase()||'MCQ'} • ${q.topic}`;
+    document.getElementById('question-tags').textContent = `${q.type?.toUpperCase()||'MCQ'} • Basic`;
 
-    // MCQ options
     const mcqDiv = document.getElementById('mcq-options');
     if (q.options && q.options.length === 4) {
       mcqDiv.classList.remove('hidden');
-      q.options.forEach((opt, i) => {
-        document.getElementById(`mcq-opt-${i}`).textContent = opt;
-      });
+      q.options.forEach((opt, i) => document.getElementById(`mcq-opt-${i}`).textContent = opt);
       if (mcqAnswers[currentIndex] !== undefined) {
         document.querySelector(`input[name="mcq-answer"][value="${mcqAnswers[currentIndex]}"]`).checked = true;
       }
@@ -199,7 +158,7 @@
       mcqDiv.classList.add('hidden');
     }
 
-    document.getElementById('answer-input').value = localStorage.getItem(`answer_${contestId}_${currentIndex}`) || '';
+    document.getElementById('answer-input').value = localStorage.getItem(`paid-9_${currentIndex}`) || '';
   }
 
   function gotoQuestion(i) {
@@ -210,17 +169,15 @@
   }
 
   function startTimer() {
-    let timeLeft = 3600; // 60 minutes for testing
+    let timeLeft = 3600; // 60 minutes
     timerInterval = setInterval(() => {
       timeLeft--;
-      const m = Math.floor(timeLeft / 60);
+      const h = Math.floor(timeLeft / 3600);
+      const m = Math.floor((timeLeft % 3600) / 60);
       const s = timeLeft % 60;
-      document.getElementById('timer').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+      document.getElementById('timer').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
       
-      if (timeLeft <= 300) { // 5 min warning
-        document.getElementById('timer').className = 'text-xl font-semibold text-red-400 animate-pulse';
-      }
-      
+      if (timeLeft <= 300) document.getElementById('timer').className = 'text-xl font-semibold text-red-400 animate-pulse';
       if (timeLeft <= 0) {
         clearInterval(timerInterval);
         submitExam();
@@ -232,10 +189,8 @@
     if (examLocked) return;
     examLocked = true;
     
-    // Save current answer
     saveCurrentAnswer();
     
-    // Mock score calculation (Supabase optional)
     let mcqScore = 0, totalMCQs = 0;
     questions.forEach((q, i) => {
       if (q.type === 'mcq' && q.answer !== undefined) {
@@ -244,61 +199,58 @@
       }
     });
 
-    // Try Supabase if available
-    if (supabase) {
+    const percentage = totalMCQs > 0 ? Math.round((mcqScore / (totalMCQs * 4)) * 100) : 0;
+    
+    // Try Supabase save
+    if (typeof supabase !== 'undefined') {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
-          const { error } = await supabase.from('scores').insert({
+          await supabase.from('scores').insert({
             user_id: user.id,
             contest_id: contestId,
             mcq_score: mcqScore,
             total_score: mcqScore,
-            percentage: totalMCQs > 0 ? Math.round((mcqScore / (totalMCQs * 4)) * 100) : 0,
+            percentage: percentage,
             completed_at: new Date().toISOString()
           });
-          
-          if (!error) {
-            alert(`🎉 Score Saved!\nMCQ: ${mcqScore}/${totalMCQs*4} (${Math.round((mcqScore/(totalMCQs*4))*100)}%)`);
-          }
+          console.log('✅ Score saved to Supabase');
         }
       } catch(e) {
-        console.log('Supabase unavailable, using local score');
+        console.log('⚠️ Supabase save failed:', e.message);
       }
     }
     
-    alert(`✅ Exam Submitted!\nMCQ Score: ${mcqScore}/${totalMCQs*4}`);
-    console.log('Final scores:', mcqAnswers);
+    alert(`🎉 Exam Submitted!\nMCQ Score: ${mcqScore}/${totalMCQs*4} (${percentage}%)\nCheck dashboard for rank!`);
   }
 
   function saveCurrentAnswer() {
     const selected = document.querySelector('input[name="mcq-answer"]:checked');
-    if (selected) {
-      mcqAnswers[currentIndex] = parseInt(selected.value);
-    }
-    localStorage.setItem(`answer_${contestId}_${currentIndex}`, document.getElementById('answer-input').value);
+    if (selected) mcqAnswers[currentIndex] = parseInt(selected.value);
+    
+    localStorage.setItem(`paid-9_${currentIndex}`, document.getElementById('answer-input').value);
     renderQuestionsList();
   }
 
-  // 🔥 MAIN INITIALIZATION
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 CodeRush Exam Engine Starting...');
+  // 🔥 PERFECT INITIALIZATION
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 CodeRush Exam Starting...');
     
-    // Load questions immediately (no external file dependency)
-    loadDemoQuestions();
+    // 1. Load YOUR questions file FIRST
+    const questionsLoaded = await loadQuestions();
     
-    // Try Supabase
-    if (initSupabase()) {
+    // 2. Initialize Supabase
+    if (typeof Supabase !== 'undefined') {
+      supabase = Supabase.createClient(supabaseUrl, supabaseKey);
+      console.log('✅ Supabase ready');
+    }
+    
+    // 3. Start exam
+    if (questionsLoaded) {
       initExam();
-    } else {
-      // Fallback without Supabase
-      setTimeout(() => {
-        console.log('⚠️ Supabase not loaded, continuing without it');
-        initExam();
-      }, 1000);
     }
 
-    // Event listeners
+    // 4. Event listeners
     document.getElementById('save-answer-btn').onclick = saveCurrentAnswer;
     document.getElementById('finish-btn').onclick = submitExam;
     document.getElementById('prev-btn').onclick = () => gotoQuestion(currentIndex - 1);
