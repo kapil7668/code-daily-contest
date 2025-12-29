@@ -25,10 +25,14 @@ function loadProblem(id) {
     problem.testCases.forEach((test, i) => {
         const div = document.createElement('div');
         div.className = 'test-case';
-        div.innerHTML = `<span>Case ${i+1}:</span> <span id="case${i+1}-output">Pending</span>`;
+        div.innerHTML = `
+            <span>Case ${i+1}: x = ${test.input}</span> 
+            <span id="case${i+1}-output" style="color: #8b949e">Expected: ${test.expected}</span>
+        `;
         testDiv.appendChild(div);
     });
 }
+
 
 function runCode() {
     const code = document.getElementById('code-editor').value;
