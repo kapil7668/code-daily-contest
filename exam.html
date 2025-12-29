@@ -154,22 +154,17 @@ function submitExam() {
   if (examLocked) return;
   examLocked = true;
   
-  // Save all answers to Supabase
-  questions.forEach(async (q, i) => {
-    const answer = localStorage.getItem(`paid9_${i}`) || '';
-    const isCorrect = q.type === 'mcq' && mcqAnswers[i] == q.answer;
-    
-    // Save to Supabase (background)
-    if (window.supabase) {
-      await window.supabase.from('submissions').insert({
-        user_id: window.user?.id || 'anonymous',
-        contest_id: 'paid-9',
-        question_id: `q${i+1}`,
-        language: 'javascript',
-        code: answer,
-        is_correct: isCorrect,
-        submitted_at: new Date().toISOString()
-      });
+function submitExam() {
+  if (examLocked) return;
+  examLocked = true;
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const contestType = urlParams.get('contest') || 'paid-9';
+  
+  localStorage.setItem('currentContest', contestType);
+  window.location.href = `result.html?contest=${contestType}`;
+}
+
     }
   });
   
