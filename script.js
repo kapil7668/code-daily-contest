@@ -19,7 +19,7 @@ const problemId = parseInt(urlParams.get('id')) || 1;
 function loadProblem(id) {
     const problem = problems[id] || problems[1];
     document.getElementById('problem-title').textContent = problem.title;
-    document.getElementById('problem-description').textContent = problem.description;
+    document.getElementById('problem-description').innerHTML = problem.description;  // ← innerHTML changed!
     
     const testDiv = document.getElementById('test-cases');
     testDiv.innerHTML = '';
