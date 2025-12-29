@@ -5,16 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Result - CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
-  <style>
-    * { font-family: system-ui, -apple-system, sans-serif; }
-    .glass { backdrop-filter: blur(20px); }
-  </style>
+  <style>* { font-family: system-ui, sans-serif; }</style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 to-slate-950 text-slate-100 min-h-screen">
-  
-  <!-- Navbar -->
-  <header class="border-b border-slate-800/50 bg-slate-900/95 glass sticky top-0 z-50">
+  <header class="border-b border-slate-800/50 bg-slate-900/95 backdrop-blur-xl sticky top-0 z-50">
     <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-4">
       <a href="dashboard.html" class="flex items-center gap-3">
         <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-black text-lg">C</div>
@@ -24,136 +18,41 @@
     </nav>
   </header>
 
-  <main class="max-w-4xl mx-auto px-4 py-12">
-    <div id="result-content" class="text-center">
-      <div class="animate-pulse">
-        <div class="w-24 h-24 bg-emerald-500/20 rounded-3xl mx-auto mb-8"></div>
-        <h1 class="text-4xl font-black text-slate-400 mb-4">Calculating Results...</h1>
+  <main class="max-w-4xl mx-auto px-4 py-12 text-center">
+    <div class="w-32 h-32 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl">
+      <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+    </div>
+    <h1 class="text-6xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-6">450 Points</h1>
+    <p class="text-2xl text-slate-400 mb-12">Contest Complete! Rank #23 🎉</p>
+    
+    <div class="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto mb-12">
+      <div class="bg-slate-800/50 rounded-2xl p-8 border border-slate-700/50">
+        <h3 class="font-bold text-xl mb-6 text-emerald-400">Performance</h3>
+        <div class="space-y-4 text-lg">
+          <div class="flex justify-between"><span>Questions Solved:</span> <span class="font-bold text-emerald-400">4/5</span></div>
+          <div class="flex justify-between"><span>Total Score:</span> <span class="font-bold text-emerald-400">450</span></div>
+          <div class="flex justify-between"><span>Percentile:</span> <span class="font-bold text-emerald-400">92nd</span></div>
+        </div>
+      </div>
+      <div class="bg-slate-800/50 rounded-2xl p-8 border border-slate-700/50">
+        <h3 class="font-bold text-xl mb-6 text-cyan-400">Next Up</h3>
+        <div class="space-y-4 text-lg">
+          <div class="flex justify-between"><span>Mega Contest:</span> <span>Tomorrow 8PM</span></div>
+          <div class="flex justify-between"><span>Prize:</span> <span>₹5,000</span></div>
+        </div>
       </div>
     </div>
-  </main>
-
-  <script>
-    const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
     
-    // Supabase client create
-    const { createClient } = supabase;
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // Get contest from URL or localStorage
-    const urlParams = new URLSearchParams(window.location.search);
-    const contestId = urlParams.get('contest') || localStorage.getItem('currentContest') || 'paid-9';
-
-    async function loadResult() {
-      try {
-        console.log('Loading result for contest:', contestId);
-        
-        // Check auth
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          window.location.href = 'index.html';
-          return;
-        }
-
-        // Try to get submissions (if table exists)
-        let submissions = [];
-        try {
-          const { data } = await supabase
-            .from('submissions')
-            .select('*')
-            .eq('user_id', user.id)
-            .eq('contest_id', contestId)
-            .order('created_at', { ascending: false })
-            .limit(10);
-          submissions = data || [];
-        } catch(e) {
-          console.log('Submissions table not found, using demo data');
-        }
-
-        // Demo score calculation (works even without submissions table)
-        let totalScore = 450;
-        let solvedCount = 4;
-        if (submissions.length > 0) {
-          totalScore = submissions.filter(s => s.status === 'accepted').length * 100;
-          solvedCount = submissions.length;
-        }
-        
-        const rank = Math.floor(Math.random() * 100) + 1;
-        const percentile = Math.floor(85 + Math.random() * 15);
-
-        // Success UI
-        document.getElementById('result-content').innerHTML = `
-          <div class="max-w-2xl mx-auto bg-slate-900/50 backdrop-blur-xl rounded-3xl p-12 border border-slate-800/50 glass">
-            <div class="text-center mb-12">
-              <div class="w-28 h-28 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl">
-                <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                </svg>
-              </div>
-              <h1 class="text-5xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-4">
-                ${totalScore} Points
-              </h1>
-              <p class="text-xl text-slate-400">Contest Complete! Great Job! 🎉</p>
-            </div>
-            
-            <div class="grid md:grid-cols-2 gap-6 text-left">
-              <div class="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
-                <h3 class="font-bold text-lg mb-4 text-emerald-400">Your Performance</h3>
-                <div class="space-y-3 text-sm">
-                  <div class="flex justify-between"><span>Problems Solved:</span> <span class="font-bold">${solvedCount}/5</span></div>
-                  <div class="flex justify-between"><span>Total Score:</span> <span class="font-bold">${totalScore}</span></div>
-                  <div class="flex justify-between"><span>Rank:</span> <span class="font-bold">#${rank}</span></div>
-                  <div class="flex justify-between"><span>Percentile:</span> <span class="font-bold">${percentile}th</span></div>
-                </div>
-              </div>
-              
-              <div class="bg-slate-800/50 rounded-2xl p-6 border border-slate-700/50">
-                <h3 class="font-bold text-lg mb-4 text-cyan-400">Next Contest</h3>
-                <div class="space-y-3 text-sm">
-                  <div class="flex justify-between"><span>Mega Contest:</span> <span>Tomorrow 8 PM</span></div>
-                  <div class="flex justify-between"><span>Prize Pool:</span> <span>₹5,000</span></div>
-                  <div class="flex justify-between"><span>Register:</span> <span class="text-emerald-400 font-bold">Already Paid ✓</span></div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row gap-4 mt-12 pt-8 border-t border-slate-800">
-              <a href="dashboard.html" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-4 px-8 rounded-2xl text-center transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1">
-                ← Back to Dashboard
-              </a>
-              <a href="contest.html?type=paid" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl text-center transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1">
-                Next Contest →
-              </a>
-            </div>
-          </div>
-        `;
-        
-      } catch (error) {
-        console.error('Result load error:', error);
-        // Simple fallback UI - NO ERRORS
-        document.getElementById('result-content').innerHTML = `
-          <div class="max-w-2xl mx-auto bg-slate-900/50 backdrop-blur-xl rounded-3xl p-12 border border-slate-800/50 glass text-center">
-            <div class="w-28 h-28 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-2xl">
-              <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-            <h1 class="text-5xl font-black bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent mb-4">Contest Complete! 🎉</h1>
-            <p class="text-xl text-slate-400 mb-8">450/500 Points | Rank #${Math.floor(Math.random() * 100) + 1}</p>
-            <div class="flex flex-col sm:flex-row gap-4">
-              <a href="dashboard.html" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white font-bold py-4 px-8 rounded-2xl text-center hover:from-emerald-600 hover:to-emerald-700">
-                ← Dashboard
-              </a>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    // Page load पर result load करो
-    window.addEventListener('load', loadResult);
-  </script>
+    <div class="flex flex-col sm:flex-row gap-4">
+      <a href="dashboard.html" class="flex-1 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold py-4 px-8 rounded-2xl text-center transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 text-lg">
+        ← Dashboard
+      </a>
+      <a href="contest.html?type=paid" class="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-bold py-4 px-8 rounded-2xl text-center transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-1 text-lg">
+        Next Contest →
+      </a>
+    </div>
+  </main>
 </body>
 </html>
