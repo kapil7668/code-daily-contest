@@ -150,21 +150,34 @@
     alert('✅ Saved!');
   }
 
-  function submitExam() {
-    if (examLocked) return;
-    examLocked = true;
+function submitExam() {
+  if (examLocked) return;
+  examLocked = true;
+  
+  // Save all answers to Supabase
+  questions.forEach(async (q, i) => {
+    const answer = localStorage.getItem(`paid9_${i}`) || '';
+    const isCorrect = q.type === 'mcq' && mcqAnswers[i] == q.answer;
     
-    let score = 0, total = 0;
-    questions.forEach((q, i) => {
-      if (q.type === 'mcq' && mcqAnswers[i] == q.answer) {
-        score += 4;
-        total += 4;
-      }
-    });
-    
-    alert(`🎉 SUBMITTED!\nScore: ${score}/${total}`);
-    console.log('Results:', mcqAnswers);
-  }
+    // Save to Supabase (background)
+    if (window.supabase) {
+      await window.supabase.from('submissions').insert({
+        user_id: window.user?.id || 'anonymous',
+        contest_id: 'paid-9',
+        question_id: `q${i+1}`,
+        language: 'javascript',
+        code: answer,
+        is_correct: isCorrect,
+        submitted_at: new Date().toISOString()
+      });
+    }
+  });
+  
+  // GO TO RESULT PAGE ✅
+  localStorage.setItem('currentContest', 'paid-9');
+  window.location.href = 'result.html?contest=paid-9';
+}
+
 
   // START EVERYTHING
   document.addEventListener('DOMContentLoaded', () => {
