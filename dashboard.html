@@ -535,6 +535,28 @@ async function loadMyContestHistory() {
     container.innerHTML = `<p class="text-[11px] text-red-400">Error loading your contests.</p>`;
   }
 }
+// Contest dropdown
+function initContestDropdown() {
+  const select = document.getElementById('contest-select');
+  if (!select) return;
+
+  CONTESTS.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.textContent = `${c.name} (${c.fee === 0 ? 'Free' : '₹' + c.fee})`;
+    select.appendChild(opt);
+  });
+
+  select.addEventListener('change', () => {
+    const contestId = select.value;
+    const body = document.getElementById('contest-leaderboard-body');
+    if (!contestId) {
+      body.innerHTML = `<p class="text-[11px] text-slate-400">No contest selected.</p>`;
+      return;
+    }
+    loadContestLeaderboard(contestId);
+  });
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   loadContests();           // ← नया line
