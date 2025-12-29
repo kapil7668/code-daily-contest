@@ -27,10 +27,16 @@
         <p class="text-[11px] text-slate-400">Overall score</p>
         <p id="overall-score" class="text-xl font-semibold text-emerald-400">Calculating...</p>
       </div>
-      <button onclick="window.location.href='dashboard.html'"
-        class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
-        Back to dashboard
-      </button>
+      <div class="flex gap-2">
+        <button onclick="window.location.href='dashboard.html'"
+          class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
+          Dashboard
+        </button>
+        <button onclick="window.print()"
+          class="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-100 text-[11px] font-semibold hover:bg-slate-600">
+          📄 Share
+        </button>
+      </div>
     </div>
   </section>
 
@@ -49,6 +55,25 @@
       <div class="px-3 py-2 text-[11px] text-slate-400">Loading leaderboard...</div>
     </div>
   </section>
+
+  <!-- Quick stats -->
+  <section class="mt-6 pt-6 border-t border-slate-800/60">
+    <h3 class="text-sm font-semibold mb-3 text-emerald-400">Your Stats</h3>
+    <div class="grid grid-cols-3 gap-4 text-xs">
+      <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+        <div class="text-2xl font-bold text-emerald-400" id="accuracy">-</div>
+        <div class="text-slate-400">Accuracy</div>
+      </div>
+      <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+        <div class="text-2xl font-bold text-emerald-400" id="total-attempts">-</div>
+        <div class="text-slate-400">Questions Attempted</div>
+      </div>
+      <div class="bg-slate-800/50 rounded-xl p-3 text-center">
+        <div class="text-2xl font-bold text-blue-400" id="percentile">-</div>
+        <div class="text-slate-400">Percentile</div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <script src="contests-config.js"></script>
@@ -61,16 +86,20 @@
   // Helpers
   function getContestIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
-    return params.get("contestId");
+    return params.get("contestId") || localStorage.getItem('currentContestId') || 'free-200';
   }
 
   function findContestById(id) {
     return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
   }
 
-  function getScoreFromUrlFallback() {
-    const params = new URLSearchParams(window.location.search);
-    return Number(params.get("score") || 0);
+  function getScoreFromLocalStorage() {
+    try {
+      const submissions = JSON.parse(localStorage.getItem('examSubmissions') || '[]');
+      return submissions.filter(s => s.answered).length;
+    } catch {
+      return 0;
+    }
   }
 
   function renderHeader(contest, yourScore, maxMarks) {
@@ -122,50 +151,52 @@
         return;
       }
 
-      // 1) Submissions for this contest
+      // 1) Get submissions from Supabase + localStorage fallback
       const { data: submissions } = await supabaseClient
         .from('submissions')
-        .select('question_id, code')
+        .select('question_id, code, answered')
         .eq('user_id', user.id)
-        .eq('contest_id', contestId);
+        .eq('contest_id', contestId)
+        .order('question_id');
 
       // 2) Problems with marks
       const { data: problems } = await supabaseClient
         .from('problems')
-        .select('id, title, marks');  // marks column[web:282]
+        .select('id, title, marks, correct_answer')
+        .eq('contest_id', contestId);
 
       // 3) Calculate total score + breakdown rows
       let totalScore = 0;
       const breakdownRows = [];
+      const attemptedCount = submissions?.length || 0;
 
       const problemMap = {};
       if (problems) {
         problems.forEach(p => { problemMap[p.id] = p; });
       }
 
-      const questionIds = ['q1', 'q2', 'q3']; // fixed 3 questions
+      const questionIds = ['q1', 'q2', 'q3'];
       questionIds.forEach((qid, index) => {
-        const p = problemMap[qid] || { title: `Question ${index + 1}`, marks: 0 };
-        const sub = submissions ? submissions.find(s => s.question_id === qid) : null;
-        const attempted = sub && sub.code && sub.code.trim().length > 0;
-        const gained = attempted ? (p.marks || 0) : 0;
+        const p = problemMap[qid] || { title: `Question ${index + 1}`, marks: 100 };
+        const sub = submissions?.find(s => s.question_id === qid);
+        
+        const attempted = sub && (sub.code?.trim().length > 0 || sub.answered);
+        const gained = attempted ? (p.marks || 100) : 0;
 
         totalScore += gained;
 
         breakdownRows.push({
           id: qid,
-          title: p.title,
-          marks: p.marks || 0,
+          title: p.title || `Question ${index + 1}`,
+          marks: p.marks || 100,
           attempted,
           gained
         });
       });
 
-      const fallbackScore = getScoreFromUrlFallback();
-      const finalScore = totalScore || fallbackScore;
-
-      // Abhi sab contest 300 marks ke maante hain
-      const maxMarks = 300;
+      const maxMarks = 600; // q1=100 + q2=200 + q3=300
+      const finalScore = totalScore;
+      const accuracy = attemptedCount > 0 ? Math.round((totalScore / maxMarks) * 100) : 0;
 
       // 4) Render header + overall score
       renderHeader(contest, finalScore, maxMarks);
@@ -174,16 +205,22 @@
       // 5) Render breakdown table
       renderBreakdownTable(breakdownRows);
 
-      // 6) Save to leaderboard + show leaderboard
-      await saveToLeaderboardAndShow(user.id, contestId, finalScore);
+      // 6) Update stats
+      document.getElementById('accuracy').textContent = `${accuracy}%`;
+      document.getElementById('total-attempts').textContent = attemptedCount;
+
+      // 7) Save to leaderboard + show leaderboard
+      await saveToLeaderboardAndShow(user.id, contestId, finalScore, accuracy);
+
+      // Clear exam data
+      localStorage.removeItem('examSubmissions');
+      localStorage.removeItem('currentContestId');
 
     } catch (err) {
       console.error('Result error', err);
       document.getElementById('overall-score').textContent = 'Error';
       document.getElementById('breakdown-body').innerHTML =
-        `<div class="px-3 py-2 text-[11px] text-red-400">Error loading result.</div>`;
-      document.getElementById('leaderboard-body').innerHTML =
-        `<div class="px-3 py-2 text-[11px] text-red-400">Error loading leaderboard.</div>`;
+        `<div class="px-3 py-2 text-[11px] text-red-400">Error loading result. Try refreshing.</div>`;
     }
   }
 
@@ -197,14 +234,14 @@
     }
 
     const htmlRows = rows.map((row, index) => `
-      <tr class="border-t border-slate-800">
-        <td class="px-3 py-2 text-[11px] text-slate-200">Q${index + 1}</td>
+      <tr class="border-t border-slate-800 hover:bg-slate-800/30">
+        <td class="px-3 py-2 text-[11px] text-slate-200 font-mono">#${index + 1}</td>
         <td class="px-3 py-2 text-[11px] text-slate-200">${row.title}</td>
-        <td class="px-3 py-2 text-[11px] text-center text-slate-100">${row.marks}</td>
-        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400' : 'text-slate-400'}">
-          ${row.attempted ? 'Attempted' : 'Not attempted'}
+        <td class="px-3 py-2 text-[11px] text-center text-slate-100 font-semibold">${row.marks}</td>
+        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400 font-semibold' : 'text-slate-400'}">
+          ${row.attempted ? '✅ Attempted' : '❌ Skipped'}
         </td>
-        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400' : 'text-slate-400'}">
+        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400 font-bold text-lg' : 'text-slate-400'}">
           ${row.gained}
         </td>
       </tr>
@@ -212,7 +249,7 @@
 
     body.innerHTML = `
       <table class="w-full text-[11px]">
-        <thead class="bg-slate-800/80 text-slate-300">
+        <thead class="bg-slate-800/80 text-slate-300 sticky top-0">
           <tr>
             <th class="px-3 py-2 text-left">Q#</th>
             <th class="px-3 py-2 text-left">Question</th>
@@ -228,34 +265,30 @@
     `;
   }
 
-  async function saveToLeaderboardAndShow(userId, contestId, score) {
+  async function saveToLeaderboardAndShow(userId, contestId, score, accuracy) {
     // Save / update score
     const { error: upsertError } = await supabaseClient
       .from('leaderboard')
-      .upsert({ contest_id: contestId, user_id: userId, score: score });
+      .upsert({ 
+        contest_id: contestId, 
+        user_id: userId, 
+        score: score,
+        accuracy: accuracy
+      });
 
     if (upsertError) {
       console.error('Leaderboard save error:', upsertError);
-    } else {
-      // Optional RPC for ranks
-      try {
-        await supabaseClient.rpc('update_leaderboard_ranks', { target_contest_id: contestId });
-      } catch (e) {
-        console.warn('Rank RPC error (optional):', e);
-      }
     }
 
-    // Fetch top 50 for this contest
+    // Fetch top 50 + your rank
     const container = document.getElementById('leaderboard-body');
     try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-
-      const { data, error } = await supabaseClient
+      const { data: leaderboard, error } = await supabaseClient
         .from('leaderboard')
-        .select('user_id, score, rank')
+        .select('user_id, score, rank, accuracy')
         .eq('contest_id', contestId)
         .order('score', { ascending: false })
-        .limit(50);   // Top 50[web:291]
+        .limit(50);
 
       if (error) {
         console.error('Leaderboard fetch error:', error);
@@ -263,30 +296,33 @@
         return;
       }
 
-      if (!data || data.length === 0) {
-        container.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No participants yet.</div>`;
+      if (!leaderboard || leaderboard.length === 0) {
+        container.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No participants yet. You're first! 🎉</div>`;
         return;
       }
 
-      data.sort((a, b) => b.score - a.score);
+      // Calculate your percentile
+      const yourScore = leaderboard.find(l => l.user_id === userId)?.score || 0;
+      const betterThanYou = leaderboard.filter(l => l.score > yourScore).length;
+      const percentile = Math.max(0, 100 - Math.round((betterThanYou / leaderboard.length) * 100));
+      document.getElementById('percentile').textContent = `${percentile}%`;
 
-      const rowsHtml = data.map((row, index) => {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      const rowsHtml = leaderboard.map((row, index) => {
         const isYou = user && row.user_id === user.id;
-        const rank = row.rank || index + 1;
+        const rank = row.rank || (index + 1);
 
-        let displayName = 'User';
-        if (isYou) displayName = 'You';
-        else if (row.user_id) displayName = row.user_id.slice(0, 6) + '...';
+        let displayName = isYou ? '👤 You' : `User ${row.user_id.slice(-6)}`;
 
         return `
-          <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-              ${rank}
+          <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/20 border-emerald-400/50' : 'hover:bg-slate-800/60'}">
+            <td class="px-3 py-1.5 text-center text-[11px] font-bold ${isYou ? 'text-emerald-400 text-sm' : ''}">
+              #${rank}
             </td>
-            <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            <td class="px-3 py-1.5 text-[11px] font-medium ${isYou ? 'text-emerald-400' : ''}">
               ${displayName}
             </td>
-            <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
+            <td class="px-3 py-1.5 text-center text-[11px] font-bold ${isYou ? 'text-emerald-400 text-sm' : ''}">
               ${row.score}
             </td>
           </tr>
@@ -297,9 +333,9 @@
         <table class="w-full text-[11px]">
           <thead class="bg-slate-800/80 text-slate-300">
             <tr>
-              <th class="px-3 py-1.5 text-left">Rank</th>
+              <th class="px-3 py-1.5 text-left w-12">Rank</th>
               <th class="px-3 py-1.5 text-left">Student</th>
-              <th class="px-3 py-1.5 text-left">Score</th>
+              <th class="px-3 py-1.5 text-left w-20">Score</th>
             </tr>
           </thead>
           <tbody class="text-slate-200">
@@ -311,6 +347,11 @@
       console.error('Leaderboard render error:', e);
       container.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Error loading leaderboard.</div>`;
     }
+  }
+
+  // Auto-redirect from exam.html after time ends
+  if (window.location.search.includes('from=exam')) {
+    document.title = 'Result - CodeRush';
   }
 
   document.addEventListener("DOMContentLoaded", loadResultPage);
