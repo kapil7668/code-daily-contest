@@ -1,328 +1,81 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CodeRush Problem – Solve & Run</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Problems - CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-    textarea::-webkit-scrollbar, pre::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    textarea::-webkit-scrollbar-thumb, pre::-webkit-scrollbar-thumb {
-      background: #4b5563;
-      border-radius: 999px;
-    }
+    .problem-card:hover { transform: translateY(-2px); }
+    .difficulty-easy { background: linear-gradient(90deg, #10b981, #34d399); }
+    .difficulty-medium { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .difficulty-hard { background: linear-gradient(90deg, #ef4444, #f87171); }
   </style>
 </head>
-
-<body class="min-h-screen text-slate-100 bg-slate-950
-             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.20),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.20),_transparent_55%)]">
-
-<!-- Top bar -->
-<header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-30">
-  <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-2.5 text-xs">
-    <div class="flex items-center gap-2">
-      <a href="dashboard.html" class="flex items-center gap-2">
-        <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
-          C
-        </div>
-        <span class="font-semibold text-sm tracking-tight">CodeRush</span>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-slate-100 min-h-screen">
+  <header class="border-b border-slate-800/50 bg-slate-900/95 backdrop-blur-xl sticky top-0 z-50">
+    <nav class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
+      <a href="dashboard.html" class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-black text-lg">C</div>
+        <span class="font-black text-xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">CodeRush</span>
       </a>
-      <span class="mx-2 text-slate-600">/</span>
-      <span id="problem-title-top" class="text-slate-200"></span>
-    </div>
-    <div class="flex items-center gap-3">
-      <select id="lang-select" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1">
-        <option value="cpp">C++</option>
-        <option value="java">Java</option>
-        <option value="py">Python</option>
-      </select>
-      <button id="run-code" class="px-3 py-1.5 rounded-lg bg-slate-700 hover:bg-slate-600 text-xs">
-        Run
-      </button>
-      <button id="submit-code" class="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 font-semibold text-xs">
-        Submit
-      </button>
-    </div>
-  </nav>
-</header>
+      <a href="dashboard.html" class="text-emerald-400 hover:text-emerald-300 font-semibold">Dashboard</a>
+    </nav>
+  </header>
 
-<main class="max-w-6xl mx-auto px-4 py-4 md:py-6 text-xs md:text-sm
-             bg-slate-900/80 border border-slate-800/70 rounded-2xl shadow-[0_0_32px_rgba(15,23,42,0.95)] mt-4 mb-8">
-  <div class="grid md:grid-cols-2 gap-4 md:gap-5">
+  <main class="max-w-7xl mx-auto px-4 py-12">
+    <div class="flex flex-col lg:flex-row gap-4 mb-8">
+      <button class="px-4 py-2 bg-slate-800/50 hover:bg-slate-700 rounded-xl text-sm border border-slate-700">All</button>
+      <button class="px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 rounded-xl text-sm">Easy</button>
+      <button class="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-xl text-sm">Medium</button>
+    </div>
 
-    <!-- Left: problem description -->
-    <section class="bg-slate-900 rounded-xl border border-slate-800 p-4 overflow-y-auto max-h-[78vh]">
-      <div class="flex items-center justify-between mb-2">
-        <div>
-          <h1 id="problem-title" class="text-sm md:text-base font-semibold mb-1"></h1>
-          <div class="flex flex-wrap items-center gap-2 text-[11px]">
-            <span id="problem-difficulty" class="px-2 py-0.5 rounded-full border border-slate-700"></span>
-            <span id="problem-topic" class="text-slate-400"></span>
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+      <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800/50">
+        <div class="text-3xl font-black text-emerald-400">5</div>
+        <div class="text-slate-400 text-sm">Total Problems</div>
+      </div>
+    </div>
+
+    <div id="problems-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="animate-pulse"><div class="h-48 bg-slate-800 rounded-2xl"></div></div>
+    </div>
+  </main>
+
+  <script>
+    const supabase = supabase.createClient('https://tghtgygjawhrcgtwhrej.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-HtIFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38');
+
+    async function loadProblems() {
+      const { data, error } = await supabase.from('problems').select('*');
+      const grid = document.getElementById('problems-grid');
+      
+      if (error || !data?.length) {
+        grid.innerHTML = '<div class="col-span-full text-center py-20 text-slate-400">Loading problems...</div>';
+        return;
+      }
+
+      grid.innerHTML = data.map(problem => `
+        <div class="group bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800/50 hover:border-emerald-500/50 hover:bg-slate-900/70 transition-all duration-300 problem-card overflow-hidden">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-3">
+              <div class="px-3 py-1 rounded-full text-xs font-bold ${problem.difficulty === 'Easy' ? 'difficulty-easy' : problem.difficulty === 'Medium' ? 'difficulty-medium' : 'difficulty-hard'} text-white">
+                ${problem.difficulty}
+              </div>
+              <div class="text-xs text-slate-400">${problem.acceptance}</div>
+            </div>
+            <h3 class="font-bold text-lg mb-2 leading-tight group-hover:text-emerald-400 transition-colors">${problem.title}</h3>
+            <p class="text-slate-400 text-sm mb-4">${problem.topic}</p>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-slate-500">${problem.frequency} attempts</span>
+              <a href="problem.html?p=${problem.slug}" class="text-emerald-400 hover:text-emerald-300 font-medium text-sm">Solve →</a>
+            </div>
           </div>
         </div>
-        <button onclick="history.back()" class="text-[11px] text-slate-400 hover:text-slate-200">
-          ← Back
-        </button>
-      </div>
-
-      <hr class="border-slate-800 mb-3" />
-
-      <article class="space-y-3 text-[11px] md:text-xs leading-relaxed">
-        <p id="problem-description" class="text-slate-200"></p>
-
-        <div>
-          <h2 class="font-semibold mb-1">Example 1:</h2>
-          <pre id="example-1" class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-[11px] overflow-x-auto"></pre>
-        </div>
-
-        <div>
-          <h2 class="font-semibold mb-1">Example 2:</h2>
-          <pre id="example-2" class="bg-slate-900 border border-slate-800 rounded-lg p-2 text-[11px] overflow-x-auto"></pre>
-        </div>
-
-        <div>
-          <h2 class="font-semibold mb-1">Constraints:</h2>
-          <ul id="constraints" class="list-disc list-inside text-slate-300 text-[11px] space-y-0.5"></ul>
-        </div>
-      </article>
-    </section>
-
-    <!-- Right: code editor + output -->
-    <section class="space-y-3">
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <div class="flex items-center justify-between mb-2 text-[11px]">
-          <span class="text-slate-300">Code</span>
-          <button id="reset-code" class="text-slate-400 hover:text-slate-200">Reset code</button>
-        </div>
-        <textarea id="code-editor"
-                  class="w-full h-52 md:h-64 bg-slate-900 border border-slate-800 rounded-lg text-[11px] p-2 font-mono text-slate-100 resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
-      </div>
-
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <div class="flex items-center justify-between mb-2 text-[11px]">
-          <span class="text-slate-300">Custom input</span>
-          <button id="clear-input" class="text-slate-400 hover:text-slate-200">Clear</button>
-        </div>
-        <textarea id="custom-input"
-                  class="w-full h-20 bg-slate-900 border border-slate-800 rounded-lg text-[11px] p-2 font-mono text-slate-100 resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500"></textarea>
-      </div>
-
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <div class="flex items-center justify-between mb-2 text-[11px]">
-          <span class="text-slate-300">Output</span>
-          <span id="output-status" class="text-[11px] text-slate-400"></span>
-        </div>
-        <pre id="output-area"
-             class="w-full min-h-[60px] bg-slate-950 border border-slate-800 rounded-lg text-[11px] p-2 font-mono text-slate-100 overflow-x-auto"></pre>
-      </div>
-    </section>
-
-  </div>
-</main>
-
-<!-- Supabase client -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
-
-<script>
-// simple "database" of problems (hardcoded for now)
-const problems = {
-  "two-sum": {
-    title: "Two Sum",
-    difficulty: "Easy",
-    topic: "Arrays",
-    description: "Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.",
-    example1: "Input: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: Because nums[0] + nums[1] == 9, we return [0, 1].",
-    example2: "Input: nums = [3,2,4], target = 6\nOutput: [1,2]",
-    constraints: [
-      "2 ≤ nums.length ≤ 10^4",
-      "-10^9 ≤ nums[i] ≤ 10^9",
-      "-10^9 ≤ target ≤ 10^9",
-      "Exactly one valid answer exists."
-    ],
-    templates: {
-      cpp: `class Solution {
-public:
-    vector<int> twoSum(vector<int>& nums, int target) {
-        
+      `).join('');
     }
-};`,
-      java: `class Solution {
-    public int[] twoSum(int[] nums, int target) {
-        
-    }
-}`,
-      py: `class Solution:
-    def twoSum(self, nums: List[int], target: int) -> List[int]:
-        pass`
-    }
-  },
-  "longest-substring": {
-    title: "Longest Substring Without Repeating Characters",
-    difficulty: "Medium",
-    topic: "Strings",
-    description: "Given a string s, find the length of the longest substring without repeating characters.",
-    example1: "Input: s = \"abcabcbb\"\nOutput: 3\nExplanation: The answer is \"abc\", with the length of 3.",
-    example2: "Input: s = \"bbbbb\"\nOutput: 1\nExplanation: The answer is \"b\", with the length of 1.",
-    constraints: [
-      "0 ≤ s.length ≤ 5 * 10^4",
-      "s consists of English letters, digits, symbols and spaces."
-    ],
-    templates: {
-      cpp: `class Solution {
-public:
-    int lengthOfLongestSubstring(string s) {
-        
-    }
-};`,
-      java: `class Solution {
-    public int lengthOfLongestSubstring(String s) {
-        
-    }
-}`,
-      py: `class Solution:
-    def lengthOfLongestSubstring(self, s: str) -> int:
-        pass`
-    }
-  },
-  "word-ladder": {
-    title: "Word Ladder",
-    difficulty: "Hard",
-    topic: "Graphs",
-    description: "Given two words beginWord and endWord, and a dictionary wordList, return the length of the shortest transformation sequence from beginWord to endWord.",
-    example1: "Input: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]\nOutput: 5",
-    example2: "Input: beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\"]\nOutput: 0",
-    constraints: [
-      "1 ≤ beginWord.length ≤ 10",
-      "endWord.length == beginWord.length",
-      "1 ≤ wordList.length ≤ 5000"
-    ],
-    templates: {
-      cpp: `class Solution {
-public:
-    int ladderLength(string beginWord, string endWord, vector<string>& wordList) {
-        
-    }
-};`,
-      java: `class Solution {
-    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        
-    }
-}`,
-      py: `class Solution:
-    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
-        pass`
-    }
-  }
-};
 
-// get which problem from URL query
-const params = new URLSearchParams(window.location.search);
-const slug = params.get('p') || 'two-sum';
-const problem = problems[slug] || problems['two-sum'];
-
-// fill problem data
-document.getElementById('problem-title').textContent = problem.title;
-document.getElementById('problem-title-top').textContent = problem.title;
-document.getElementById('problem-difficulty').textContent = problem.difficulty;
-document.getElementById('problem-topic').textContent = problem.topic;
-document.getElementById('problem-description').textContent = problem.description;
-document.getElementById('example-1').textContent = problem.example1;
-document.getElementById('example-2').textContent = problem.example2;
-
-// constraints list
-const ul = document.getElementById('constraints');
-problem.constraints.forEach(c => {
-  const li = document.createElement('li');
-  li.textContent = c;
-  ul.appendChild(li);
-});
-
-// difficulty color
-const diffChip = document.getElementById('problem-difficulty');
-if (problem.difficulty === 'Easy') {
-  diffChip.classList.add('text-emerald-400','border-emerald-500/60');
-} else if (problem.difficulty === 'Medium') {
-  diffChip.classList.add('text-amber-400','border-amber-500/60');
-} else {
-  diffChip.classList.add('text-red-400','border-red-500/60');
-}
-
-// language templates
-const langSelect = document.getElementById('lang-select');
-const codeEditor = document.getElementById('code-editor');
-
-function loadTemplate() {
-  const lang = langSelect.value;
-  const template = problem.templates[lang] || '';
-  codeEditor.value = template;
-}
-langSelect.addEventListener('change', loadTemplate);
-
-// initial code
-loadTemplate();
-
-// reset / clear
-document.getElementById('reset-code').onclick = loadTemplate;
-document.getElementById('clear-input').onclick = () => {
-  document.getElementById('custom-input').value = '';
-};
-
-// fake run / submit behaviour (improved)
-const outputArea = document.getElementById('output-area');
-const outputStatus = document.getElementById('output-status');
-
-document.getElementById('run-code').onclick = () => {
-  const userInput = document.getElementById('custom-input').value.trim();
-  const lang = langSelect.value;
-
-  outputStatus.textContent = 'Running (dummy)...';
-
-  setTimeout(() => {
-    outputStatus.textContent = 'Finished';
-
-    const snippet = codeEditor.value
-      .split('\n')
-      .slice(0, 6)
-      .join('\n');
-
-    outputArea.textContent =
-      `Language: ${lang.toUpperCase()}\n` +
-      `Problem: ${problem.title}\n\n` +
-      (userInput
-        ? `Input received:\n${userInput}\n\n`
-        : 'No custom input provided.\n\n') +
-      '--- Code preview ---\n' +
-      snippet +
-      '\n\n(Note: This is a dummy run. Later this will call your backend / judge.)';
-  }, 400);
-};
-
-document.getElementById('submit-code').onclick = () => {
-  outputStatus.textContent = 'Judging (dummy)...';
-  setTimeout(() => {
-    outputStatus.textContent = 'Submitted';
-    outputArea.textContent =
-      'Your solution has been saved locally.\n' +
-      'In the real version, this will run against hidden test cases and update your contest stats.';
-  }, 500);
-};
-
-// Supabase auth check
-(async () => {
-  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  const { data, error } = await supabaseClient.auth.getUser();  // [web:236]
-  if (error || !data.user) {
-    window.location.href = 'index.html';
-  }
-})();
-</script>
-
+    loadProblems();
+  </script>
 </body>
 </html>
