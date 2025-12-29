@@ -204,60 +204,58 @@
   </section>
 
   <!-- Problems Tab -->
-  <section id="tab-problems" class="tab-page hidden">
-    <h2 class="text-lg font-semibold mb-2">Practice problems</h2>
-    <p class="text-[11px] text-slate-400 mb-3">
-      Start with these curated sets. Later yaha se real problem pages link kar sakte ho.
-    </p>
+  <!-- Problems Tab - LEETCODE STYLE -->
+<section id="tab-problems" class="tab-page hidden">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+      Practice Problems
+    </h2>
+    <a href="problems.html" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-semibold rounded-xl text-sm">
+      View All (4,237)
+    </a>
+  </div>
 
-    <div class="grid md:grid-cols-3 gap-4 text-xs">
-      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
-        <h3 class="font-semibold text-sm mb-1">Beginner DSA (20)</h3>
-        <p class="text-slate-300 text-[11px] mb-2">
-          Arrays, strings, hashing – sabse common interview starters.
-        </p>
-        <ul class="text-[11px] text-slate-400 space-y-1 mb-2">
-          <li>• Two Sum</li>
-          <li>• Reverse String</li>
-          <li>• Move Zeroes</li>
-        </ul>
-        <a href="problems-beginner.html"
-           class="inline-block px-3 py-1.5 rounded-lg border border-emerald-400 text-emerald-300">
-          Open set
-        </a>
+  <div class="grid md:grid-cols-3 gap-6">
+    <a href="problems.html" class="group bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800/50 hover:border-emerald-500/50 hover:bg-slate-900/70 transition-all duration-300 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-emerald-400 to-emerald-500 text-slate-900">Easy</div>
+          <div class="text-xs text-slate-400">85.3%</div>
+        </div>
+        <h3 class="font-bold text-xl mb-2 leading-tight group-hover:text-emerald-400">Two Sum</h3>
+        <p class="text-slate-400 text-sm mb-4">Array</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-slate-500">1.2K attempts</span>
+          <span class="text-emerald-400 font-medium text-sm">Solve →</span>
+        </div>
       </div>
+    </a>
 
-      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
-        <h3 class="font-semibold text-sm mb-1">Core DSA (50)</h3>
-        <p class="text-slate-300 text-[11px] mb-2">
-          Stacks, queues, linked list, trees, DP basics.
-        </p>
-        <ul class="text-[11px] text-slate-400 space-y-1 mb-2">
-          <li>• Valid Parentheses</li>
-          <li>• LRU Cache</li>
-          <li>• Level Order Traversal</li>
-        </ul>
-        <button class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200">
-          Coming soon
-        </button>
+    <a href="problems.html" class="group bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800/50 hover:border-emerald-500/50 hover:bg-slate-900/70 transition-all duration-300 overflow-hidden">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+          <div class="px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900">Medium</div>
+          <div class="text-xs text-slate-400">72.1%</div>
+        </div>
+        <h3 class="font-bold text-xl mb-2 leading-tight group-hover:text-emerald-400">Longest Substring</h3>
+        <p class="text-slate-400 text-sm mb-4">Sliding Window</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xs text-slate-500">980 attempts</span>
+          <span class="text-emerald-400 font-medium text-sm">Solve →</span>
+        </div>
       </div>
+    </a>
 
-      <div class="bg-slate-800/80 border border-slate-700 rounded-xl p-4">
-        <h3 class="font-semibold text-sm mb-1">Company sheets</h3>
-        <p class="text-slate-300 text-[11px] mb-2">
-          FAANG style sheets, topic‑wise filters aur difficulty mix.
-        </p>
-        <ul class="text-[11px] text-slate-400 space-y-1 mb-2">
-          <li>• SDE‑1 Starter</li>
-          <li>• Product‑based 75</li>
-          <li>• Mixed difficulty set</li>
-        </ul>
-        <button class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200">
-          Coming soon
-        </button>
+    <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl border border-slate-800/50 p-6">
+      <div class="text-3xl font-black text-emerald-400 mb-2">4,237</div>
+      <div class="text-slate-400 text-sm mb-4">Total Problems</div>
+      <div class="grid grid-cols-2 gap-4 text-xs">
+        <div><span class="font-bold text-emerald-400">1,892</span><br><span class="text-slate-400">Easy</span></div>
+        <div><span class="font-bold text-amber-400">2,345</span><br><span class="text-slate-400">Medium+Hard</span></div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
   <!-- Contests Tab (cards with big prize) -->
   <section id="tab-contests" class="tab-page hidden">
