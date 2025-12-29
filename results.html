@@ -48,6 +48,26 @@
     </div>
   </section>
 
+  <!-- 🆕 RANK NOTIFICATION BANNER (NEW!) -->
+  <section class="mt-6 pt-6 border-t border-slate-800/60">
+    <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/40 rounded-2xl p-6 mb-6 backdrop-blur-sm">
+      <div class="flex items-start gap-3">
+        <div class="flex-shrink-0 mt-1">
+          <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"></path>
+          </svg>
+        </div>
+        <div class="flex-1">
+          <h3 class="text-sm font-bold text-amber-100 mb-1">📢 Contest Ongoing</h3>
+          <p class="text-xs text-amber-200 leading-relaxed">
+            Your current position shown above. <strong>Final rank will be decided when contest ends.</strong><br>
+            You'll get automatic notification when ranks are finalized!
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Leaderboard (Top 50 of this contest) -->
   <section id="leaderboard" class="mt-4 text-xs">
     <h2 class="text-sm font-semibold mb-2">Contest leaderboard (Top 50)</h2>
@@ -91,15 +111,6 @@
 
   function findContestById(id) {
     return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
-  }
-
-  function getScoreFromLocalStorage() {
-    try {
-      const submissions = JSON.parse(localStorage.getItem('examSubmissions') || '[]');
-      return submissions.filter(s => s.answered).length;
-    } catch {
-      return 0;
-    }
   }
 
   function renderHeader(contest, yourScore, maxMarks) {
@@ -175,26 +186,26 @@
         problems.forEach(p => { problemMap[p.id] = p; });
       }
 
-      const questionIds = ['q1', 'q2', 'q3'];
+      const questionIds = ['q1', 'q2', 'q3', 'q4', 'q5']; // Updated for 5 questions
       questionIds.forEach((qid, index) => {
-        const p = problemMap[qid] || { title: `Question ${index + 1}`, marks: 100 };
+        const p = problemMap[qid] || { title: `Question ${index + 1}`, marks: 20 };
         const sub = submissions?.find(s => s.question_id === qid);
         
         const attempted = sub && (sub.code?.trim().length > 0 || sub.answered);
-        const gained = attempted ? (p.marks || 100) : 0;
+        const gained = attempted ? (p.marks || 20) : 0;
 
         totalScore += gained;
 
         breakdownRows.push({
           id: qid,
           title: p.title || `Question ${index + 1}`,
-          marks: p.marks || 100,
+          marks: p.marks || 20,
           attempted,
           gained
         });
       });
 
-      const maxMarks = 600; // q1=100 + q2=200 + q3=300
+      const maxMarks = 100; // 5 questions x 20 marks
       const finalScore = totalScore;
       const accuracy = attemptedCount > 0 ? Math.round((totalScore / maxMarks) * 100) : 0;
 
@@ -273,7 +284,8 @@
         contest_id: contestId, 
         user_id: userId, 
         score: score,
-        accuracy: accuracy
+        accuracy: accuracy,
+        is_finalized: false
       });
 
     if (upsertError) {
