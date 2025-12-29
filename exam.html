@@ -6,6 +6,7 @@
   <title>Contest Exam – CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { font-family: system-ui, sans-serif; }
     .nav-unattempted { background: #374151 !important; color: white !important; border: 2px solid #4b5563 !important; }
@@ -100,6 +101,11 @@
 
   <script src="contests-config.js"></script>
   <script>
+    // ====== SUPABASE SETUP ======
+    const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     // ====== STATE ======
     let currentQuestion = 0;
     let mainTime = 90 * 60;
@@ -108,8 +114,10 @@
     let contestConfig, questions = [];
     let mainTimerInt, questionTimerInt;
     let editor = null;
-    let questionStates = Array(32).fill('unattempted'); // unattempted, attempted, active, coding
+    let questionStates = Array(32).fill('unattempted');
     let mcqAnswers = {};
+    let mcqScore = 0; // +4/-1 scoring
+    let codingScore = 0; // Manual for now
 
     // Dynamic questions loader
     function loadQuestionsFile() {
@@ -151,8 +159,47 @@
       });
     }
 
+    // ====== SUPABASE SUBMIT EXAM ======
+    async function submitExamToSupabase() {
+      try {
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError || !user) {
+          alert('Login required!');
+          return false;
+        }
+
+        const totalScore = mcqScore + codingScore;
+        console.log('🎯 Submitting scores:', { mcqScore, codingScore, totalScore });
+
+        const { error } = await supabase
+          .from('scores')
+          .insert([{
+            user_id: user.id,
+            contest_id: contestId,
+            mcq_score: mcqScore,
+            coding_score: codingScore,
+            total_score: totalScore,
+            submit_time: new Date().toISOString()
+          }]);
+
+        if (error) {
+          console.error('❌ Supabase error:', error);
+          alert('Score save failed. Try again.');
+          return false;
+        }
+
+        console.log('✅ Score saved to leaderboard!');
+        window.location.href = `results.html?contestId=${contestId}&score=${totalScore}`;
+        return true;
+      } catch (error) {
+        console.error('Submit error:', error);
+        alert('Exam submission failed.');
+        return false;
+      }
+    }
+
     // ====== MAIN INIT ======
-    function initExam() {
+    async function initExam() {
       const questionsKey = contestId.toUpperCase().replace(/-/g, '_') + '_QUESTIONS';
       questions = window[questionsKey] || generateFallbackQuestions();
       
@@ -169,10 +216,21 @@
     function startTimers() {
       mainTimerInt = setInterval(() => {
         mainTime--;
+        if (mainTime <= 0) {
+          clearInterval(mainTimerInt);
+          clearInterval(questionTimerInt);
+          submitExamToSupabase();
+          return;
+        }
         const h = Math.floor(mainTime / 3600);
         const m = Math.floor((mainTime % 3600) / 60);
         const s = mainTime % 60;
         document.getElementById('main-timer').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        
+        // RED warning at 5 min
+        if (mainTime <= 300) {
+          document.getElementById('main-timer').className = 'text-xl text-red-400 font-bold';
+        }
       }, 1000);
 
       questionTimerInt = setInterval(() => {
@@ -206,6 +264,11 @@
         ['A', 'B', 'C', 'D'].forEach((letter, i) => {
           document.getElementById(`opt-${letter}`).textContent = q.options[i];
         });
+      }
+      
+      // Restore saved answer
+      if (!isCoding && mcqAnswers[currentQuestion]) {
+        document.querySelector(`input[name="mcq"][value="${mcqAnswers[currentQuestion]}"]`).checked = true;
       }
       
       questionTime = q.time || (isCoding ? 900 : 120);
@@ -269,11 +332,12 @@
     }
 
     // ====== EVENTS ======
+    document.addEventListener('DOMContentLoaded', loadQuestionsFile);
+
     document.getElementById('next-btn').onclick = nextQuestion;
     document.getElementById('prev-btn').onclick = prevQuestion;
     document.getElementById('save-btn').onclick = () => {
       saveCurrentAnswer();
-      // No alert popup - silent save
     };
 
     document.querySelectorAll('input[name="mcq"]').forEach(radio => {
@@ -283,7 +347,8 @@
       };
     });
 
-    document.addEventListener('DOMContentLoaded', loadQuestionsFile);
+    // Manual exam end button (for testing)
+    window.submitExam = submitExamToSupabase;
   </script>
 </body>
 </html>
