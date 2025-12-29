@@ -20,9 +20,7 @@
   </style>
 </head>
 <body class="min-h-screen text-slate-100 bg-slate-950 p-8">
-  <!-- SAME HTML STRUCTURE AS BEFORE -->
   <div class="max-w-6xl mx-auto bg-slate-900/80 border border-slate-800 rounded-2xl p-8">
-    <!-- Header, Navigator, Question Area, Buttons - SAME AS BEFORE -->
     <div class="flex justify-between items-center mb-8">
       <div>
         <h1 id="contest-title" class="text-2xl font-bold text-emerald-400">Loading Contest...</h1>
@@ -53,17 +51,17 @@
 
         <!-- MCQ Options -->
         <div id="mcq-interface" class="mcq-interface space-y-3">
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="A" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-A" class="ml-4"></span>
+          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all opt-label">
+            <input type="radio" name="mcq" value="0" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-0" class="ml-4"></span>
           </label>
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="B" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-B" class="ml-4"></span>
+          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all opt-label">
+            <input type="radio" name="mcq" value="1" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-1" class="ml-4"></span>
           </label>
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="C" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-C" class="ml-4"></span>
+          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all opt-label">
+            <input type="radio" name="mcq" value="2" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-2" class="ml-4"></span>
           </label>
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="D" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-D" class="ml-4"></span>
+          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all opt-label">
+            <input type="radio" name="mcq" value="3" class="w-5 h-5 text-emerald-500 ml-4"><span id="opt-3" class="ml-4"></span>
           </label>
         </div>
 
@@ -97,76 +95,207 @@
 
   <script>
     // Supabase
-    const supabase = supabase.createClient("https://tghtgygjawhrcgtwhrej.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38");
+    const supabaseUrl = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+    const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
     // State
-    let currentQuestion = 0, mainTime = 90*60, questionTime = 120, contestId = new URLSearchParams(window.location.search).get('contestId') || 'paid-9';
-    let questions = [], editor, questionStates = Array(32).fill('unattempted'), mcqAnswers = {}, mcqScore = 0;
+    let currentQuestion = 0, mainTime = 90*60, questionTime = 120;
+    let contestId = new URLSearchParams(window.location.search).get('contestId') || 'paid-9';
+    let questions = [], editor, questionStates = [], mcqAnswers = {}, mcqScore = 0, codingScores = [0, 0];
 
-    // 🔥 MAGIC - LOAD ANY CONTEST QUESTIONS
-    function loadQuestionsFile() {
-      const jsFileName = `./questions/${contestId}.js?t=${Date.now()}`;
-      console.log(`🔍 Loading: ${jsFileName}`);
-      
-      const script = document.createElement('script');
-      script.src = jsFileName;
-      script.onload = () => {
-        // Convert contestId to QUESTIONS variable name
-        const questionsKey = contestId.toUpperCase().replace(/-/g, '_') + '_QUESTIONS';
-        console.log(`🔍 Looking for: ${questionsKey}`);
+    // 🔥 FIXED: Direct JSON load (No JS files needed)
+    async function loadQuestions() {
+      try {
+        console.log(`🔍 Loading questions-${contestId}.json`);
+        const response = await fetch(`questions-${contestId}.json?t=${Date.now()}`);
         
-        if (window[questionsKey]) {
-          questions = window[questionsKey];
-          console.log(`✅ ${questions.length} questions loaded for ${contestId}`);
-          initExam();
-        } else {
-          console.error(`❌ ${questionsKey} not found!`);
-          useFallback();
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: File not found`);
         }
-      };
-      script.onerror = useFallback;
-      document.head.appendChild(script);
+        
+        const text = await response.text();
+        questions = JSON.parse(text);
+        console.log(`✅ ${questions.length} questions loaded for ${contestId}`);
+        
+        // Initialize states
+        questionStates = Array(questions.length).fill('unattempted');
+        initExam();
+      } catch (error) {
+        console.error("❌ Questions load failed:", error);
+        document.getElementById('question-statement').innerHTML = 
+          `<div class="text-red-400 text-center p-8">❌ Questions file missing: questions-${contestId}.json<br>Admin se contact karo.</div>`;
+      }
     }
 
-    function useFallback() {
-      console.log('🔄 Using fallback questions');
-      questions = Array.from({length: 30}, (_, i) => ({
-        title: `Q${i+1}`, statement: `DSA Question ${i+1}`, 
-        options: [`A) Option ${i+1}`, `B) Option ${i+2}`, `C) Option ${i+3}`, `D) Option ${i+4}`]
-      })).concat([
-        {title: 'Q31: Coding', statement: 'Solve coding problem', type: 'coding'},
-        {title: 'Q32: Coding', statement: 'Solve coding problem', type: 'coding'}
-      ]);
-      initExam();
-    }
-
-    // Rest of functions (initMonaco, submitExam, loadQuestion, timers, navigation) - SAME AS BEFORE
     function initExam() {
       document.getElementById('contest-title').textContent = contestId.includes('paid') ? 
         `${contestId.toUpperCase()} Contest` : 'Free Daily Contest';
+      
       initMonaco();
       loadQuestion();
       updateNavigator();
       startTimers();
     }
 
-    // Submit function
-    async function submitExam() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return alert('Login first!');
-      
-      await supabase.from('scores').insert([{
-        user_id: user.id, contest_id: contestId, mcq_score: mcqScore, coding_score: 0, 
-        total_score: mcqScore, submit_time: new Date().toISOString()
-      }]);
-      alert(`✅ Score ${mcqScore} saved for ${contestId}!`);
-      window.location.href = 'dashboard.html';
+    function initMonaco() {
+      require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
+      require(['vs/editor/editor.main'], () => {
+        editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+          value: '# Write your code here\nprint("Hello World")',
+          language: 'python',
+          theme: 'vs-dark',
+          automaticLayout: true
+        });
+      });
     }
 
-    // Event listeners
-    document.addEventListener('DOMContentLoaded', loadQuestionsFile);
+    function loadQuestion() {
+      const q = questions[currentQuestion];
+      if (!q) return;
+      
+      document.getElementById('question-label').textContent = `Question ${currentQuestion + 1}/${questions.length}`;
+      document.getElementById('question-title').textContent = q.question || `Q${currentQuestion + 1}`;
+      document.getElementById('question-tags').textContent = q.type === 'coding' ? 'Coding • 15min (+20)' : 'MCQ • 2min (+4/-1)';
+      document.getElementById('question-statement').innerHTML = q.statement || 'Question statement here...';
+
+      // Clear previous selections
+      document.querySelectorAll('input[name="mcq"]').forEach(r => r.checked = false);
+
+      if (q.type === 'coding') {
+        document.body.classList.add('coding-mode');
+        if (mcqAnswers[currentQuestion] !== undefined) {
+          document.querySelector(`input[name="mcq"][value="${mcqAnswers[currentQuestion]}"]`).checked = true;
+        }
+      } else {
+        document.body.classList.remove('coding-mode');
+        // Load MCQ options
+        ['0','1','2','3'].forEach((opt, i) => {
+          const span = document.getElementById(`opt-${opt}`);
+          if (q.options && q.options[i]) {
+            span.textContent = q.options[i];
+          } else {
+            span.textContent = `Option ${String.fromCharCode(65+i)}`;
+          }
+        });
+        if (mcqAnswers[currentQuestion] !== undefined) {
+          document.querySelector(`input[name="mcq"][value="${mcqAnswers[currentQuestion]}"]`).checked = true;
+        }
+      }
+
+      updateNavigator();
+    }
+
+    function updateNavigator() {
+      const nav = document.getElementById('questions-nav');
+      nav.innerHTML = questions.map((q, i) => {
+        const cls = questionStates[i] === 'active' ? 'nav-active' : 
+                   (questionStates[i] === 'attempted' ? 'nav-attempted' : 
+                   (q.type === 'coding' ? 'nav-coding' : 'nav-unattempted'));
+        return `<button class="w-full text-xs p-2 rounded-lg border-2 ${cls}" onclick="gotoQuestion(${i})">${i+1}</button>`;
+      }).join('');
+      
+      // Highlight current
+      document.querySelectorAll('#questions-nav button')[currentQuestion]?.classList.add('nav-active');
+    }
+
+    function gotoQuestion(index) {
+      currentQuestion = index;
+      loadQuestion();
+    }
+
+    // Timers
+    function startTimers() {
+      setInterval(() => {
+        mainTime--;
+        const m = Math.floor(mainTime/60), s = mainTime%60;
+        document.getElementById('main-timer').textContent = 
+          `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (mainTime <= 0) alert('Time Up!');
+      }, 1000);
+
+      setInterval(() => {
+        questionTime--;
+        const m = Math.floor(questionTime/60), s = questionTime%60;
+        document.getElementById('question-timer').textContent = 
+          `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        if (questionTime <= 0) {
+          questionTime = 120;
+          nextQuestion();
+        }
+      }, 1000);
+    }
+
+    function nextQuestion() { 
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        loadQuestion();
+      }
+    }
+
+    function prevQuestion() { 
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        loadQuestion();
+      }
+    }
+
+    // MCQ Answer tracking
+    document.addEventListener('change', (e) => {
+      if (e.target.name === 'mcq') {
+        mcqAnswers[currentQuestion] = parseInt(e.target.value);
+        questionStates[currentQuestion] = 'attempted';
+        updateNavigator();
+      }
+    });
+
+    // Navigation buttons
+    document.getElementById('next-btn').onclick = nextQuestion;
+    document.getElementById('prev-btn').onclick = prevQuestion;
+    document.getElementById('save-btn').onclick = () => {
+      questionStates[currentQuestion] = 'attempted';
+      updateNavigator();
+    };
+
+    // Submit Exam - SCORES SAVE ✅
+    async function submitExam() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return alert('❌ Pehle Login karo!');
+
+      // Calculate MCQ Score
+      mcqScore = 0;
+      for (let i = 0; i < questions.length; i++) {
+        if (questions[i].type !== 'coding' && mcqAnswers[i] === questions[i].answer) {
+          mcqScore += 4;
+        }
+      }
+
+      const totalScore = mcqScore + codingScores.reduce((a,b)=>a+b, 0);
+
+      // Save to Supabase
+      const { error } = await supabase
+        .from('scores')
+        .insert({
+          user_id: user.id,
+          contest_id: contestId,
+          mcq_score: mcqScore,
+          coding_score: codingScores.reduce((a,b)=>a+b, 0),
+          total_score: totalScore
+        });
+
+      if (error) {
+        console.error("❌ Save failed:", error);
+        alert('❌ Score save nahi hua!');
+      } else {
+        console.log("✅ Score saved to leaderboard!");
+        alert(`✅ Score ${totalScore} saved!\nMCQ: ${mcqScore} | Coding: ${codingScores.reduce((a,b)=>a+b, 0)}`);
+        window.location.href = 'dashboard.html';
+      }
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', loadQuestions);
     document.getElementById('submit-exam-btn').onclick = submitExam;
-    // ... other event listeners (next, prev, save, mcq change)
   </script>
 </body>
 </html>
