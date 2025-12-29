@@ -21,7 +21,7 @@
 
 <main class="max-w-4xl mx-auto px-4 py-8 md:py-12">
   <div id="contest-details" class="bg-slate-900/75 border border-slate-800/60 rounded-3xl shadow-[0_0_40px_rgba(15,23,42,0.95)] p-8 md:p-12 mb-8 text-center">
-    Loading...
+    Loading contest...
   </div>
 
   <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-8">
@@ -37,26 +37,20 @@
   </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 <script>
-const supabase = supabase.createClient('https://tghtgygjawhrcgtwhrej.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38');
-
-// ALL CONTESTS DATA
 const CONTESTS = [
-  {id:1,name:"Free Daily Rush",desc:"3 Easy-Medium problems • 60 mins • Live ranking",fee:0,prize:0,color:"emerald"},
+  {id:1,name:"Free Daily Rush",desc:"3 Easy-Medium problems • 60 mins • Live ranking",fee:0,prize:1000,color:"emerald"},
   {id:2,name:"Quick Rush ₹9",desc:"5 problems • 45 mins • Top 3 win ₹300",fee:9,prize:1000,color:"cyan"},
-  {id:3,name:"Mega Contest ₹49",desc:"8 problems • 90 mins • Top 10 win ₹5K+",fee:49,prize:15000,color:"amber"},
-  {id:4,name:"Night Battle ₹19",desc:"6 problems • 75 mins • Top 5 win ₹1K+",fee:19,prize:3000,color:"purple"},
-  {id:5,name:"Weekend Grand ₹99",desc:"10 Hard problems • 120 mins • ₹25K prize pool",fee:99,prize:25000,color:"rose"},
+  {id:3,name:"Mega Contest ₹49",desc:"8 problems • 90 mins • Top 10 win ₹5K+",fee:49,prize:2500,color:"amber"},
+  {id:4,name:"Night Battle ₹19",desc:"6 problems • 75 mins • Top 5 win ₹1K+",fee:19,prize:13410,color:"purple"},
+  {id:5,name:"Weekend Grand ₹99",desc:"10 Hard problems • 120 mins • ₹25K prize pool",fee:99,prize:23880,color:"rose"},
   {id:6,name:"Beginner Special",desc:"4 Easy problems • 40 mins • Certificates",fee:0,prize:0,color:"lime"},
-  {id:7,name:"Pro League ₹29",desc:"7 problems • 80 mins • Top 20 win cash",fee:29,prize:8000,color:"sky"}
+  {id:7,name:"Pro League ₹29",desc:"7 problems • 80 mins • Top 20 win cash",fee:29,prize:29700,color:"sky"}
 ];
 
-// Get contest ID from URL
 const urlParams = new URLSearchParams(window.location.search);
-let contestId = parseInt(urlParams.get('id')) || 1; // Default to contest 1
+const contestId = parseInt(urlParams.get('id')) || 1;
 
-// Load contest details
 function loadContest() {
   const contest = CONTESTS.find(c => c.id === contestId);
   
@@ -88,32 +82,23 @@ function loadContest() {
       </div>
       <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
         <button id="joinContest" class="w-full bg-gradient-to-r from-${contest.color}-500 to-${contest.color}-400 hover:from-${contest.color}-600 hover:to-${contest.color}-500 text-slate-900 font-black py-4 px-8 rounded-2xl text-lg shadow-2xl hover:-translate-y-1 transition-all duration-300">
-          ${contest.fee===0?'Join Test Free':'Pay ₹'+contest.fee+' & Join'}
+          ${contest.fee===0?'✅ Join Test Free':'💳 Pay ₹'+contest.fee+' & Join'}
         </button>
       </div>
     </div>
   `;
   
-  // Join button click
   document.getElementById('joinContest').onclick = () => {
     if (contest.fee === 0) {
-      alert('✅ Free contest joined! Starting in 3 seconds...');
+      alert('✅ Free contest joined! Problems loading...');
     } else {
-      alert('💳 Razorpay payment - Coming soon!');
+      alert('💳 Razorpay Payment - Next Feature!');
     }
   };
 }
 
-// Check auth & load
-(async () => {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    window.location.href = 'index.html';
-    return;
-  }
-  
-  loadContest(); // Load immediately
-})();
+// LOAD IMMEDIATELY - NO AUTH BLOCK
+loadContest();
 </script>
 </body>
 </html>
