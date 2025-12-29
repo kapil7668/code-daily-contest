@@ -3,328 +3,202 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CodeRush Contest – Details</title>
+  <title id="contest-title">Contest - CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="contests-config.js"></script>
   <style>
-    * {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    }
+    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   </style>
 </head>
 
 <body class="min-h-screen text-slate-100 bg-slate-950
-             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.20),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.20),_transparent_55%)]">
+             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
 
-<!-- Navbar -->
-<header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur sticky top-0 z-30">
-  <nav class="max-w-5xl mx-auto flex items-center justify-between px-4 py-3 text-xs">
-    <div class="flex items-center gap-2">
-      <a href="dashboard.html" class="flex items-center gap-2">
-        <div class="h-7 w-7 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
-          C
-        </div>
-        <span class="font-semibold text-sm tracking-tight">CodeRush</span>
-      </a>
-      <span class="mx-2 text-slate-600">/</span>
-      <span id="contest-short" class="text-slate-300"></span>
-    </div>
-    <button onclick="history.back()"
-            class="hidden sm:inline px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300 hover:border-slate-500 text-[11px]">
-      ← Back
-    </button>
+<!-- Top Navbar -->
+<header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
+  <nav class="max-w-4xl mx-auto flex items-center justify-between px-4 py-3">
+    <a href="dashboard.html" class="flex items-center gap-2">
+      <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">
+        C
+      </div>
+      <span class="font-semibold text-lg tracking-tight">CodeRush</span>
+    </a>
+    <a href="dashboard.html" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-semibold rounded-xl text-sm">
+      ← Back to Dashboard
+    </a>
   </nav>
 </header>
 
-<main class="max-w-5xl mx-auto px-4 py-5 md:py-7 text-xs md:text-sm
-             bg-slate-900/80 border border-slate-800/70 rounded-2xl shadow-[0_0_32px_rgba(15,23,42,0.95)] mt-4 mb-8">
-
-  <!-- Loading -->
-  <div id="loading" class="flex items-center justify-center py-12">
-    <div class="animate-spin h-8 w-8 border-4 border-emerald-400 border-t-transparent rounded-full"></div>
+<main class="max-w-4xl mx-auto px-4 py-8 md:py-12">
+  <div id="contest-details" class="bg-slate-900/75 border border-slate-800/60 rounded-3xl shadow-[0_0_40px_rgba(15,23,42,0.95)] p-8 md:p-12 mb-8">
+    <!-- Contest details dynamically loaded here -->
   </div>
 
-  <!-- Main content -->
-  <section id="contest-content" class="hidden">
-    <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-5">
-
-      <!-- LEFT -->
-      <div class="flex-1 space-y-4">
-        <div>
-          <p id="badge" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] border border-emerald-400/60 text-emerald-300 mb-2"></p>
-          <h1 id="contest-title" class="text-lg md:text-2xl font-bold mb-2"></h1>
-          <p id="contest-subtitle" class="text-slate-300 text-[11px] md:text-xs max-w-xl"></p>
-        </div>
-
-        <!-- Contest details -->
-        <section id="contest-details"
-                 class="space-y-3 text-sm text-slate-200 bg-slate-900/60 border border-slate-800 rounded-2xl p-4">
-          <h2 class="text-sm font-semibold mb-1">Contest details</h2>
-          <p class="text-[11px] text-slate-300">
-            Entry: <span id="detail-entry-fee" class="font-semibold text-slate-100"></span> •
-            Min participants: <span id="detail-min-participants" class="font-semibold text-slate-100"></span> •
-            Total prize: <span id="detail-total-prize" class="font-semibold text-amber-300"></span>
-          </p>
-          <div class="mt-1">
-            <h3 class="text-[11px] uppercase tracking-wide text-slate-400 mb-1">Prize breakdown</h3>
-            <ul id="detail-payouts" class="text-[11px] text-slate-200 space-y-1"></ul>
-          </div>
-          <p class="text-[11px] text-slate-400">
-            Prize distribution contest khatam hone ke 24–48 ghante ke andar UPI / bank ke through hogi.
-          </p>
-        </section>
-      </div>
-
-      <!-- RIGHT -->
-      <div class="bg-slate-900/80 border border-slate-700 rounded-xl p-3 min-w-[260px]">
-        <h2 class="text-[11px] font-semibold mb-2 text-slate-200">When & duration</h2>
-        <p id="contest-time" class="text-slate-300 text-[11px] mb-1"></p>
-        <p id="contest-duration" class="text-slate-400 text-[11px] mb-3"></p>
-
-        <div class="flex items-center justify-between text-[11px] mb-3">
-          <span id="contest-level" class="px-2 py-0.5 rounded-full border border-slate-600 text-slate-200"></span>
-          <span id="contest-prize" class="text-amber-300 text-right"></span>
-        </div>
-
-        <!-- Free button -->
-        <button id="free-register-btn"
-                class="w-full mb-2 px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-900 text-[11px] font-semibold">
-          Register for free
-        </button>
-
-        <!-- Paid contest -->
-        <div id="paid-contest-section" class="hidden">
-          <div class="mb-4 p-4 bg-gradient-to-r from-orange-500/10 to-amber-500/10 border border-orange-400/30 rounded-xl">
-            <h3 class="font-bold mb-3 text-orange-300">Choose Entry Amount</h3>
-
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-              <button data-amount="9" class="entry-btn px-6 py-4 rounded-xl border-2 border-emerald-400 bg-emerald-500/20 text-emerald-100 font-bold text-lg hover:bg-emerald-500/30 shadow-lg transform hover:scale-[1.02] transition-all duration-200">
-                💰 ₹9<br><span class="text-xs text-emerald-200">Top 10 Prizes</span>
-              </button>
-              <button data-amount="49" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹49</button>
-              <button data-amount="99" class="entry-btn px-3 py-2 rounded-lg border border-emerald-400 bg-emerald-500/10 text-emerald-200 text-sm">₹99</button>
-              <button data-amount="149" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹149</button>
-              <button data-amount="199" class="entry-btn px-3 py-2 rounded-lg border border-slate-600 text-slate-100 text-sm">₹199</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Success message -->
-        <div id="successMsg" class="hidden bg-green-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-green-400/50">
-          <p class="font-bold text-sm text-green-800 mb-1">Payment Successful!</p>
-          <p class="text-[11px] text-green-700 mb-1">₹<span id="paidAmount">9</span> का payment successful.</p>
-          <p class="text-[11px] text-green-600 font-medium">Instructions page पर जा रहे हैं... (2 sec)</p>
-        </div>
-
-        <div id="registeredBadge" class="hidden bg-blue-100/90 backdrop-blur-sm p-4 rounded-xl mt-4 border-2 border-blue-400/50">
-          <span class="font-bold text-blue-800 text-[12px]">✓ Already registered for this contest</span>
-        </div>
-
-        <button id="secondary-btn"
-                class="w-full mt-3 px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px]">
-          Add to calendar
-        </button>
-      </div>
+  <!-- Contest Leaderboard -->
+  <section class="bg-slate-900/80 border border-slate-800 rounded-3xl p-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+        Live Leaderboard
+      </h2>
+      <div class="text-sm text-slate-400">Real-time ranking</div>
     </div>
+    <div id="contest-leaderboard" class="text-xs text-slate-200">
+      <p class="text-slate-400 text-center py-12">Loading leaderboard...</p>
+    </div>
+  </section>
 
-    <!-- Format / scoring / eligibility -->
-    <section class="grid md:grid-cols-3 gap-4 mb-6">
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <h3 class="font-semibold mb-1 text-xs">Format</h3>
-        <p id="contest-format" class="text-[11px] text-slate-300"></p>
-      </div>
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <h3 class="font-semibold mb-1 text-xs">Scoring</h3>
-        <p id="contest-scoring" class="text-[11px] text-slate-300"></p>
-      </div>
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <h3 class="font-semibold mb-1 text-xs">Eligibility</h3>
-        <p id="contest-eligibility" class="text-[11px] text-slate-300"></p>
-      </div>
-    </section>
-
-    <!-- Rules / languages -->
-    <section class="grid md:grid-cols-2 gap-4 text-[11px] md:text-xs">
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <h3 class="font-semibold mb-2 text-xs">Rules</h3>
-        <ul id="contest-rules" class="list-disc list-inside space-y-1 text-slate-300"></ul>
-      </div>
-      <div class="bg-slate-900 rounded-xl border border-slate-800 p-3">
-        <h3 class="font-semibold mb-2 text-xs">Languages & platform</h3>
-        <ul id="contest-langs" class="list-disc list-inside space-y-1 text-slate-300"></ul>
-      </div>
-    </section>
+  <!-- Contest Problems (COMING SOON) -->
+  <section class="mt-8 bg-slate-900/80 border border-slate-800 rounded-3xl p-8 text-center">
+    <div class="text-6xl mb-4">🚧</div>
+    <h3 class="text-2xl font-bold text-slate-300 mb-2">Contest Problems</h3>
+    <p class="text-slate-400 mb-4">Problems will appear here when contest starts</p>
+    <div class="grid md:grid-cols-3 gap-4 text-sm text-slate-500 mt-6">
+      <div>Problem 1 (Easy)</div>
+      <div>Problem 2 (Medium)</div>
+      <div>Problem 3 (Hard)</div>
+    </div>
   </section>
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 <script>
-const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
-
+const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🔥 YOUR KEY REPLACED ✅
-async function payForContest(contestId, amount) {
-  try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      alert('Login first!');
-      window.location.href = 'index.html';
-      return;
-    }
+const urlParams = new URLSearchParams(window.location.search);
+const contestId = parseInt(urlParams.get('id'));
 
-    const options = {
-      key: 'rzp_test_RxLABHQ9TsZYHJ', // ✅ YOUR KEY
-      amount: amount * 100, // Convert to paise (₹9 = 900)
-      currency: 'INR',
-      name: 'CodeRush Contest',
-      description: `${contestId} - Top 10 Prizes`,
-      handler: async function(response) {
-        console.log('✅ Payment success:', response);
-        
-        // 🔥 SAVE TO YOUR TABLE
-        const { error } = await supabaseClient.from('contest_registrations').insert({
-          user_id: user.id,
-          contest_type: contestId,
-          contest_variant: 'top10',
-          amount_paid: amount,
-          payment_status: 'success',
-          created_at: new Date().toISOString()
-        });
-
-        if (!error) {
-          console.log('✅ Row saved in contest_registrations!');
-        } else {
-          console.error('Supabase error:', error);
-        }
-
-        // 🔥 REDIRECT TO INSTRUCTIONS
-        window.location.href = `instructions.html?contestId=${contestId}`;
-      },
-      prefill: {
-        name: user.user_metadata?.full_name || 'Contestant',
-        email: user.email
-      },
-      theme: {
-        color: '#10b981'
-      }
-    };
-
-    const rzp = new Razorpay(options);
-    rzp.open();
-  } catch (error) {
-    console.error('Payment error:', error);
-    alert('Payment failed. Try again.');
-  }
-}
-
-// Contests config (simplified)
-const contests = {
-  free: {
-    short: "Free Daily Rush",
-    badge: "Featured • Free",
-    title: "Free Daily Rush – 3 Problems in 60 Minutes",
-    subtitle: "Best daily habit builder. Solve 3 hand‑picked DSA problems.",
-    time: "Everyday • 8:00 PM IST",
-    duration: "Duration: 60 minutes • 3 problems",
-    level: "Beginner to Intermediate",
-    prize: "No entry fee • virtual rewards",
-    format: "3 problems: Easy, Medium, Medium",
-    scoring: "Score = sum of problem scores",
-    eligibility: "Open for all registered users",
-    rules: ["Multiple submissions allowed", "No cheating", "Ties by time"],
-    langs: ["C++, Java, Python", "Online judge", "Modern browser"]
-  },
-  paid: {
-    short: "Paid Mega Contest",
-    badge: "Pro • Paid",
-    title: "Paid Mega Contest – High Rated DSA Challenge",
-    subtitle: "Serious 2‑hour contest with cash prizes for top 10.",
-    time: "Every Sunday • 7:00 PM IST",
-    duration: "Duration: 120 minutes • 4 problems",
-    level: "Intermediate to Advanced",
-    prize: "Entry fee via Razorpay • cash prizes",
-    format: "4 problems: DP, graphs, greedy, arrays",
-    scoring: "Fixed score per problem",
-    eligibility: "Indian users (18+) with payment method",
-    rules: ["One account per person", "No refunds", "KYC for winners"],
-    langs: ["C++, Java, Python", "Online judge", "Chrome/Edge"]
-  }
-};
-
-// URL params
-const pageParams = new URLSearchParams(window.location.search);
-
-document.addEventListener("DOMContentLoaded", async () => {
-  const { data, error } = await supabaseClient.auth.getUser();
-  if (error || !data?.user) {
-    window.location.href = "index.html";
+// Load contest details
+function loadContestDetails() {
+  if (!CONTESTS || !contestId) {
+    document.getElementById('contest-details').innerHTML = '<p class="text-red-400 text-center py-12">Contest not found!</p>';
     return;
   }
 
-  document.getElementById("loading").style.display = "none";
-  document.getElementById("contest-content").classList.remove("hidden");
-
-  const type = pageParams.get("type") === "paid" ? "paid" : "free";
-  const c = contests[type];
-
-  // Fill all content
-  document.getElementById("contest-short").textContent = c.short;
-  document.getElementById("badge").textContent = c.badge;
-  document.getElementById("contest-title").textContent = c.title;
-  document.getElementById("contest-subtitle").textContent = c.subtitle;
-  document.getElementById("contest-time").textContent = c.time;
-  document.getElementById("contest-duration").textContent = c.duration;
-  document.getElementById("contest-level").textContent = c.level;
-  document.getElementById("contest-prize").textContent = c.prize;
-  document.getElementById("contest-format").textContent = c.format;
-  document.getElementById("contest-scoring").textContent = c.scoring;
-  document.getElementById("contest-eligibility").textContent = c.eligibility;
-
-  // Rules & langs
-  ["contest-rules", "contest-langs"].forEach(id => {
-    const ul = document.getElementById(id);
-    c[id.replace("contest-", "")].forEach(rule => {
-      const li = document.createElement("li");
-      li.textContent = rule;
-      ul.appendChild(li);
-    });
-  });
-
-  if (type === "paid") {
-    document.getElementById("paid-contest-section").classList.remove("hidden");
-    document.getElementById("free-register-btn").style.display = "none";
-    setupEntryButtons();
-  } else {
-    document.getElementById("free-register-btn").onclick = registerFreeContest;
-    document.getElementById("paid-contest-section").style.display = "none";
+  const contest = CONTESTS.find(c => c.id === contestId);
+  if (!contest) {
+    document.getElementById('contest-details').innerHTML = '<p class="text-red-400 text-center py-12">Contest not found!</p>';
+    return;
   }
-});
 
-function setupEntryButtons() {
-  document.querySelectorAll(".entry-btn").forEach((btn) => {
-    btn.onclick = () => {
-      const amount = Number(btn.dataset.amount);
-      payForContest('paid-9', amount);
-      document.getElementById("paidAmount").textContent = amount;
-    };
-  });
+  document.title = `${contest.name} - CodeRush`;
+  
+  document.getElementById('contest-details').innerHTML = `
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center gap-2 bg-${contest.color}-500/20 border-2 border-${contest.color}-500/40 px-6 py-3 rounded-2xl mb-6">
+        <div class="w-3 h-3 bg-${contest.color}-400 rounded-full animate-pulse"></div>
+        <span class="text-sm font-bold text-${contest.color}-400 uppercase tracking-wider">LIVE</span>
+      </div>
+      <h1 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-${contest.color}-400 to-${contest.color}-200 bg-clip-text text-transparent mb-4">
+        ${contest.name}
+      </h1>
+      <p class="text-xl text-slate-300 mb-8">${contest.description}</p>
+    </div>
+    
+    <div class="grid md:grid-cols-3 gap-8 text-center">
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+        <div class="text-3xl font-black text-emerald-400 mb-2">₹${contest.totalPrize.toLocaleString()}</div>
+        <div class="text-slate-400 text-sm uppercase tracking-wide">Prize Pool</div>
+      </div>
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+        <div class="text-3xl font-bold text-${contest.color}-400 mb-2">${contest.fee === 0 ? 'FREE' : '₹' + contest.fee}</div>
+        <div class="text-slate-400 text-sm uppercase tracking-wide">Entry Fee</div>
+      </div>
+      <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
+        <button id="join-btn" class="w-full bg-gradient-to-r from-${contest.color}-500 to-${contest.color}-400 hover:from-${contest.color}-600 hover:to-${contest.color}-500 text-slate-900 font-black py-4 px-8 rounded-2xl text-lg shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          ${contest.fee === 0 ? 'Join Test Free' : 'Pay ₹' + contest.fee + ' & Join'}
+        </button>
+      </div>
+    </div>
+  `;
+
+  // Join button handler
+  document.getElementById('join-btn').onclick = () => {
+    if (contest.fee === 0) {
+      alert('Free contest joined! Problems will load in 3 seconds...');
+      // Start free contest logic
+    } else {
+      // Razorpay payment (NEXT STEP)
+      alert(`Razorpay payment for ₹${contest.fee} will integrate here!`);
+    }
+  };
 }
 
-async function registerFreeContest() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  if (user) {
-    await supabaseClient.from("contest_registrations").insert({
-      user_id: user.id,
-      contest_type: "free",
-      payment_status: "free"
-    });
-    window.location.href = "exam.html?type=free";
+// Load leaderboard
+async function loadContestLeaderboard() {
+  const container = document.getElementById('contest-leaderboard');
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    
+    const { data, error } = await supabaseClient
+      .from('leaderboard')
+      .select('user_id, score, rank')
+      .eq('contest_id', contestId)
+      .order('score', { ascending: false });
+
+    if (error || !data?.length) {
+      container.innerHTML = `
+        <div class="text-center py-12 text-slate-400">
+          <div class="text-4xl mb-4">🏆</div>
+          <p>No participants yet!</p>
+          <p class="text-sm mt-2">Be the first to join and get #1 rank</p>
+        </div>
+      `;
+      return;
+    }
+
+    const rows = data.map((row, index) => {
+      const isYou = user && row.user_id === user.id;
+      return `
+        <tr class="border-t border-slate-800/50 ${isYou ? 'bg-emerald-500/10' : ''}">
+          <td class="px-4 py-3 text-center font-bold text-lg ${isYou ? 'text-emerald-400' : 'text-slate-200'}">
+            ${row.rank || index + 1}
+          </td>
+          <td class="px-4 py-3 font-semibold ${isYou ? 'text-emerald-400' : 'text-slate-100'}">
+            ${isYou ? 'You' : row.user_id?.slice(0, 8) + '...'}
+          </td>
+          <td class="px-4 py-3 text-right font-bold text-slate-100">
+            ${row.score || 0}
+          </td>
+        </tr>
+      `;
+    }).join('');
+
+    container.innerHTML = `
+      <div class="border border-slate-800 rounded-2xl overflow-hidden">
+        <table class="w-full">
+          <thead class="bg-slate-800/80">
+            <tr>
+              <th class="px-4 py-3 text-left text-slate-300 font-semibold">Rank</th>
+              <th class="px-4 py-3 text-left text-slate-300 font-semibold">Contestant</th>
+              <th class="px-4 py-3 text-left text-slate-300 font-semibold">Score</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      </div>
+    `;
+  } catch (e) {
+    container.innerHTML = '<p class="text-red-400 text-center py-12">Error loading leaderboard</p>';
   }
 }
+
+// Auth check + Load
+(async () => {
+  const { data, error } = await supabaseClient.auth.getUser();
+  if (error || !data.user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  loadContestDetails();
+  loadContestLeaderboard();
+  
+  // Auto-refresh leaderboard every 10s
+  setInterval(loadContestLeaderboard, 10000);
+})();
 </script>
-
 </body>
 </html>
