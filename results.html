@@ -3,370 +3,177 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contest Result – CodeRush</title>
+  <title>Results - CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
-  </style>
+  <style>* { font-family: system-ui, sans-serif; }</style>
 </head>
+<body class="min-h-screen text-slate-100 bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
 
-<body class="min-h-screen text-slate-100 bg-slate-950
-             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
-
-<main class="max-w-4xl mx-auto px-4 py-6 mt-6 mb-10 bg-slate-900/85 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
-  <!-- Header -->
-  <div id="result-header" class="flex items-center justify-between mb-4">
-    <!-- JS se fill hoga -->
+<div class="max-w-4xl mx-auto px-4 py-12">
+  <!-- RESULTS HEADER -->
+  <div class="text-center mb-12">
+    <div class="w-24 h-24 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+      <span class="text-3xl">🏆</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent mb-4">
+      Your Results
+    </h1>
+    <p class="text-xl text-slate-400 mb-2">PAID-9 Contest</p>
+    <p class="text-2xl font-bold text-emerald-400" id="totalScore">Calculating...</p>
   </div>
 
-  <!-- Overall score card -->
-  <section id="score-card" class="mb-5">
-    <div class="bg-slate-800/80 border border-slate-700 rounded-2xl px-4 py-3 flex items-center justify-between">
+  <!-- USER INFO -->
+  <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 mb-8">
+    <div class="grid md:grid-cols-3 gap-6 text-sm">
       <div>
-        <p class="text-[11px] text-slate-400">Overall score</p>
-        <p id="overall-score" class="text-xl font-semibold text-emerald-400">Calculating...</p>
+        <p class="text-slate-500 uppercase tracking-wide text-xs mb-1">Contest</p>
+        <p class="font-semibold text-emerald-400">PAID-9</p>
       </div>
-      <div class="flex gap-2">
-        <button onclick="window.location.href='dashboard.html'"
-          class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold">
-          Dashboard
-        </button>
-        <button onclick="window.print()"
-          class="px-3 py-1.5 rounded-lg bg-slate-700 text-slate-100 text-[11px] font-semibold hover:bg-slate-600">
-          📄 Share
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- Per-question breakdown -->
-  <section class="mb-5">
-    <h2 class="text-sm font-semibold mb-2">Question wise breakdown</h2>
-    <div id="breakdown-body" class="border border-slate-800 rounded-xl overflow-hidden text-xs">
-      <div class="px-3 py-2 text-[11px] text-slate-400">Loading breakdown...</div>
-    </div>
-  </section>
-
-  <!-- 🆕 RANK NOTIFICATION BANNER (NEW!) -->
-  <section class="mt-6 pt-6 border-t border-slate-800/60">
-    <div class="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/40 rounded-2xl p-6 mb-6 backdrop-blur-sm">
-      <div class="flex items-start gap-3">
-        <div class="flex-shrink-0 mt-1">
-          <svg class="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"></path>
-          </svg>
-        </div>
-        <div class="flex-1">
-          <h3 class="text-sm font-bold text-amber-100 mb-1">📢 Contest Ongoing</h3>
-          <p class="text-xs text-amber-200 leading-relaxed">
-            Your current position shown above. <strong>Final rank will be decided when contest ends.</strong><br>
-            You'll get automatic notification when ranks are finalized!
-          </p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Leaderboard (Top 50 of this contest) -->
-  <section id="leaderboard" class="mt-4 text-xs">
-    <h2 class="text-sm font-semibold mb-2">Contest leaderboard (Top 50)</h2>
-    <div id="leaderboard-body" class="border border-slate-800 rounded-xl overflow-hidden">
-      <div class="px-3 py-2 text-[11px] text-slate-400">Loading leaderboard...</div>
-    </div>
-  </section>
-
-  <!-- Quick stats -->
-  <section class="mt-6 pt-6 border-t border-slate-800/60">
-    <h3 class="text-sm font-semibold mb-3 text-emerald-400">Your Stats</h3>
-    <div class="grid grid-cols-3 gap-4 text-xs">
-      <div class="bg-slate-800/50 rounded-xl p-3 text-center">
-        <div class="text-2xl font-bold text-emerald-400" id="accuracy">-</div>
-        <div class="text-slate-400">Accuracy</div>
-      </div>
-      <div class="bg-slate-800/50 rounded-xl p-3 text-center">
-        <div class="text-2xl font-bold text-emerald-400" id="total-attempts">-</div>
-        <div class="text-slate-400">Questions Attempted</div>
-      </div>
-      <div class="bg-slate-800/50 rounded-xl p-3 text-center">
-        <div class="text-2xl font-bold text-blue-400" id="percentile">-</div>
-        <div class="text-slate-400">Percentile</div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<script src="contests-config.js"></script>
-<script>
-  // === Supabase client ===
-  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // Helpers
-  function getContestIdFromUrl() {
-    const params = new URLSearchParams(window.location.search);
-    return params.get("contestId") || localStorage.getItem('currentContestId') || 'free-200';
-  }
-
-  function findContestById(id) {
-    return Array.isArray(CONTESTS) ? CONTESTS.find(c => c.id === id) : null;
-  }
-
-  function renderHeader(contest, yourScore, maxMarks) {
-    const header = document.getElementById("result-header");
-    if (!header || !contest) return;
-
-    header.innerHTML = `
       <div>
-        <p class="text-[11px] uppercase tracking-wide ${
-          contest.type === "free" ? "text-emerald-400" : "text-amber-400"
-        } mb-1">
-          ${contest.type === "free" ? "Free contest" : "Paid contest"}
-        </p>
-        <h1 class="text-xl font-semibold mb-1">${contest.title} – Result</h1>
-        <p class="text-slate-300 text-xs mb-1">
-          Entry ${contest.entryFee === 0 ? "Free" : "₹" + contest.entryFee}
-          • Total prize ₹${contest.totalPrize}
-          • Top ${contest.maxWinners} students get rewards
-        </p>
-        <p class="text-emerald-400 text-sm font-semibold">
-          Your score: <span id="your-score">${yourScore}</span> / ${maxMarks}
-        </p>
+        <p class="text-slate-500 uppercase tracking-wide text-xs mb-1">Total Marks</p>
+        <p class="font-semibold" id="totalMarks">100</p>
       </div>
-    `;
-  }
+      <div>
+        <p class="text-slate-500 uppercase tracking-wide text-xs mb-1">Completed</p>
+        <p class="font-semibold text-emerald-400" id="completedAt">Just now</p>
+      </div>
+    </div>
+  </div>
 
-  // Main flow: calculate score, show breakdown, save to leaderboard
-  async function loadResultPage() {
-    const contestId = getContestIdFromUrl();
-    const contest = findContestById(contestId);
-
-    if (!contest) {
-      document.body.innerHTML = `
-        <div class="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100">
-          <div class="bg-slate-900 border border-slate-800 rounded-xl px-5 py-4 text-sm">
-            <p class="text-red-400 font-semibold mb-2">Invalid contest.</p>
-            <a href="dashboard.html" class="text-emerald-400 underline text-xs">Back to dashboard</a>
-          </div>
-        </div>
-      `;
-      return;
-    }
-
-    try {
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (!user) {
-        alert('Please login again.');
-        window.location.href = 'index.html';
-        return;
-      }
-
-      // 1) Get submissions from Supabase + localStorage fallback
-      const { data: submissions } = await supabaseClient
-        .from('submissions')
-        .select('question_id, code, answered')
-        .eq('user_id', user.id)
-        .eq('contest_id', contestId)
-        .order('question_id');
-
-      // 2) Problems with marks
-      const { data: problems } = await supabaseClient
-        .from('problems')
-        .select('id, title, marks, correct_answer')
-        .eq('contest_id', contestId);
-
-      // 3) Calculate total score + breakdown rows
-      let totalScore = 0;
-      const breakdownRows = [];
-      const attemptedCount = submissions?.length || 0;
-
-      const problemMap = {};
-      if (problems) {
-        problems.forEach(p => { problemMap[p.id] = p; });
-      }
-
-      const questionIds = ['q1', 'q2', 'q3', 'q4', 'q5']; // Updated for 5 questions
-      questionIds.forEach((qid, index) => {
-        const p = problemMap[qid] || { title: `Question ${index + 1}`, marks: 20 };
-        const sub = submissions?.find(s => s.question_id === qid);
-        
-        const attempted = sub && (sub.code?.trim().length > 0 || sub.answered);
-        const gained = attempted ? (p.marks || 20) : 0;
-
-        totalScore += gained;
-
-        breakdownRows.push({
-          id: qid,
-          title: p.title || `Question ${index + 1}`,
-          marks: p.marks || 20,
-          attempted,
-          gained
-        });
-      });
-
-      const maxMarks = 100; // 5 questions x 20 marks
-      const finalScore = totalScore;
-      const accuracy = attemptedCount > 0 ? Math.round((totalScore / maxMarks) * 100) : 0;
-
-      // 4) Render header + overall score
-      renderHeader(contest, finalScore, maxMarks);
-      document.getElementById('overall-score').textContent = `${finalScore} / ${maxMarks}`;
-
-      // 5) Render breakdown table
-      renderBreakdownTable(breakdownRows);
-
-      // 6) Update stats
-      document.getElementById('accuracy').textContent = `${accuracy}%`;
-      document.getElementById('total-attempts').textContent = attemptedCount;
-
-      // 7) Save to leaderboard + show leaderboard
-      await saveToLeaderboardAndShow(user.id, contestId, finalScore, accuracy);
-
-      // Clear exam data
-      localStorage.removeItem('examSubmissions');
-      localStorage.removeItem('currentContestId');
-
-    } catch (err) {
-      console.error('Result error', err);
-      document.getElementById('overall-score').textContent = 'Error';
-      document.getElementById('breakdown-body').innerHTML =
-        `<div class="px-3 py-2 text-[11px] text-red-400">Error loading result. Try refreshing.</div>`;
-    }
-  }
-
-  function renderBreakdownTable(rows) {
-    const body = document.getElementById('breakdown-body');
-    if (!body) return;
-
-    if (!rows || rows.length === 0) {
-      body.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No submissions found.</div>`;
-      return;
-    }
-
-    const htmlRows = rows.map((row, index) => `
-      <tr class="border-t border-slate-800 hover:bg-slate-800/30">
-        <td class="px-3 py-2 text-[11px] text-slate-200 font-mono">#${index + 1}</td>
-        <td class="px-3 py-2 text-[11px] text-slate-200">${row.title}</td>
-        <td class="px-3 py-2 text-[11px] text-center text-slate-100 font-semibold">${row.marks}</td>
-        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400 font-semibold' : 'text-slate-400'}">
-          ${row.attempted ? '✅ Attempted' : '❌ Skipped'}
-        </td>
-        <td class="px-3 py-2 text-[11px] text-center ${row.attempted ? 'text-emerald-400 font-bold text-lg' : 'text-slate-400'}">
-          ${row.gained}
-        </td>
-      </tr>
-    `).join('');
-
-    body.innerHTML = `
-      <table class="w-full text-[11px]">
-        <thead class="bg-slate-800/80 text-slate-300 sticky top-0">
-          <tr>
-            <th class="px-3 py-2 text-left">Q#</th>
-            <th class="px-3 py-2 text-left">Question</th>
-            <th class="px-3 py-2 text-left">Marks</th>
-            <th class="px-3 py-2 text-left">Status</th>
-            <th class="px-3 py-2 text-left">Gained</th>
+  <!-- QUESTIONS TABLE -->
+  <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-8">
+    <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
+      <span>📊 Question-wise Performance</span>
+    </h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-700">
+            <th class="text-left py-4 pr-4 font-semibold">Question</th>
+            <th class="text-left py-4 px-4 font-semibold">Type</th>
+            <th class="text-left py-4 px-4 font-semibold">Marks</th>
+            <th class="text-left py-4 px-4 font-semibold">Status</th>
+            <th class="text-left py-4 pl-4 font-semibold">Score</th>
           </tr>
         </thead>
-        <tbody class="text-slate-200">
-          ${htmlRows}
+        <tbody id="resultsTableBody">
+          <!-- Results will load here -->
         </tbody>
       </table>
-    `;
-  }
+    </div>
+  </div>
 
-  async function saveToLeaderboardAndShow(userId, contestId, score, accuracy) {
-    // Save / update score
-    const { error: upsertError } = await supabaseClient
-      .from('leaderboard')
-      .upsert({ 
-        contest_id: contestId, 
-        user_id: userId, 
-        score: score,
-        accuracy: accuracy,
-        is_finalized: false
-      });
+  <!-- ACTION BUTTONS -->
+  <div class="flex flex-col sm:flex-row gap-4 justify-center">
+    <a href="index.html" class="px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-semibold rounded-2xl text-center transition-all shadow-xl">
+      ← Back to Home
+    </a>
+    <a href="leaderboard.html" class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-2xl text-center transition-all shadow-xl">
+      🏆 View Leaderboard
+    </a>
+  </div>
+</div>
 
-    if (upsertError) {
-      console.error('Leaderboard save error:', upsertError);
-    }
+<script>
+  // Get contest from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const contestId = urlParams.get('contestId') || 'paid-9';
+  
+  // Mock questions data (same as exam.html)
+  const questions = [
+    {"question": "What is 2+2?", "type": "mcq", "marks": 20},
+    {"question": "Array length kaise nikale?", "type": "mcq", "marks": 20},
+    {"question": "console.log ka output?", "type": "mcq", "marks": 20},
+    {"question": "var vs let?", "type": "mcq", "marks": 20},
+    {"question": "Coding Problem 1", "type": "coding", "marks": 20}
+  ];
 
-    // Fetch top 50 + your rank
-    const container = document.getElementById('leaderboard-body');
-    try {
-      const { data: leaderboard, error } = await supabaseClient
-        .from('leaderboard')
-        .select('user_id, score, rank, accuracy')
-        .eq('contest_id', contestId)
-        .order('score', { ascending: false })
-        .limit(50);
-
-      if (error) {
-        console.error('Leaderboard fetch error:', error);
-        container.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Failed to load leaderboard.</div>`;
-        return;
+  // Get user submissions from localStorage
+  function getUserSubmissions() {
+    const userId = localStorage.getItem('user_id');
+    const submissions = [];
+    
+    questions.forEach((q, i) => {
+      const submission = localStorage.getItem(`paid9_submission_${i}`);
+      if (submission) {
+        try {
+          submissions.push({
+            ...q,
+            ...JSON.parse(submission),
+            index: i
+          });
+        } catch(e) {}
+      } else {
+        // No submission
+        submissions.push({
+          ...q,
+          answered: false,
+          score: 0,
+          index: i
+        });
       }
-
-      if (!leaderboard || leaderboard.length === 0) {
-        container.innerHTML = `<div class="px-3 py-2 text-[11px] text-slate-400">No participants yet. You're first! 🎉</div>`;
-        return;
-      }
-
-      // Calculate your percentile
-      const yourScore = leaderboard.find(l => l.user_id === userId)?.score || 0;
-      const betterThanYou = leaderboard.filter(l => l.score > yourScore).length;
-      const percentile = Math.max(0, 100 - Math.round((betterThanYou / leaderboard.length) * 100));
-      document.getElementById('percentile').textContent = `${percentile}%`;
-
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      const rowsHtml = leaderboard.map((row, index) => {
-        const isYou = user && row.user_id === user.id;
-        const rank = row.rank || (index + 1);
-
-        let displayName = isYou ? '👤 You' : `User ${row.user_id.slice(-6)}`;
-
-        return `
-          <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/20 border-emerald-400/50' : 'hover:bg-slate-800/60'}">
-            <td class="px-3 py-1.5 text-center text-[11px] font-bold ${isYou ? 'text-emerald-400 text-sm' : ''}">
-              #${rank}
-            </td>
-            <td class="px-3 py-1.5 text-[11px] font-medium ${isYou ? 'text-emerald-400' : ''}">
-              ${displayName}
-            </td>
-            <td class="px-3 py-1.5 text-center text-[11px] font-bold ${isYou ? 'text-emerald-400 text-sm' : ''}">
-              ${row.score}
-            </td>
-          </tr>
-        `;
-      }).join('');
-
-      container.innerHTML = `
-        <table class="w-full text-[11px]">
-          <thead class="bg-slate-800/80 text-slate-300">
-            <tr>
-              <th class="px-3 py-1.5 text-left w-12">Rank</th>
-              <th class="px-3 py-1.5 text-left">Student</th>
-              <th class="px-3 py-1.5 text-left w-20">Score</th>
-            </tr>
-          </thead>
-          <tbody class="text-slate-200">
-            ${rowsHtml}
-          </tbody>
-        </table>
-      `;
-    } catch (e) {
-      console.error('Leaderboard render error:', e);
-      container.innerHTML = `<div class="px-3 py-2 text-[11px] text-red-400">Error loading leaderboard.</div>`;
-    }
+    });
+    
+    return submissions;
   }
 
-  // Auto-redirect from exam.html after time ends
-  if (window.location.search.includes('from=exam')) {
-    document.title = 'Result - CodeRush';
+  // Calculate score (simple logic - answered = full marks)
+  function calculateScore(submissions) {
+    let totalScore = 0;
+    submissions.forEach(s => {
+      s.score = s.answered ? s.marks : 0;
+      totalScore += s.score;
+    });
+    return totalScore;
   }
 
-  document.addEventListener("DOMContentLoaded", loadResultPage);
+  // Render results table
+  function renderResults() {
+    const submissions = getUserSubmissions();
+    const totalScore = calculateScore(submissions);
+    
+    // Update header
+    document.getElementById('totalScore').textContent = `${totalScore}/${submissions.reduce((sum, s) => sum + s.marks, 0)}`;
+    document.getElementById('totalMarks').textContent = submissions.reduce((sum, s) => sum + s.marks, 0);
+    document.getElementById('completedAt').textContent = new Date().toLocaleString('hi-IN');
+
+    // Render table
+    document.getElementById('resultsTableBody').innerHTML = submissions.map(s => `
+      <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
+        <td class="py-4 pr-4 font-medium">Q${s.index + 1}. ${s.question}</td>
+        <td class="py-4 px-4">
+          <span class="px-3 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            ${s.type.toUpperCase()}
+          </span>
+        </td>
+        <td class="py-4 px-4 font-semibold">${s.marks}</td>
+        <td class="py-4 px-4">
+          <span class="px-3 py-1 rounded-full text-xs ${
+            s.answered ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 
+            'bg-red-500/20 text-red-400 border border-red-500/30'
+          }">
+            ${s.answered ? '✅ Answered' : '❌ Skipped'}
+          </span>
+        </td>
+        <td class="py-4 pl-4 font-bold text-lg ${
+          s.score > 0 ? 'text-emerald-400' : 'text-slate-500'
+        }">${s.score}</td>
+      </tr>
+    `).join('');
+  }
+
+  // Load on page ready
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('🚀 Results page loaded for contest:', contestId);
+    renderResults();
+    
+    // Clear exam data after showing results
+    localStorage.removeItem('exam_completed_paid9');
+    questions.forEach((_, i) => {
+      localStorage.removeItem(`paid9_${i}`);
+      localStorage.removeItem(`paid9_submission_${i}`);
+    });
+  });
 </script>
 
 </body>
