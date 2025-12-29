@@ -262,273 +262,19 @@
 
 
   <!-- Contests Tab (cards with big prize) -->
-  <section id="tab-contests" class="tab-page hidden">
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-lg font-semibold">Contests</h2>
-      <button class="text-xs px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 font-semibold">
-        View rules
-      </button>
-    </div>
+<!-- NEW DYNAMIC CONTESTS TAB -->
+<section id="tab-contests" class="tab-page hidden">
+  <div class="flex items-center justify-between mb-6">
+    <h2 class="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
+      Live Contests
+    </h2>
+    <div class="text-sm text-slate-400">Min participants required for prizes</div>
+  </div>
+  <div id="contests-grid" class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div class="col-span-full text-center py-12 text-slate-400 text-lg">Loading contests...</div>
+  </div>
+</section>
 
-    <div class="mb-5 text-[11px] text-slate-400">
-      <p>• All contests timed hote hain; scoring pehle total score, phir last correct submission time se decide hota hai.</p>
-      <p>• Cheating / code sharing se account ban ho sakta hai.</p>
-      <p>• Paid contests ke prizes 24–48 hours ke andar UPI / bank ke through issue kiye jayenge.</p>
-    </div>
-
-    <div class="grid md:grid-cols-2 gap-4 text-xs">
-
-      <!-- Free Starter -->
-      <article class="rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-cyan-400 text-emerald-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹1,000
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Free Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              Free Starter Contest
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Free test • Min 200 students • Top 1 wins ₹1,000.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] opacity-80">Today • 8:00 PM</span>
-            <button
-              onclick="window.location.href='contest.html?type=free'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-emerald-300 text-[12px] font-semibold hover:bg-slate-800">
-              Join test
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- Free Mega -->
-      <article class="rounded-2xl bg-gradient-to-r from-cyan-500 via-emerald-400 to-emerald-500 text-emerald-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹2,500
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Free Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              Free Mega Contest
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Free test • Min 500 students • Top 1 wins ₹2,500.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] text-amber-100">Tomorrow • 8:00 PM</span>
-            <button
-              onclick="window.location.href='contest.html?type=free'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-emerald-300 text-[12px] font-semibold hover:bg-slate-800">
-              Join test
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ₹9 Quick Rush -->
-      <article class="rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-400 text-amber-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹590
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Paid Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              ₹9 Quick Rush
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Entry ₹9 • Min 110 students • Top 10 paid  
-              (1st ₹300, 2nd ₹100, 3rd ₹50, 4–10 ₹20).
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] text-amber-100">45‑min sprint</span>
-            <button
-              onclick="window.location.href='contest.html?type=paid&amount=9'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-amber-200 text-[12px] font-semibold hover:bg-slate-800">
-              Join for ₹9
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ₹49 Pro Rush -->
-      <article class="rounded-2xl bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 text-amber-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹5,000
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Paid Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              ₹49 Pro Rush
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Entry ₹49 • Min 125 students • Medium–Hard set • Top 20 paid.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] text-amber-100">For serious coders</span>
-            <button
-              onclick="window.location.href='contest.html?type=paid&amount=49'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-amber-200 text-[12px] font-semibold hover:bg-slate-800">
-              Join for ₹49
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ₹99 Advanced (Top 10 default) -->
-      <article class="rounded-2xl bg-gradient-to-r from-fuchsia-500 via-amber-500 to-orange-400 text-fuchsia-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹7,400
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Paid Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              ₹99 Advanced Contest
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Entry ₹99 • Min 125 students • 90 mins • Medium–Hard problems.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] text-fuchsia-100">Interview‑focused</span>
-            <button
-              onclick="window.location.href='contest.html?type=paid&amount=99&variant=top10'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-amber-200 text-[12px] font-semibold hover:bg-slate-800">
-              Join for ₹99
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ₹149 Elite Rush -->
-      <article class="rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-purple-500 text-fuchsia-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹11,900
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Paid Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              ₹149 Elite Rush
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Entry ₹149 • Min 150 students • High difficulty • Wider payout for top ranks.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] text-fuchsia-100">Advanced DSA challenge</span>
-            <button
-              onclick="window.location.href='contest.html?type=paid&amount=149'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-pink-200 text-[12px] font-semibold hover:bg-slate-800">
-              Join for ₹149
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ₹199 Champion Contest -->
-      <article class="rounded-2xl bg-gradient-to-r from-indigo-500 via-blue-500 to-cyan-400 text-indigo-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹19,900
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Paid Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              ₹199 Champion Contest
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Entry ₹199 • Min 200 students • 120 mins • Big prize pool for top performers.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] text-indigo-100">Weekend special</span>
-            <button
-              onclick="window.location.href='contest.html?type=paid&amount=199'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-cyan-200 text-[12px] font-semibold hover:bg-slate-800">
-              Join for ₹199
-            </button>
-          </div>
-        </div>
-      </article>
-
-      <!-- ₹99 Grand League (Top 100) -->
-      <article class="rounded-2xl bg-gradient-to-r from-purple-600 via-pink-500 to-amber-400 text-purple-950 shadow-xl">
-        <div class="p-4 md:p-5 flex items-center justify-between gap-4">
-          <div class="space-y-1">
-            <p class="text-xs md:text-sm uppercase tracking-wide font-semibold opacity-90">
-              Win prize
-            </p>
-            <p class="text-3xl md:text-4xl font-black leading-none">
-              ₹29,900
-            </p>
-
-            <p class="mt-2 text-[11px] font-semibold uppercase">Paid Contest</p>
-            <h3 class="text-sm md:text-base font-bold">
-              ₹99 Grand League (Top 100)
-            </h3>
-            <p class="text-[11px] opacity-90">
-              Entry ₹99 • Min 500 students • Top 100 winners • Weekend mega contest.
-            </p>
-          </div>
-
-          <div class="flex flex-col items-end gap-2 text-right">
-            <span class="text-[11px] text-purple-100">Lots of prizes</span>
-            <button
-              onclick="window.location.href='contest.html?type=paid&amount=99&variant=top100'"
-              class="px-4 py-2 rounded-xl bg-slate-900 text-amber-200 text-[12px] font-semibold hover:bg-slate-800">
-              Join league
-            </button>
-          </div>
-        </div>
-      </article>
-
-    </div>
-  </section>
 
   <!-- Premium Tab -->
   <section id="tab-premium" class="tab-page hidden">
@@ -540,7 +286,6 @@
 <!-- Supabase + dashboard logic -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
 <script src="contests-config.js"></script>
-<script src="contests-list.js"></script>
 
 <script>
 const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
@@ -623,100 +368,32 @@ async function loadDashboardStats() {
 }
 
 // Global Top 10 Leaderboard
-async function loadGlobalLeaderboard() {
-  const container = document.getElementById('global-leaderboard-body');
-  if (!container) return;
-
-  try {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-
-    const { data, error } = await supabaseClient
-      .from('leaderboard')
-      .select('contest_id, user_id, score, rank')
-      .order('score', { ascending: false })
-      .limit(10);
-
-    if (error) {
-      console.error('Leaderboard error:', error);
-      container.innerHTML = `<p class="text-[11px] text-red-400">Failed to load leaderboard.</p>`;
-      return;
+// 🔥 DYNAMIC COLORED CONTESTS LOADER
+function loadContests() {
+    const container = document.getElementById('contests-grid');
+    if (!container || typeof CONTESTS === 'undefined') {
+        console.error('CONTESTS not loaded or container missing');
+        return;
     }
-
-    if (!data || data.length === 0) {
-      container.innerHTML = `<p class="text-[11px] text-slate-400">No scores yet. Play a contest to appear here!</p>`;
-      return;
-    }
-
-    const rowsHtml = data.map((row, index) => {
-      const isYou = user && row.user_id === user.id;
-
-      let displayName = 'User';
-      if (isYou) displayName = 'You';
-      else if (row.username) displayName = row.username;
-      else if (row.user_id) displayName = row.user_id.slice(0, 6) + '...';
-
-      return `
-        <tr class="border-t border-slate-800 ${isYou ? 'bg-emerald-500/10' : 'hover:bg-slate-800/60'}">
-          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-            ${index + 1}
-          </td>
-          <td class="px-3 py-1.5 text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-            ${displayName}
-          </td>
-          <td class="px-3 py-1.5 text-center text-[11px] ${isYou ? 'text-emerald-400 font-semibold' : ''}">
-            ${row.score}
-          </td>
-          <td class="px-3 py-1.5 text-[11px] text-slate-400">
-            ${row.contest_id}
-          </td>
-        </tr>
-      `;
-    }).join('');
-
-    container.innerHTML = `
-      <div class="border border-slate-800 rounded-xl overflow-hidden">
-        <table class="w-full text-[11px]">
-          <thead class="bg-slate-800/80 text-slate-300">
-            <tr>
-              <th class="px-3 py-1.5 text-left">Rank</th>
-              <th class="px-3 py-1.5 text-left">Student</th>
-              <th class="px-3 py-1.5 text-left">Score</th>
-              <th class="px-3 py-1.5 text-left">Contest</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>
-      </div>
-    `;
-  } catch (e) {
-    console.error('Leaderboard load error:', e);
-    container.innerHTML = `<p class="text-[11px] text-red-400">Error loading leaderboard.</p>`;
-  }
-}
-
-// Contest dropdown
-function initContestDropdown() {
-  const select = document.getElementById('contest-select');
-  if (!select || typeof CONTESTS === 'undefined') return;
-
-  CONTESTS.forEach(c => {
-    const opt = document.createElement('option');
-    opt.value = c.id;
-    opt.textContent = `${c.title} (${c.type === 'paid' ? 'Paid' : 'Free'})`;
-    select.appendChild(opt);
-  });
-
-  select.addEventListener('change', () => {
-    const contestId = select.value;
-    const body = document.getElementById('contest-leaderboard-body');
-    if (!contestId) {
-      body.innerHTML = `<p class="text-[11px] text-slate-400">No contest selected.</p>`;
-      return;
-    }
-    loadContestLeaderboard(contestId);
-  });
+    
+    container.innerHTML = '';
+    
+    CONTESTS.forEach((contest, index) => {
+        const card = document.createElement('a');
+        card.href = `contest.html?id=${contest.id}`;
+        card.className = `group bg-gradient-to-br from-${contest.color}-500/20 to-${contest.color}-400/20 border-2 border-${contest.color}-500/40 backdrop-blur-xl rounded-3xl p-6 hover:shadow-${contest.color}-500/50 transition-all duration-300 hover:-translate-y-2 cursor-pointer h-full flex flex-col`;
+        
+        card.innerHTML = `
+            <div class="text-xs uppercase tracking-wider font-bold text-${contest.color}-400 mb-3 flex-shrink-0">${contest.fee === 0 ? 'FREE' : '₹' + contest.fee}</div>
+            <div class="text-4xl lg:text-5xl font-black text-${contest.color}-400 mb-2 drop-shadow-lg flex-shrink-0">₹${contest.totalPrize.toLocaleString()}</div>
+            <h3 class="font-bold text-lg mb-3 text-white flex-shrink-0">${contest.name}</h3>
+            <p class="text-${contest.color}-200 text-sm mb-6 flex-1">${contest.description}</p>
+            <button class="w-full bg-gradient-to-r from-${contest.color}-500 to-${contest.color}-400 text-slate-900 font-bold py-3 px-6 rounded-2xl hover:from-${contest.color}-600 hover:to-${contest.color}-500 transition-all shadow-lg font-black flex-shrink-0 mt-auto">
+                ${contest.fee === 0 ? 'Join Test' : 'Join ₹' + contest.fee}
+            </button>
+        `;
+        container.appendChild(card);
+    });
 }
 
 async function loadContestLeaderboard(contestId) {
@@ -860,11 +537,13 @@ async function loadMyContestHistory() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  loadContests();           // ← नया line
   loadDashboardStats();
   loadGlobalLeaderboard();
   initContestDropdown();
   loadMyContestHistory();
 });
+
 </script>
 
 </body>
