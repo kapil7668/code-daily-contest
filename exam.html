@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PAID-9 Contest - CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
   <style>* { font-family: system-ui, sans-serif; }</style>
 </head>
 <body class="min-h-screen text-slate-100 bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
@@ -81,6 +82,11 @@
 </main>
 
 <script>
+  // Supabase setup
+  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   // 🔥 TUMHARE EXACT QUESTIONS - NO FILE DEPENDENCY
   const questions = [
     {"question": "What is 2+2?", "statement": "Basic arithmetic question", "options": ["3", "4", "5", "6"], "answer": 1, "type": "mcq"},
@@ -91,6 +97,35 @@
   ];
 
   let currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {};
+
+  // Auth check
+  async function checkAuth() {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      window.location.href = 'index.html';
+      return false;
+    }
+    return true;
+  }
+
+  // Save answers to Supabase
+  async function saveAllAnswersToSupabase() {
+    const { data: { user } } = await supabase.auth.getUser();
+    const contestId = new URLSearchParams(window.location.search).get('contest') || 'paid-9';
+    
+    // Save MCQ answers
+    Object.keys(mcqAnswers).forEach(async (qIndex) => {
+      await supabase.from('submissions').insert({
+        user_id: user.id,
+        contest_id: contestId,
+        question_index: parseInt(qIndex),
+        answer: mcqAnswers[qIndex],
+        status: 'submitted',
+        score: 100, // Demo score
+        created_at: new Date().toISOString()
+      });
+    });
+  }
 
   // Questions list render
   function renderQuestionsList() {
@@ -132,7 +167,7 @@
   }
 
   function startTimer() {
-    let timeLeft = 3600;
+    let timeLeft = 3600; // 60 minutes
     timerInterval = setInterval(() => {
       timeLeft--;
       const m = Math.floor(timeLeft / 60);
@@ -150,33 +185,34 @@
     alert('✅ Saved!');
   }
 
-function submitExam() {
-  if (examLocked) return;
-  examLocked = true;
-  
-function submitExam() {
-  if (examLocked) return;
-  examLocked = true;
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const contestType = urlParams.get('contest') || 'paid-9';
-  
-  localStorage.setItem('currentContest', contestType);
-  window.location.href = `result.html?contest=${contestType}`;
-}
-
-    }
-  });
-  
-  // GO TO RESULT PAGE ✅
-  localStorage.setItem('currentContest', 'paid-9');
-  window.location.href = 'result.html?contest=paid-9';
-}
-
+  // 🔥 FIXED SUBMIT FUNCTION - DUPLICATE HATAYA
+  async function submitExam() {
+    if (examLocked) return;
+    examLocked = true;
+    
+    console.log('🚀 Submitting exam...');
+    
+    // Save to Supabase
+    await saveAllAnswersToSupabase();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const contestId = urlParams.get('contest') || 'paid-9';
+    
+    // Set contest ID for result page
+    localStorage.setItem('currentContest', contestId);
+    
+    // Redirect to result page ✅
+    window.location.href = `result.html?contest=${contestId}`;
+  }
 
   // START EVERYTHING
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
     console.log('🚀 CodeRush PAID-9 LOADED ✅');
+    
+    // Auth check
+    const isAuth = await checkAuth();
+    if (!isAuth) return;
+    
     renderQuestionsList();
     renderCurrentQuestion();
     startTimer();
