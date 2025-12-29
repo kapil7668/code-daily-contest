@@ -11,41 +11,34 @@
   </style>
 </head>
 
-<body class="min-h-screen text-slate-100 bg-slate-950
-             bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
+<body class="min-h-screen text-slate-100 bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
 
-<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10
-             bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
+<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10 bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
 
-  <!-- Top bar: contest info + timer -->
+  <!-- Header -->
   <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
     <div>
-      <p id="contest-type-badge" class="text-[11px] uppercase tracking-wide text-emerald-400 mb-1"></p>
+      <p id="contest-type-badge" class="text-[11px] uppercase tracking-wide text-emerald-400 mb-1">Loading...</p>
       <h1 id="contest-title" class="text-lg md:text-xl font-semibold mb-1">Loading contest...</h1>
       <p id="contest-meta" class="text-[11px] text-slate-400"></p>
     </div>
-
     <div class="flex items-center gap-4">
       <div class="text-right">
         <p class="text-[11px] text-slate-400">Time remaining</p>
         <p id="timer" class="text-xl font-semibold text-emerald-400">--:--:--</p>
       </div>
-      <button id="finish-btn"
-        class="px-3 py-1.5 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white text-[11px] font-semibold hover:from-red-600 hover:to-red-700">
-        🏁 Finish & Submit
+      <button id="finish-btn" class="px-6 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-bold hover:from-red-600 hover:to-red-700 shadow-lg">
+        🏁 SUBMIT EXAM & SEE RANK
       </button>
     </div>
   </header>
 
-  <!-- Layout: questions list + current question -->
   <section class="grid md:grid-cols-[220px,1fr] gap-4 mt-4">
-    <!-- Question list -->
     <aside class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs">
-      <h2 class="text-[12px] font-semibold mb-2">Questions ( <span id="question-count">0</span> )</h2>
+      <h2 class="text-[12px] font-semibold mb-2">Questions (<span id="question-count">0</span>)</h2>
       <div id="questions-list" class="space-y-1 max-h-96 overflow-y-auto"></div>
     </aside>
 
-    <!-- Question viewer -->
     <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs flex flex-col">
       <div class="mb-2 flex items-center justify-between">
         <div>
@@ -55,55 +48,39 @@
         <div id="question-tags" class="text-[11px] text-right text-slate-400"></div>
       </div>
 
-      <div id="question-statement" class="text-[12px] text-slate-200 mb-3 min-h-[120px]"></div>
+      <div id="question-statement" class="text-[12px] text-slate-200 mb-3 min-h-[120px] p-4 bg-slate-800/50 rounded-lg"></div>
 
       <!-- MCQ Options -->
       <div id="mcq-options" class="space-y-2 mb-4 hidden">
-        <label class="flex items-center p-2 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
           <input type="radio" name="mcq-answer" value="0" class="w-4 h-4 text-emerald-500 ml-3">
           <span id="mcq-opt-0" class="ml-3 text-sm"></span>
         </label>
-        <label class="flex items-center p-2 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
           <input type="radio" name="mcq-answer" value="1" class="w-4 h-4 text-emerald-500 ml-3">
           <span id="mcq-opt-1" class="ml-3 text-sm"></span>
         </label>
-        <label class="flex items-center p-2 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
           <input type="radio" name="mcq-answer" value="2" class="w-4 h-4 text-emerald-500 ml-3">
           <span id="mcq-opt-2" class="ml-3 text-sm"></span>
         </label>
-        <label class="flex items-center p-2 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
           <input type="radio" name="mcq-answer" value="3" class="w-4 h-4 text-emerald-500 ml-3">
           <span id="mcq-opt-3" class="ml-3 text-sm"></span>
         </label>
       </div>
 
-      <!-- Textarea for coding/descriptive -->
       <label class="text-[11px] text-slate-300 mb-1 block">Your answer / code</label>
-      <textarea id="answer-input"
-        class="flex-1 min-h-[180px] w-full bg-slate-950/70 border border-slate-800 rounded-xl px-3 py-2 text-[12px] text-slate-100 focus:outline-none focus:ring-1 focus:ring-emerald-500 resize-vertical"
-        placeholder="Type your solution here..."></textarea>
+      <textarea id="answer-input" class="flex-1 min-h-[180px] w-full bg-slate-950/70 border border-slate-800 rounded-xl px-3 py-2 text-[12px] text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-vertical" placeholder="Type your solution here..."></textarea>
 
-      <div class="mt-3 flex items-center justify-between">
+      <div class="mt-4 flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <button id="save-answer-btn"
-            class="px-3 py-1.5 rounded-lg border border-emerald-500 text-emerald-300 text-[11px] font-semibold hover:bg-emerald-500/20">
-            💾 Save answer
-          </button>
-          <button id="run-debug-btn"
-            class="px-3 py-1.5 rounded-lg border border-slate-600 text-slate-200 text-[11px] hover:bg-slate-800">
-            ▶️ Run / Debug
-          </button>
+          <button id="save-answer-btn" class="px-4 py-2 rounded-lg border-2 border-emerald-500 text-emerald-300 text-sm font-semibold hover:bg-emerald-500/20">💾 Save</button>
+          <button id="run-debug-btn" class="px-4 py-2 rounded-lg border border-slate-600 text-slate-200 text-sm hover:bg-slate-800">▶️ Run</button>
         </div>
-
         <div class="flex gap-2">
-          <button id="prev-btn"
-            class="px-3 py-1.5 rounded-lg border border-slate-700 text-[11px] text-slate-200 hover:bg-slate-800">
-            ← Previous
-          </button>
-          <button id="next-btn"
-            class="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-900 text-[11px] font-semibold hover:bg-emerald-600">
-            Next →
-          </button>
+          <button id="prev-btn" class="px-4 py-2 rounded-lg border border-slate-700 text-sm text-slate-200 hover:bg-slate-800">← Prev</button>
+          <button id="next-btn" class="px-4 py-2 rounded-lg bg-emerald-500 text-slate-900 text-sm font-semibold hover:bg-emerald-600">Next →</button>
         </div>
       </div>
     </section>
@@ -111,312 +88,152 @@
 </main>
 
 <script>
-  // ====== Supabase client ======
-  const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
-  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // Supabase
+  const supabase = supabase.createClient('https://tghtgygjawhrcgtwhrej.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38');
 
-  // ====== Razorpay Key Integration ======
-  const RAZORPAY_ORDER_ID = 'rzp_test_RxLABHQ9TsZYHJ'; // Tumhari key ✅
+  // State
+  let contestId = new URLSearchParams(window.location.search).get('contestId') || 'paid-9';
+  let questions = [], currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {};
 
-  // ====== State ======
-  let contestId = null;
-  let contestConfig = null;
-  let questions = [];
-  let currentIndex = 0;
-  let timerInterval = null;
-  let examLocked = false;
-  let mcqAnswers = {};
-  let totalScore = 0;
+  // Contest configs (NO EXTERNAL FILE NEEDED)
+  const CONTESTS = {
+    'paid-9': { type: 'paid', title: 'PAID-9 Contest (₹9)', entryFee: 9, totalPrize: 900 },
+    'free': { type: 'free', title: 'Free Daily Contest', entryFee: 0, totalPrize: 0 }
+  };
 
-  // ====== Dynamic Questions Load (JSON files) ======
-  async function loadQuestionsFromJSON() {
+  // 🔥 FIXED: Load questions from ./questions/ folder
+  async function loadQuestions() {
     try {
-      console.log(`🔍 Loading questions-${contestId}.json`);
-      const response = await fetch(`questions-${contestId}.json?t=${Date.now()}`);
+      console.log(`🔍 Loading ./questions/questions-${contestId}.json`);
+      const response = await fetch(`./questions/questions-${contestId}.json?t=${Date.now()}`);
       
-      if (!response.ok) {
-        throw new Error(`File not found: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`404: File not found (${response.status})`);
       
       questions = await response.json();
-      console.log(`✅ ${questions.length} questions loaded for ${contestId}`);
-      
+      console.log(`✅ ${questions.length} questions loaded!`);
       document.getElementById('question-count').textContent = questions.length;
       return true;
     } catch (error) {
       console.error('❌ Questions load failed:', error);
       document.getElementById('question-statement').innerHTML = 
-        `<div class="text-red-400 text-center p-8">❌ Questions file missing: questions-${contestId}.json</div>`;
+        `<div class="text-red-400 text-center p-8">❌ questions-${contestId}.json missing in /questions/ folder</div>`;
       return false;
     }
   }
 
-  // ====== Contest Config (Fallback) ======
-  function getContestConfig(contestId) {
-    const configs = {
-      'paid-9': { type: 'paid', title: 'PAID-9 Contest (₹9)', entryFee: 9, totalPrize: 900, maxWinners: 3 },
-      'free': { type: 'free', title: 'Free Daily Contest', entryFee: 0, totalPrize: 0, maxWinners: 0 }
-    };
-    return configs[contestId] || configs['free'];
-  }
-
-  // ====== Razorpay Payment Verification ======
-  async function verifyPaymentAccess() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      alert('❌ Pehle Login karo!');
-      window.location.href = 'index.html';
-      return false;
-    }
-
-    // Free contests - direct access
-    if (contestConfig.type === 'free') return true;
-
-    // Paid contests - check Razorpay order
-    try {
-      const { data } = await supabaseClient
-        .from('payments')
-        .select('status')
-        .eq('user_id', user.id)
-        .eq('order_id', RAZORPAY_ORDER_ID)
-        .single();
-
-      if (data && data.status === 'paid') {
-        console.log('✅ Payment verified');
-        return true;
-      } else {
-        alert('❌ Payment verify nahi hua! Razorpay order check karo.');
-        window.location.href = `index.html#${contestId}`;
-        return false;
-      }
-    } catch (error) {
-      console.warn('Payment check failed:', error);
-      return true; // Offline mode ke liye allow
-    }
-  }
-
-  // ====== Check if already submitted ======
-  async function checkAlreadySubmitted() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) return false;
-
-    const { data } = await supabaseClient
-      .from('scores')
-      .select('total_score')
-      .eq('user_id', user.id)
-      .eq('contest_id', contestId)
-      .maybeSingle();
-
-    if (data) {
-      alert(`✅ Already submitted! Score: ${data.total_score}`);
-      window.location.href = `dashboard.html?contestId=${contestId}`;
-      return true;
-    }
-    return false;
-  }
-
-  // ====== Timer ======
-  function startTimer(totalSeconds = 5400) { // 90 minutes
-    let remaining = totalSeconds;
-    const timerEl = document.getElementById('timer');
-
-    function render() {
-      const h = String(Math.floor(remaining / 3600)).padStart(2, '0');
-      const m = String(Math.floor((remaining % 3600) / 60)).padStart(2, '0');
-      const s = String(remaining % 60).padStart(2, '0');
-      timerEl.textContent = `${h}:${m}:${s}`;
-      
-      if (remaining <= 300) { // Last 5 min red
-        timerEl.className = 'text-xl font-semibold text-red-400';
-      }
-    }
-
-    render();
-    timerInterval = setInterval(() => {
-      remaining--;
-      render();
-      if (remaining <= 0) {
-        clearInterval(timerInterval);
-        submitExam(true); // Auto submit
-      }
-    }, 1000);
-  }
-
-  // ====== UI Rendering ======
-  function renderContestHeader() {
-    document.getElementById('contest-type-badge').textContent = 
-      contestConfig.type === 'free' ? 'Free contest' : 'Paid contest (₹9)';
-    document.getElementById('contest-type-badge').className = 
-      `text-[11px] uppercase tracking-wide ${contestConfig.type === 'free' ? 'text-emerald-400' : 'text-amber-400'} mb-1`;
+  function initExam() {
+    const contestConfig = CONTESTS[contestId] || CONTESTS['free'];
     
+    document.getElementById('contest-type-badge').textContent = contestConfig.type === 'free' ? 'FREE' : 'PAID ₹9';
+    document.getElementById('contest-type-badge').className = `text-[11px] uppercase tracking-wide ${contestConfig.type === 'free' ? 'text-emerald-400' : 'text-amber-400'} mb-1`;
     document.getElementById('contest-title').textContent = contestConfig.title;
-    document.getElementById('contest-meta').textContent = 
-      `Entry ${contestConfig.entryFee === 0 ? 'Free' : '₹' + contestConfig.entryFee} • Razorpay Verified • Live Leaderboard`;
+    document.getElementById('contest-meta').textContent = `Razorpay Verified • Live Leaderboard • Score Save`;
+
+    renderQuestionsList();
+    renderCurrentQuestion();
+    startTimer();
   }
 
   function renderQuestionsList() {
-    const list = document.getElementById('questions-list');
-    list.innerHTML = questions.map((q, index) => {
-      const isActive = index === currentIndex;
-      const isAnswered = mcqAnswers[index] !== undefined || localStorage.getItem(`answer_${contestId}_${q.id}`);
-      return `
-        <button class="w-full text-left px-3 py-1.5 rounded-lg border text-[11px] mb-1 transition-all
-          ${isActive ? 'bg-emerald-500/30 border-emerald-500 text-emerald-200 shadow-md' : 
-            (isAnswered ? 'bg-blue-500/20 border-blue-500 text-blue-200' : 'bg-slate-900 border-slate-700 text-slate-200')}
-          hover:bg-emerald-500/20 hover:border-emerald-500"
-          onclick="switchQuestion(${index})">
-          Q${index + 1} ${q.type === 'coding' ? '💻' : '❓'} ${q.topic || ''}
-        </button>
-      `;
+    document.getElementById('questions-list').innerHTML = questions.map((q, i) => {
+      const isAnswered = mcqAnswers[i] !== undefined;
+      return `<button class="w-full text-left p-2 rounded-lg border text-xs mb-1 ${i===currentIndex ? 'bg-emerald-500/30 border-emerald-500' : (isAnswered ? 'bg-blue-500/20 border-blue-500' : 'border-slate-700 bg-slate-900/50')} hover:bg-emerald-500/20" onclick="gotoQuestion(${i})">
+        Q${i+1} ${q.type==='coding'?'💻':'❓'}
+      </button>`;
     }).join('');
   }
 
   function renderCurrentQuestion() {
     const q = questions[currentIndex];
-    if (!q) return;
+    document.getElementById('question-label').textContent = `Question ${currentIndex+1}/${questions.length}`;
+    document.getElementById('question-title').textContent = q.question || `Q${currentIndex+1}`;
+    document.getElementById('question-statement').textContent = q.statement || 'Question loading...';
+    document.getElementById('question-tags').textContent = `${q.type?.toUpperCase()||'MCQ'} • ${q.topic||'Basic'}`;
 
-    document.getElementById('question-label').textContent = `Question ${currentIndex + 1}/${questions.length}`;
-    document.getElementById('question-title').textContent = q.question || q.title || 'Loading...';
-    document.getElementById('question-statement').textContent = q.statement || 'Question statement here...';
-    document.getElementById('question-tags').textContent = 
-      `${q.type?.toUpperCase() || 'MCQ'} • ${q.topic || ''} • ${q.level || 'Medium'}`;
-
-    // Show MCQ options if available
-    const mcqOptions = document.getElementById('mcq-options');
+    // MCQ options
+    const mcqDiv = document.getElementById('mcq-options');
     if (q.options && q.options.length === 4) {
-      mcqOptions.classList.remove('hidden');
-      q.options.forEach((option, i) => {
-        document.getElementById(`mcq-opt-${i}`).textContent = option;
-      });
-      // Restore saved answer
+      mcqDiv.classList.remove('hidden');
+      q.options.forEach((opt, i) => document.getElementById(`mcq-opt-${i}`).textContent = opt);
       if (mcqAnswers[currentIndex] !== undefined) {
         document.querySelector(`input[name="mcq-answer"][value="${mcqAnswers[currentIndex]}"]`).checked = true;
       }
     } else {
-      mcqOptions.classList.add('hidden');
+      mcqDiv.classList.add('hidden');
     }
 
-    // Restore textarea answer
-    const savedAnswer = localStorage.getItem(`answer_${contestId}_${q.id}`) || '';
-    document.getElementById('answer-input').value = savedAnswer;
+    document.getElementById('answer-input').value = localStorage.getItem(`answer_${contestId}_${currentIndex}`) || '';
   }
 
-  // ====== Question Navigation ======
-  function switchQuestion(index) {
-    if (examLocked || index < 0 || index >= questions.length) return;
-    
-    saveCurrentAnswer();
-    currentIndex = index;
+  function gotoQuestion(i) {
+    if (examLocked) return;
+    currentIndex = i;
     renderCurrentQuestion();
     renderQuestionsList();
   }
 
-  // ====== Answer Management ======
-  function saveCurrentAnswer() {
-    const q = questions[currentIndex];
-    if (!q) return;
-
-    // Save MCQ answer
-    const selectedRadio = document.querySelector('input[name="mcq-answer"]:checked');
-    if (selectedRadio) {
-      mcqAnswers[currentIndex] = parseInt(selectedRadio.value);
-    }
-
-    // Save textarea answer
-    const textareaValue = document.getElementById('answer-input').value;
-    localStorage.setItem(`answer_${contestId}_${q.id}`, textareaValue);
+  function startTimer() {
+    let timeLeft = 5400; // 90 minutes
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      const h = Math.floor(timeLeft/3600), m = Math.floor((timeLeft%3600)/60), s = timeLeft%60;
+      document.getElementById('timer').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+      if (timeLeft <= 0) submitExam();
+    }, 1000);
   }
 
-  // ====== Score Calculation & Submit ======
-  async function submitExam(auto = false) {
+  async function submitExam() {
     if (examLocked) return;
     examLocked = true;
+    
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return alert('Login karo pehle!');
 
-    if (!auto) {
-      const confirmSubmit = confirm('Exam submit karna hai? Baad mein edit nahi kar paoge!');
-      if (!confirmSubmit) return;
-    }
-
-    saveCurrentAnswer();
-
-    // Calculate MCQ Score
+    // Calculate score
     let mcqScore = 0;
-    for (let i = 0; i < questions.length; i++) {
-      if (questions[i].answer !== undefined && mcqAnswers[i] === questions[i].answer) {
-        mcqScore += 4;
-      }
-    }
+    questions.forEach((q, i) => {
+      if (q.answer !== undefined && mcqAnswers[i] === q.answer) mcqScore += 4;
+    });
 
-    // Coding score (placeholder - actual judge integration later)
-    const codingScore = 0;
-
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) {
-      alert('❌ Login required!');
-      return;
-    }
-
-    // ✅ SAVE TO SCORES TABLE
-    const { error } = await supabaseClient
-      .from('scores')
-      .insert({
-        user_id: user.id,
-        contest_id: contestId,
-        mcq_score: mcqScore,
-        coding_score: codingScore,
-        total_score: mcqScore + codingScore
-      });
+    // Save score
+    const { error } = await supabase.from('scores').insert({
+      user_id: user.id,
+      contest_id: contestId,
+      mcq_score: mcqScore,
+      coding_score: 0,
+      total_score: mcqScore
+    });
 
     if (error) {
-      console.error('❌ Score save failed:', error);
+      console.error('Save error:', error);
       alert('❌ Score save nahi hua!');
     } else {
-      console.log('✅ Score saved to leaderboard!');
-      alert(`✅ Exam Submitted!\nMCQ: ${mcqScore} | Total: ${mcqScore + codingScore}`);
-      window.location.href = `dashboard.html?contestId=${contestId}`;
+      console.log('✅ Score saved!');
+      alert(`✅ Score Saved!\nMCQ: ${mcqScore}`);
+      window.location.href = 'dashboard.html';
     }
   }
 
-  // ====== Event Listeners ======
+  // Events
   document.addEventListener('DOMContentLoaded', async () => {
-    // Get contest ID
-    contestId = new URLSearchParams(window.location.search).get('contestId') || 'paid-9';
-    
-    // Load questions
-    const questionsLoaded = await loadQuestionsFromJSON();
-    if (!questionsLoaded) return;
+    const loaded = await loadQuestions();
+    if (loaded) initExam();
 
-    // Verify payment access
-    contestConfig = getContestConfig(contestId);
-    const accessGranted = await verifyPaymentAccess();
-    if (!accessGranted) return;
+    document.getElementById('save-answer-btn').onclick = () => {
+      mcqAnswers[currentIndex] = document.querySelector('input[name="mcq-answer"]:checked')?.value;
+      localStorage.setItem(`answer_${contestId}_${currentIndex}`, document.getElementById('answer-input').value);
+      renderQuestionsList();
+      alert('✅ Saved!');
+    };
 
-    // Check if already submitted
-    const alreadySubmitted = await checkAlreadySubmitted();
-    if (alreadySubmitted) return;
+    document.getElementById('finish-btn').onclick = submitExam;
+    document.getElementById('prev-btn').onclick = () => currentIndex > 0 && gotoQuestion(currentIndex-1);
+    document.getElementById('next-btn').onclick = () => currentIndex < questions.length-1 && gotoQuestion(currentIndex+1);
 
-    // Initialize UI
-    renderContestHeader();
-    renderQuestionsList();
-    renderCurrentQuestion();
-    startTimer();
-
-    // Button events
-    document.getElementById('save-answer-btn').onclick = saveCurrentAnswer;
-    document.getElementById('run-debug-btn').onclick = () => alert('🚧 Code judge coming soon!');
-    document.getElementById('prev-btn').onclick = () => switchQuestion(currentIndex - 1);
-    document.getElementById('next-btn').onclick = () => switchQuestion(currentIndex + 1);
-    document.getElementById('finish-btn').onclick = () => submitExam();
-
-    // MCQ change tracking
     document.addEventListener('change', (e) => {
-      if (e.target.name === 'mcq-answer') {
-        mcqAnswers[currentIndex] = parseInt(e.target.value);
-      }
+      if (e.target.name === 'mcq-answer') mcqAnswers[currentIndex] = parseInt(e.target.value);
     });
   });
 </script>
-
 </body>
 </html>
