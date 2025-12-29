@@ -2,7 +2,7 @@
 const problems = {
     1: {
         title: "Reverse Integer",
-        description: "Given a signed 32-bit integer x, return x with its digits reversed...",
+        description: `Given a signed 32-bit integer <code class="bg-slate-800 px-1 py-0.5 rounded text-emerald-400">x</code>, return <code class="bg-slate-800 px-1 py-0.5 rounded text-emerald-400">x</code> with its digits reversed. If reversing <code class="bg-slate-800 px-1 py-0.5 rounded text-emerald-400">x</code> causes the value to go outside the signed 32-bit integer range <code class="bg-slate-800 px-1 py-0.5 rounded text-emerald-400">[-2<sup>31</sup>, 2<sup>31</sup> - 1]</code>, then return <code class="bg-slate-800 px-1 py-0.5 rounded text-emerald-400">0</code>.<br><br>Assume the environment does not allow you to store 64-bit integers (signed or unsigned).`,
         testCases: [
             { input: 123, expected: 321 },
             { input: -123, expected: -321 },
@@ -10,6 +10,7 @@ const problems = {
         ]
     }
 };
+
 
 // Get problem ID from URL
 const urlParams = new URLSearchParams(window.location.search);
