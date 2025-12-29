@@ -3,352 +3,164 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contest Exam – CodeRush</title>
+  <title>Contest Instructions – CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/monaco-editor@0.44.0/min/vs/loader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     * { font-family: system-ui, sans-serif; }
-    .nav-unattempted { background: #374151 !important; color: white !important; border: 2px solid #4b5563 !important; }
-    .nav-attempted { background: #f59e0b !important; color: white !important; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4); }
-    .nav-active { background: #10b981 !important; color: white !important; box-shadow: 0 4px 12px rgba(16,185,129,0.6); }
-    .nav-coding { background: #3b82f6 !important; color: white !important; }
-    .coding-interface { display: none; }
-    .mcq-interface { display: block; }
-    body.coding-mode .coding-interface { display: block !important; }
-    body.coding-mode .mcq-interface { display: none !important; }
   </style>
 </head>
 <body class="min-h-screen text-slate-100 bg-slate-950 p-8">
-  <div class="max-w-6xl mx-auto bg-slate-900/80 border border-slate-800 rounded-2xl p-8">
+  <div class="max-w-4xl mx-auto bg-slate-900/80 border border-slate-800 rounded-2xl p-8 text-sm">
 
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
-      <div>
-        <h1 id="contest-title" class="text-2xl font-bold text-emerald-400">Loading Contest...</h1>
-        <p id="phase-indicator" class="text-lg font-semibold mt-1 text-blue-400">MCQ Phase (1/32)</p>
-      </div>
-      <div class="text-right space-y-1">
-        <div>Exam Time: <span id="main-timer" class="text-xl text-emerald-400 font-bold">01:30:00</span></div>
-        <div>Question: <span id="question-timer" class="text-lg text-orange-400 font-bold">02:00</span></div>
-      </div>
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent mb-4">
+        Contest Instructions
+      </h1>
+      <div id="contest-title" class="text-xl font-semibold text-emerald-400 mb-2">Loading...</div>
+      <div class="text-slate-400">Please read carefully before starting</div>
     </div>
 
-    <!-- Layout -->
-    <div class="grid lg:grid-cols-[100px,1fr] gap-6">
+    <!-- Instructions -->
+    <div class="space-y-6 mb-12">
       
-      <!-- 32 Question Navigator -->
-      <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 h-[500px]">
-        <div class="text-xs font-bold mb-4 text-slate-400 rotate-[-90deg] origin-center w-full text-center">Questions</div>
-        <div id="questions-nav" class="space-y-2 max-h-[450px] overflow-y-auto"></div>
+      <!-- Timer Breakdown -->
+      <div class="bg-slate-800/50 p-6 rounded-2xl border border-emerald-500/30">
+        <h2 class="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2">
+          ⏰ Exam Structure
+        </h2>
+        <div class="grid md:grid-cols-2 gap-4 text-slate-200">
+          <div>
+            <div class="font-semibold text-emerald-300 mb-2">🟢 MCQ Phase (60 min)</div>
+            <div class="space-y-1 text-sm">
+              <div>• 30 MCQs • 2 min each (+4/-1 scoring)</div>
+              <div>• Auto-advance after 2 min</div>
+              <div>• Side navigator for jumping</div>
+            </div>
+          </div>
+          <div>
+            <div class="font-semibold text-blue-300 mb-2">🔵 Coding Phase (30 min)</div>
+            <div class="space-y-1 text-sm">
+              <div>• 2 Coding problems</div>
+              <div>• Monaco Editor (Python 3)</div>
+              <div>• Compile & Submit buttons</div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4 p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-400/30 rounded-xl">
+          <div class="font-bold text-orange-300 mb-1">⚠️ Total: 90 minutes</div>
+          <div class="text-orange-200 text-sm">Time expires → Auto-submit to leaderboard</div>
+        </div>
       </div>
 
-      <!-- Question Area -->
-      <div class="space-y-4">
-        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-xl border border-slate-700">
+      <!-- Rules -->
+      <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+        <h2 class="text-lg font-bold text-slate-200 mb-4">📋 Rules</h2>
+        <ul class="space-y-2 text-slate-300 list-disc list-inside">
+          <li>No copying from outside sources</li>
+          <li>Top 10 players win prizes (min 50 participants)</li>
+          <li>Results live on dashboard immediately</li>
+          <li>One account per person only</li>
+          <li>Prizes distributed within 24-48 hours via UPI</li>
+          <li>Submit early to avoid last-minute issues</li>
+        </ul>
+      </div>
+
+      <!-- Eligibility -->
+      <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
+        <h2 class="text-lg font-bold text-slate-200 mb-4">✅ Eligibility</h2>
+        <div class="grid md:grid-cols-2 gap-4 text-slate-300">
           <div>
-            <div id="question-label" class="text-sm text-slate-400">Question 1/32</div>
-            <div id="question-title" class="text-lg font-semibold text-white">Loading...</div>
+            <div class="font-semibold mb-2">Open to:</div>
+            <ul class="space-y-1 list-disc list-inside text-sm">
+              <li>All registered Indian users (18+)</li>
+              <li>College students & working professionals</li>
+            </ul>
           </div>
-          <div id="question-tags" class="text-sm text-slate-400">MCQ • 2min (+4/-1)</div>
-        </div>
-
-        <!-- Question Statement -->
-        <div id="question-statement" class="bg-slate-800 p-6 rounded-xl border border-slate-700 min-h-[200px] text-sm leading-relaxed prose prose-invert max-w-none"></div>
-
-        <!-- MCQ Interface -->
-        <div id="mcq-interface" class="mcq-interface space-y-3">
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="A" class="w-5 h-5 text-emerald-500 ml-4">
-            <span id="opt-A" class="ml-4 text-sm font-medium">Loading option A...</span>
-          </label>
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="B" class="w-5 h-5 text-emerald-500 ml-4">
-            <span id="opt-B" class="ml-4 text-sm font-medium">Loading option B...</span>
-          </label>
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="C" class="w-5 h-5 text-emerald-500 ml-4">
-            <span id="opt-C" class="ml-4 text-sm font-medium">Loading option C...</span>
-          </label>
-          <label class="flex items-center p-4 bg-slate-800/50 rounded-xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/5 transition-all">
-            <input type="radio" name="mcq" value="D" class="w-5 h-5 text-emerald-500 ml-4">
-            <span id="opt-D" class="ml-4 text-sm font-medium">Loading option D...</span>
-          </label>
-        </div>
-
-        <!-- CODING Interface -->
-        <div id="coding-interface" class="coding-interface">
-          <div class="bg-slate-700 p-3 rounded-xl mb-4 flex justify-between items-center text-sm">
-            <span>🛠️ Code Editor - Python 3</span>
-            <span id="editor-status">Ln 1, Col 1</span>
+          <div>
+            <div class="font-semibold mb-2">Prizes for:</div>
+            <ul class="space-y-1 list-disc list-inside text-sm">
+              <li>₹9 entry: Top 10 → ₹5000 total pool</li>
+              <li>Winner gets 40% of prize pool</li>
+            </ul>
           </div>
-          <div id="monaco-editor" class="h-64 border border-slate-600 rounded-xl mb-4"></div>
-          <div class="flex gap-3">
-            <button id="compile-btn" class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-semibold transition-all">Compile & Test</button>
-            <button id="submit-code-btn" class="flex-1 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-all">Submit Code</button>
-          </div>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex gap-3 pt-4">
-          <button id="prev-btn" class="px-8 py-3 border border-slate-600 rounded-xl text-sm hover:bg-slate-700 transition-all flex-1">← Previous</button>
-          <button id="save-btn" class="px-8 py-3 border-2 border-emerald-500 text-emerald-400 rounded-xl text-sm font-semibold hover:bg-emerald-500/20 transition-all flex-1">Save Answer</button>
-          <button id="next-btn" class="px-8 py-3 bg-emerald-500 text-slate-900 rounded-xl text-sm font-bold hover:bg-emerald-600 shadow-lg transition-all flex-1">Next →</button>
         </div>
       </div>
     </div>
+
+    <!-- START Button -->
+    <div class="text-center">
+      <button id="start-exam-btn" class="px-16 py-6 bg-gradient-to-r from-emerald-500 to-emerald-600 
+                                         hover:from-emerald-600 hover:to-emerald-700 text-slate-900 
+                                         text-xl font-bold rounded-2xl shadow-2xl transform hover:scale-105 
+                                         transition-all duration-300 shadow-emerald-500/50 w-full md:w-auto">
+        🚀 START EXAM NOW
+      </button>
+    </div>
+
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="contests-config.js"></script>
   <script>
-    // ====== SUPABASE SETUP ======
+    // Supabase
     const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ====== STATE ======
-    let currentQuestion = 0;
-    let mainTime = 90 * 60;
-    let questionTime = 120;
-    let contestId = new URLSearchParams(window.location.search).get('contestId') || 'free-200';
-    let contestConfig, questions = [];
-    let mainTimerInt, questionTimerInt;
-    let editor = null;
-    let questionStates = Array(32).fill('unattempted');
-    let mcqAnswers = {};
-    let mcqScore = 0; // +4/-1 scoring
-    let codingScore = 0; // Manual for now
+    // Get contest from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const contestId = urlParams.get('contestId') || 'free-200';
 
-    // Dynamic questions loader
-    function loadQuestionsFile() {
-      const script = document.createElement('script');
-      script.src = `./questions/${contestId}.js?t=${Date.now()}`;
-      script.onload = initExam;
-      script.onerror = () => {
-        questions = generateFallbackQuestions();
-        initExam();
-      };
-      document.head.appendChild(script);
-    }
-
-    function generateFallbackQuestions() {
-      return Array.from({length: 30}, (_, i) => ({
-        title: `Q${i+1}`,
-        statement: `MCQ ${i+1}: Programming question`,
-        options: [`A) Option ${i+1}`, `B) Option ${i+2}`, `C) Option ${i+3}`, `D) Option ${i+4}`],
-        time: 120,
-        type: 'mcq'
-      })).concat([
-        {title: 'Q31: Coding 1', statement: 'Write code solution', type: 'coding', time: 900},
-        {title: 'Q32: Coding 2', statement: 'Write code solution', type: 'coding', time: 900}
-      ]);
-    }
-
-    // Monaco Editor
-    function initMonaco() {
-      require.config({ paths: { vs: 'https://unpkg.com/monaco-editor@0.44.0/min/vs' } });
-      require(['vs/editor/editor.main'], function() {
-        editor = monaco.editor.create(document.getElementById('monaco-editor'), {
-          value: '# Write your solution here\n',
-          language: 'python',
-          theme: 'vs-dark',
-          fontSize: 14,
-          minimap: { enabled: false },
-          automaticLayout: true
-        });
-      });
-    }
-
-    // ====== SUPABASE SUBMIT EXAM ======
-    async function submitExamToSupabase() {
-      try {
-        const { data: { user }, error: userError } = await supabase.auth.getUser();
-        if (userError || !user) {
-          alert('Login required!');
-          return false;
-        }
-
-        const totalScore = mcqScore + codingScore;
-        console.log('🎯 Submitting scores:', { mcqScore, codingScore, totalScore });
-
-        const { error } = await supabase
-          .from('scores')
-          .insert([{
-            user_id: user.id,
-            contest_id: contestId,
-            mcq_score: mcqScore,
-            coding_score: codingScore,
-            total_score: totalScore,
-            submit_time: new Date().toISOString()
-          }]);
-
-        if (error) {
-          console.error('❌ Supabase error:', error);
-          alert('Score save failed. Try again.');
-          return false;
-        }
-
-        console.log('✅ Score saved to leaderboard!');
-        window.location.href = `results.html?contestId=${contestId}&score=${totalScore}`;
-        return true;
-      } catch (error) {
-        console.error('Submit error:', error);
-        alert('Exam submission failed.');
-        return false;
-      }
-    }
-
-    // ====== MAIN INIT ======
-    async function initExam() {
-      const questionsKey = contestId.toUpperCase().replace(/-/g, '_') + '_QUESTIONS';
-      questions = window[questionsKey] || generateFallbackQuestions();
-      
-      contestConfig = window.CONTESTS?.find(c => c.id === contestId) || window.CONTESTS[0];
-      document.getElementById('contest-title').textContent = contestConfig?.title || 'Contest';
-      
-      initMonaco();
-      loadQuestion();
-      updateNavigator();
-      startTimers();
-    }
-
-    // ====== TIMERS ======
-    function startTimers() {
-      mainTimerInt = setInterval(() => {
-        mainTime--;
-        if (mainTime <= 0) {
-          clearInterval(mainTimerInt);
-          clearInterval(questionTimerInt);
-          submitExamToSupabase();
-          return;
-        }
-        const h = Math.floor(mainTime / 3600);
-        const m = Math.floor((mainTime % 3600) / 60);
-        const s = mainTime % 60;
-        document.getElementById('main-timer').textContent = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        
-        // RED warning at 5 min
-        if (mainTime <= 300) {
-          document.getElementById('main-timer').className = 'text-xl text-red-400 font-bold';
-        }
-      }, 1000);
-
-      questionTimerInt = setInterval(() => {
-        questionTime--;
-        const m = Math.floor(questionTime / 60);
-        const s = questionTime % 60;
-        document.getElementById('question-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
-        if (questionTime <= 0) nextQuestion();
-      }, 1000);
-    }
-
-    // ====== QUESTIONS ======
-    function loadQuestion() {
-      const q = questions[currentQuestion];
-      document.getElementById('question-label').textContent = `Question ${currentQuestion + 1}/32`;
-      document.getElementById('question-title').textContent = q.title;
-      document.getElementById('question-statement').innerHTML = q.statement.replace(/\n/g, '<br>');
-      
-      const isCoding = currentQuestion >= 30;
-      document.body.className = isCoding ? 'coding-mode' : '';
-      document.getElementById('phase-indicator').textContent = 
-        isCoding ? `🔵 Coding Phase (${currentQuestion + 1}/32)` : `🟢 MCQ Phase (${currentQuestion + 1}/32)`;
-      document.getElementById('question-tags').textContent = 
-        isCoding ? '💻 Coding • 15min' : '📝 MCQ • 2min (+4/-1)';
-      
-      // Clear radio buttons
-      document.querySelectorAll('input[name="mcq"]').forEach(r => r.checked = false);
-      
-      // Load MCQ options
-      if (q.options?.length === 4 && !isCoding) {
-        ['A', 'B', 'C', 'D'].forEach((letter, i) => {
-          document.getElementById(`opt-${letter}`).textContent = q.options[i];
-        });
-      }
-      
-      // Restore saved answer
-      if (!isCoding && mcqAnswers[currentQuestion]) {
-        document.querySelector(`input[name="mcq"][value="${mcqAnswers[currentQuestion]}"]`).checked = true;
-      }
-      
-      questionTime = q.time || (isCoding ? 900 : 120);
-      updateNavigator();
-    }
-
-    function nextQuestion() {
-      saveCurrentAnswer();
-      if (currentQuestion < 31) {
-        currentQuestion++;
-        loadQuestion();
-      }
-    }
-
-    function prevQuestion() {
-      saveCurrentAnswer();
-      if (currentQuestion > 0) {
-        currentQuestion--;
-        loadQuestion();
-      }
-    }
-
-    // ====== SAVE SYSTEM (Auto + Manual) ======
-    function saveCurrentAnswer() {
-      const q = questions[currentQuestion];
-      const isCoding = currentQuestion >= 30;
-      
-      if (isCoding && editor) {
-        localStorage.setItem(`code_${contestId}_Q${currentQuestion + 1}`, editor.getValue());
-        questionStates[currentQuestion] = 'attempted';
-      } else {
-        const selected = document.querySelector('input[name="mcq"]:checked');
-        if (selected) {
-          mcqAnswers[currentQuestion] = selected.value;
-          localStorage.setItem(`mcq_${contestId}_Q${currentQuestion + 1}`, selected.value);
-          questionStates[currentQuestion] = 'attempted';
-        }
-      }
-    }
-
-    // ====== NAVIGATOR ======
-    function updateNavigator() {
-      const nav = document.getElementById('questions-nav');
-      nav.innerHTML = '';
-      questions.forEach((q, i) => {
-        const btn = document.createElement('button');
-        const isCoding = i >= 30;
-        btn.className = `w-full h-12 rounded-xl text-sm font-bold border-2 mb-2 transition-all shadow-md ${
-          i === currentQuestion ? 'nav-active' :
-          questionStates[i] === 'attempted' ? 'nav-attempted' :
-          isCoding ? 'nav-coding' : 'nav-unattempted'
-        }`;
-        btn.innerHTML = isCoding ? `C${i-29}` : `${i + 1}`;
-        btn.onclick = () => {
-          saveCurrentAnswer();
-          currentQuestion = i;
-          loadQuestion();
-        };
-        nav.appendChild(btn);
-      });
-    }
-
-    // ====== EVENTS ======
-    document.addEventListener('DOMContentLoaded', loadQuestionsFile);
-
-    document.getElementById('next-btn').onclick = nextQuestion;
-    document.getElementById('prev-btn').onclick = prevQuestion;
-    document.getElementById('save-btn').onclick = () => {
-      saveCurrentAnswer();
+    // Contests config
+    const contests = {
+      'paid-9': { title: 'Paid Mega Contest – Top 10 Prizes (₹9)' },
+      'free-200': { title: 'Free Daily Rush – Practice Contest' }
     };
 
-    document.querySelectorAll('input[name="mcq"]').forEach(radio => {
-      radio.onchange = () => {
-        saveCurrentAnswer();
-        updateNavigator();
-      };
-    });
+    const contestConfig = contests[contestId] || contests['free-200'];
+    document.getElementById('contest-title').textContent = contestConfig.title;
 
-    // Manual exam end button (for testing)
-    window.submitExam = submitExamToSupabase;
+    // 🔥 START EXAM BUTTON
+    document.getElementById('start-exam-btn').onclick = async () => {
+      try {
+        // Check login
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          alert('Please login first!');
+          window.location.href = 'index.html';
+          return;
+        }
+
+        // Check registration
+        const { data: registration } = await supabase
+          .from('contest_registrations')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('contest_type', contestId)
+          .eq('payment_status', 'success')
+          .single();
+
+        if (!registration) {
+          alert('Please register/pay for this contest first!');
+          window.location.href = `contest-details.html?type=${contestId.startsWith('free') ? 'free' : 'paid'}`;
+          return;
+        }
+
+        // ✅ START EXAM
+        console.log('🚀 Starting exam:', contestId);
+        window.location.href = `exam.html?contestId=${contestId}`;
+        
+      } catch (error) {
+        console.error('Start exam error:', error);
+        alert('Something went wrong. Please try again.');
+      }
+    };
+
+    // Auto-focus button
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('start-exam-btn').focus();
+    });
   </script>
 </body>
 </html>
