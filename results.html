@@ -3,178 +3,148 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Results - CodeRush</title>
+  <title>Result - CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>* { font-family: system-ui, sans-serif; }</style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.min.js"></script>
+  <style>
+    * { font-family: system-ui, -apple-system, sans-serif; }
+    .glass { backdrop-filter: blur(20px); }
+  </style>
 </head>
-<body class="min-h-screen text-slate-100 bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
-
-<div class="max-w-4xl mx-auto px-4 py-12">
-  <!-- RESULTS HEADER -->
-  <div class="text-center mb-12">
-    <div class="w-24 h-24 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
-      <span class="text-3xl">🏆</span>
-    </div>
-    <h1 class="text-4xl md:text-5xl font-bold bg-gradient-to-r from-emerald-400 to-blue-400 bg-clip-text text-transparent mb-4">
-      Your Results
-    </h1>
-    <p class="text-xl text-slate-400 mb-2">PAID-9 Contest</p>
-    <p class="text-2xl font-bold text-emerald-400" id="totalScore">Calculating...</p>
-  </div>
-
-  <!-- USER INFO -->
-  <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-8 mb-8">
-    <div class="grid md:grid-cols-3 gap-6 text-sm">
-      <div>
-        <p class="text-slate-500 uppercase tracking-wide text-xs mb-1">Contest</p>
-        <p class="font-semibold text-emerald-400">PAID-9</p>
-      </div>
-      <div>
-        <p class="text-slate-500 uppercase tracking-wide text-xs mb-1">Total Marks</p>
-        <p class="font-semibold" id="totalMarks">100</p>
-      </div>
-      <div>
-        <p class="text-slate-500 uppercase tracking-wide text-xs mb-1">Completed</p>
-        <p class="font-semibold text-emerald-400" id="completedAt">Just now</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- QUESTIONS TABLE -->
-  <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 mb-8">
-    <h2 class="text-2xl font-bold mb-6 flex items-center gap-3">
-      <span>📊 Question-wise Performance</span>
-    </h2>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-slate-700">
-            <th class="text-left py-4 pr-4 font-semibold">Question</th>
-            <th class="text-left py-4 px-4 font-semibold">Type</th>
-            <th class="text-left py-4 px-4 font-semibold">Marks</th>
-            <th class="text-left py-4 px-4 font-semibold">Status</th>
-            <th class="text-left py-4 pl-4 font-semibold">Score</th>
-          </tr>
-        </thead>
-        <tbody id="resultsTableBody">
-          <!-- Results will load here -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- ACTION BUTTONS -->
-  <div class="flex flex-col sm:flex-row gap-4 justify-center">
-    <a href="index.html" class="px-8 py-4 bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-semibold rounded-2xl text-center transition-all shadow-xl">
-      ← Back to Home
-    </a>
-    <a href="leaderboard.html" class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-semibold rounded-2xl text-center transition-all shadow-xl">
-      🏆 View Leaderboard
-    </a>
-  </div>
-</div>
-
-<script>
-  // Get contest from URL
-  const urlParams = new URLSearchParams(window.location.search);
-  const contestId = urlParams.get('contestId') || 'paid-9';
+<body class="bg-gradient-to-br from-slate-900 to-slate-950 text-slate-100 min-h-screen">
   
-  // Mock questions data (same as exam.html)
-  const questions = [
-    {"question": "What is 2+2?", "type": "mcq", "marks": 20},
-    {"question": "Array length kaise nikale?", "type": "mcq", "marks": 20},
-    {"question": "console.log ka output?", "type": "mcq", "marks": 20},
-    {"question": "var vs let?", "type": "mcq", "marks": 20},
-    {"question": "Coding Problem 1", "type": "coding", "marks": 20}
-  ];
+  <!-- Navbar -->
+  <header class="border-b border-slate-800/50 bg-slate-900/95 glass sticky top-0 z-50">
+    <nav class="max-w-6xl mx-auto flex items-center justify-between px-4 py-4">
+      <a href="dashboard.html" class="flex items-center gap-3">
+        <div class="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-black text-lg">C</div>
+        <span class="font-black text-xl bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">CodeRush</span>
+      </a>
+      <a href="dashboard.html" class="text-emerald-400 hover:text-emerald-300 font-semibold">← Back to Dashboard</a>
+    </nav>
+  </header>
 
-  // Get user submissions from localStorage
-  function getUserSubmissions() {
-    const userId = localStorage.getItem('user_id');
-    const submissions = [];
-    
-    questions.forEach((q, i) => {
-      const submission = localStorage.getItem(`paid9_submission_${i}`);
-      if (submission) {
-        try {
-          submissions.push({
-            ...q,
-            ...JSON.parse(submission),
-            index: i
-          });
-        } catch(e) {}
-      } else {
-        // No submission
-        submissions.push({
-          ...q,
-          answered: false,
-          score: 0,
-          index: i
-        });
+  <main class="max-w-4xl mx-auto px-4 py-12">
+    <div id="result-content" class="text-center">
+      <!-- Loading state -->
+      <div class="animate-pulse">
+        <div class="w-24 h-24 bg-emerald-500/20 rounded-3xl mx-auto mb-8"></div>
+        <h1 class="text-4xl font-black text-slate-400 mb-4">Calculating Results...</h1>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Get contest and user info from URL/localStorage
+    const urlParams = new URLSearchParams(window.location.search);
+    const contestId = urlParams.get('contest') || localStorage.getItem('currentContest');
+    const userId = supabase.auth.getUser().then(({ data }) => data.user?.id);
+
+    async function loadResult() {
+      try {
+        const { data: userData } = await supabase.auth.getUser();
+        if (!userData.user) {
+          window.location.href = 'index.html';
+          return;
+        }
+
+        const { data: submissions } = await supabase
+          .from('submissions')
+          .select('*')
+          .eq('user_id', userData.user.id)
+          .eq('contest_id', contestId)
+          .order('created_at', { ascending: false })
+          .limit(10);
+
+        if (!submissions || submissions.length === 0) {
+          document.getElementById('result-content').innerHTML = `
+            <div class="max-w-md mx-auto bg-slate-900/50 backdrop-blur-xl rounded-3xl p-12 border border-slate-800/50">
+              <div class="w-24 h-24 bg-gradient-to-br from-slate-500/30 to-slate-400/30 rounded-3xl mx-auto mb-8 flex items-center justify-center">
+                <svg class="w-12 h-12 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <h1 class="text-3xl font-black text-slate-100 mb-4">No Submissions Found</h1>
+              <p class="text-slate-400 mb-8">Complete the contest to see your results.</p>
+              <a href="dashboard.html" class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-900 font-bold rounded-2xl shadow-xl hover:shadow-emerald-500/50 transition-all">← Back to Dashboard</a>
+            </div>
+          `;
+          return;
+        }
+
+        // Calculate score (q1=100, q2=200, q3=300 marks)
+        const score = submissions.reduce((total, sub) => {
+          const marks = sub.question_id === 'q1' ? 100 : sub.question_id === 'q2' ? 200 : 300;
+          return total + (sub.is_correct ? marks : 0);
+        }, 0);
+
+        // Show result
+        document.getElementById('result-content').innerHTML = `
+          <div class="max-w-2xl mx-auto bg-gradient-to-br from-emerald-500/10 to-cyan-500/10 backdrop-blur-xl rounded-3xl p-12 border border-emerald-500/30 shadow-2xl">
+            <div class="w-32 h-32 bg-gradient-to-br from-emerald-400 to-cyan-500 rounded-3xl mx-auto mb-8 flex items-center justify-center shadow-2xl">
+              <span class="text-5xl font-black text-slate-900">${score}</span>
+            </div>
+            <h1 class="text-4xl lg:text-5xl font-black bg-gradient-to-r from-slate-100 to-slate-200 bg-clip-text text-transparent mb-4">Your Score</h1>
+            <p class="text-xl text-emerald-400 font-bold mb-12">${Math.round((score/600)*100)}% Accuracy</p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-12">
+              <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800/50">
+                <div class="text-3xl font-black text-emerald-400 mb-2">${submissions.length}</div>
+                <div class="text-sm text-slate-400 uppercase tracking-wide">Questions Attempted</div>
+              </div>
+              <div class="bg-slate-900/50 backdrop-blur-xl rounded-2xl p-6 border border-slate-800/50">
+                <div class="text-3xl font-black text-cyan-400 mb-2">${contestId === 'free' ? '✅ Free' : '💰 Paid'}</div>
+                <div class="text-sm text-slate-400 uppercase tracking-wide">Contest Type</div>
+              </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a href="dashboard.html" class="flex-1 px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-400 text-slate-900 font-bold rounded-2xl shadow-xl hover:shadow-emerald-500/50 transition-all text-center">Next Contest</a>
+              <a href="#leaderboard" class="flex-1 px-8 py-4 border-2 border-emerald-400/50 text-emerald-400 font-bold rounded-2xl backdrop-blur-sm hover:bg-emerald-500/10 transition-all text-center" onclick="loadLeaderboard()">View Leaderboard</a>
+            </div>
+          </div>
+
+          <!-- Leaderboard -->
+          <div id="leaderboard-section" class="mt-20 hidden">
+            <h2 class="text-3xl font-black text-center mb-12 bg-gradient-to-r from-slate-100 to-slate-300 bg-clip-text text-transparent">Leaderboard</h2>
+            <div id="leaderboard-list" class="max-w-4xl mx-auto"></div>
+          </div>
+        `;
+
+        localStorage.removeItem('currentContest');
+      } catch (error) {
+        console.error('Result load error:', error);
       }
-    });
-    
-    return submissions;
-  }
+    }
 
-  // Calculate score (simple logic - answered = full marks)
-  function calculateScore(submissions) {
-    let totalScore = 0;
-    submissions.forEach(s => {
-      s.score = s.answered ? s.marks : 0;
-      totalScore += s.score;
-    });
-    return totalScore;
-  }
+    async function loadLeaderboard() {
+      try {
+        const { data: leaderboard } = await supabase
+          .from('submissions')
+          .select('user_id, score:total_score')
+          .eq('contest_id', contestId)
+          .order('score', { ascending: false })
+          .limit(50);
 
-  // Render results table
-  function renderResults() {
-    const submissions = getUserSubmissions();
-    const totalScore = calculateScore(submissions);
-    
-    // Update header
-    document.getElementById('totalScore').textContent = `${totalScore}/${submissions.reduce((sum, s) => sum + s.marks, 0)}`;
-    document.getElementById('totalMarks').textContent = submissions.reduce((sum, s) => sum + s.marks, 0);
-    document.getElementById('completedAt').textContent = new Date().toLocaleString('hi-IN');
+        document.getElementById('leaderboard-section').classList.remove('hidden');
+        // Simple leaderboard render (basic)
+        document.getElementById('leaderboard-list').innerHTML = `
+          <div class="bg-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-slate-800/50">
+            <p class="text-center text-slate-400 text-lg mb-8">Top performers will appear here after contest ends</p>
+            <div class="text-center text-emerald-400 font-bold text-xl">🥇 Calculating ranks...</div>
+          </div>
+        `;
+      } catch (error) {
+        console.error('Leaderboard error:', error);
+      }
+    }
 
-    // Render table
-    document.getElementById('resultsTableBody').innerHTML = submissions.map(s => `
-      <tr class="border-b border-slate-800 hover:bg-slate-800/50 transition-colors">
-        <td class="py-4 pr-4 font-medium">Q${s.index + 1}. ${s.question}</td>
-        <td class="py-4 px-4">
-          <span class="px-3 py-1 rounded-full text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-            ${s.type.toUpperCase()}
-          </span>
-        </td>
-        <td class="py-4 px-4 font-semibold">${s.marks}</td>
-        <td class="py-4 px-4">
-          <span class="px-3 py-1 rounded-full text-xs ${
-            s.answered ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 
-            'bg-red-500/20 text-red-400 border border-red-500/30'
-          }">
-            ${s.answered ? '✅ Answered' : '❌ Skipped'}
-          </span>
-        </td>
-        <td class="py-4 pl-4 font-bold text-lg ${
-          s.score > 0 ? 'text-emerald-400' : 'text-slate-500'
-        }">${s.score}</td>
-      </tr>
-    `).join('');
-  }
-
-  // Load on page ready
-  document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 Results page loaded for contest:', contestId);
-    renderResults();
-    
-    // Clear exam data after showing results
-    localStorage.removeItem('exam_completed_paid9');
-    questions.forEach((_, i) => {
-      localStorage.removeItem(`paid9_${i}`);
-      localStorage.removeItem(`paid9_submission_${i}`);
-    });
-  });
-</script>
-
+    // Load result on page load
+    window.addEventListener('load', loadResult);
+  </script>
 </body>
 </html>
