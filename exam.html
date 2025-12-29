@@ -11,7 +11,6 @@
 <body class="min-h-screen text-slate-100 bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
 
 <main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10 bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
-  <!-- Header same as before -->
   <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
     <div>
       <p class="text-[11px] uppercase tracking-wide text-amber-400 mb-1">PAID ₹9</p>
@@ -89,15 +88,26 @@
 </main>
 
 <script>
-  // 🔥 ALL GLOBAL VARIABLES FIRST
-  let currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {}, questions = [];
+  // ✅ GLOBAL SUPABASE CLIENT - FIRST LOAD
   const SUPABASE_URL = 'https://tghtgygjawhrcgtwhrej.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38';
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // ✅ FIXED saveAllSubmissions() - TOP LEVEL
+  // ✅ GLOBAL QUESTIONS ARRAY
+  const questions = [
+    {"question": "What is 2+2?", "statement": "Basic arithmetic question", "options": ["3", "4", "5", "6"], "answer": 1, "type": "mcq", "marks": 20},
+    {"question": "Array length kaise nikale?", "statement": "JavaScript array length property", "options": [".size()", ".length", ".count", ".size"], "answer": 1, "type": "mcq", "marks": 20},
+    {"question": "console.log ka output?", "statement": "Browser console method", "options": ["Print", "Log", "Display", "Show"], "answer": 1, "type": "mcq", "marks": 20},
+    {"question": "var vs let?", "statement": "JavaScript variable declaration", "options": ["Same", "let is block scoped", "var is faster", "No difference"], "answer": 1, "type": "mcq", "marks": 20},
+    {"question": "Coding Problem 1", "statement": "Write function to reverse string: def reverse(s):", "type": "coding", "marks": 20}
+  ];
+
+  let currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {};
+
+  // ✅ PERFECT saveAllSubmissions FUNCTION
   async function saveAllSubmissions() {
     try {
-      const { data: { user } } = await supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY).auth.getUser();
+      const { data: { user } } = await supabaseClient.auth.getUser();
       if (!user) throw new Error('No user logged in');
 
       const contestId = 'paid-9';
@@ -111,7 +121,7 @@
         language: 'javascript'
       }));
 
-      const { data, error } = await supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+      const { data, error } = await supabaseClient
         .from('submissions')
         .upsert(submissions, { 
           onConflict: 'user_id,contest_id,question_id',
@@ -146,73 +156,7 @@
     }, 3000);
   }
 
-  // 🔥 MAIN INIT - AFTER ALL FUNCTIONS DEFINED
-  document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 CodeRush PAID-9 LOADED ✅');
-    
-    // Supabase client
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    
-    // Check auth
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      alert('Please login first!');
-      window.location.href = 'index.html';
-      return;
-    }
-
-    // QUESTIONS DATA
-    questions = [
-      {"question": "What is 2+2?", "statement": "Basic arithmetic question", "options": ["3", "4", "5", "6"], "answer": 1, "type": "mcq", "marks": 20},
-      {"question": "Array length kaise nikale?", "statement": "JavaScript array length property", "options": [".size()", ".length", ".count", ".size"], "answer": 1, "type": "mcq", "marks": 20},
-      {"question": "console.log ka output?", "statement": "Browser console method", "options": ["Print", "Log", "Display", "Show"], "answer": 1, "type": "mcq", "marks": 20},
-      {"question": "var vs let?", "statement": "JavaScript variable declaration", "options": ["Same", "let is block scoped", "var is faster", "No difference"], "answer": 1, "type": "mcq", "marks": 20},
-      {"question": "Coding Problem 1", "statement": "Write function to reverse string: def reverse(s):", "type": "coding", "marks": 20}
-    ];
-
-    localStorage.setItem('currentContestId', 'paid-9');
-    
-    // RENDER
-    renderQuestionsList();
-    renderCurrentQuestion();
-    startTimer();
-
-    // ✅ FIXED SAVE BUTTON - AFTER DOMContentLoaded
-    document.getElementById('saveProgressBtn').onclick = async () => {
-      try {
-        await saveAllSubmissions();
-        showToast('✅ Progress saved to cloud!');
-      } catch (error) {
-        console.error('Save error:', error);
-        questions.forEach((q, i) => {
-          localStorage.setItem(`paid9_${i}`, document.getElementById('answer-input').value || '');
-        });
-        showToast('💾 Saved locally - Submit to see results!', 'warning');
-      }
-    };
-
-    // Other event listeners...
-    document.getElementById('save-answer-btn').onclick = function() {
-      const selected = document.querySelector('input[name="mcq-answer"]:checked');
-      if (selected) mcqAnswers[currentIndex] = parseInt(selected.value);
-      localStorage.setItem(`paid9_${currentIndex}`, document.getElementById('answer-input').value);
-      renderQuestionsList();
-      showToast('✅ Answer saved!');
-    };
-
-    document.getElementById('finalSubmitBtn').onclick = finalSubmitExam;
-    document.getElementById('prev-btn').onclick = () => gotoQuestion(currentIndex-1);
-    document.getElementById('next-btn').onclick = () => gotoQuestion(currentIndex+1);
-    
-    document.addEventListener('change', (e) => {
-      if (e.target.name === 'mcq-answer') {
-        mcqAnswers[currentIndex] = parseInt(e.target.value);
-        renderQuestionsList();
-      }
-    });
-  });
-
-  // Other functions (same as before)...
+  // All other functions (renderQuestionsList, renderCurrentQuestion, etc.) - SAME AS BEFORE
   function renderQuestionsList() {
     document.getElementById('questions-list').innerHTML = questions.map((q, i) => {
       const isAnswered = mcqAnswers[i] !== undefined || localStorage.getItem(`paid9_${i}`);
@@ -290,6 +234,58 @@
       examLocked = false;
     }
   }
+
+  // ✅ MAIN INIT - PERFECT ORDER
+  document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🚀 CodeRush PAID-9 LOADED ✅');
+    
+    // Auth check
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) {
+      alert('Please login first!');
+      window.location.href = 'index.html';
+      return;
+    }
+
+    localStorage.setItem('currentContestId', 'paid-9');
+    
+    renderQuestionsList();
+    renderCurrentQuestion();
+    startTimer();
+
+    // ✅ ALL BUTTONS - AFTER DOM LOADED
+    document.getElementById('saveProgressBtn').onclick = async () => {
+      try {
+        await saveAllSubmissions();
+        showToast('✅ Progress saved to cloud!');
+      } catch (error) {
+        console.error('Save error:', error);
+        questions.forEach((q, i) => {
+          localStorage.setItem(`paid9_${i}`, document.getElementById('answer-input').value || '');
+        });
+        showToast('💾 Saved locally - Submit to see results!', 'warning');
+      }
+    };
+
+    document.getElementById('save-answer-btn').onclick = function() {
+      const selected = document.querySelector('input[name="mcq-answer"]:checked');
+      if (selected) mcqAnswers[currentIndex] = parseInt(selected.value);
+      localStorage.setItem(`paid9_${currentIndex}`, document.getElementById('answer-input').value);
+      renderQuestionsList();
+      showToast('✅ Answer saved!');
+    };
+
+    document.getElementById('finalSubmitBtn').onclick = finalSubmitExam;
+    document.getElementById('prev-btn').onclick = () => gotoQuestion(currentIndex-1);
+    document.getElementById('next-btn').onclick = () => gotoQuestion(currentIndex+1);
+    
+    document.addEventListener('change', (e) => {
+      if (e.target.name === 'mcq-answer') {
+        mcqAnswers[currentIndex] = parseInt(e.target.value);
+        renderQuestionsList();
+      }
+    });
+  });
 </script>
 
 </body>
