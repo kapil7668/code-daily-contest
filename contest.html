@@ -165,7 +165,7 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🔥 FIXED PAYMENT FUNCTION - WORKING TEST KEY
+// 🔥 YOUR KEY REPLACED ✅
 async function payForContest(contestId, amount) {
   try {
     const { data: { user } } = await supabaseClient.auth.getUser();
@@ -176,7 +176,7 @@ async function payForContest(contestId, amount) {
     }
 
     const options = {
-      key: 'rzp_test_46f70357e1814f5', // ✅ WORKING TEST KEY
+      key: 'rzp_test_RxLABHQ9TsZYHJ', // ✅ YOUR KEY
       amount: amount * 100, // Convert to paise (₹9 = 900)
       currency: 'INR',
       name: 'CodeRush Contest',
