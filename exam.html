@@ -4,106 +4,84 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PAID-9 Contest - CodeRush</title>
-  <!-- ✅ NO @tailwind - Direct Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    * { font-family: 'Segoe UI', system-ui, sans-serif; }
-  </style>
+  <style>* { font-family: system-ui, sans-serif; }</style>
 </head>
+<body class="min-h-screen text-slate-100 bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
 
-<body class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-950 to-black text-slate-100">
-
-<main class="max-w-6xl mx-auto px-4 py-8">
-  <!-- Header -->
-  <header class="bg-slate-900/80 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 mb-8 shadow-2xl">
-    <div class="flex flex-col lg:flex-row lg:items-center gap-6">
-      <div>
-        <p class="text-xs uppercase tracking-wider text-amber-400 font-bold mb-2">PAID ₹9</p>
-        <h1 class="text-3xl lg:text-4xl font-black bg-gradient-to-r from-emerald-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-          PAID-9 Contest
-        </h1>
-        <p class="text-sm text-slate-400 mt-2">5 Questions • 60 Minutes • ₹900 Prize Pool</p>
+<main class="max-w-6xl mx-auto px-4 py-5 md:py-7 mt-6 mb-10 bg-slate-900/80 border border-slate-800/60 rounded-2xl shadow-[0_0_40px_rgba(15,23,42,0.95)]">
+  <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+    <div>
+      <p class="text-[11px] uppercase tracking-wide text-amber-400 mb-1">PAID ₹9</p>
+      <h1 class="text-lg md:text-xl font-semibold mb-1">PAID-9 Contest</h1>
+      <p class="text-[11px] text-slate-400">5 Questions • 60 Min • ₹900 Prize</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="text-right">
+        <p class="text-[11px] text-slate-400">Time remaining</p>
+        <p id="timer" class="text-xl font-semibold text-emerald-400">60:00</p>
       </div>
-      <div class="flex items-center gap-6">
-        <div class="text-right">
-          <p class="text-xs text-slate-400 uppercase tracking-wide">Time Remaining</p>
-          <p id="timer" class="text-3xl font-black text-emerald-400">--:--</p>
-        </div>
-        <button id="finish-btn" class="px-8 py-4 bg-gradient-to-r from-red-500 to-red-700 text-white font-black text-lg rounded-2xl shadow-2xl hover:scale-105 transition-all duration-200">
-          🏁 SUBMIT & RANK
-        </button>
-      </div>
+      <button id="finish-btn" class="px-6 py-2 rounded-lg bg-gradient-to-r from-red-500 to-red-600 text-white text-sm font-bold hover:from-red-600 hover:to-red-700 shadow-lg">
+        🏁 SUBMIT EXAM & SEE RANK
+      </button>
     </div>
   </header>
 
-  <div class="grid lg:grid-cols-[260px,1fr] gap-8">
-    <!-- Questions Sidebar -->
-    <aside class="bg-slate-900/90 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6 sticky top-8 h-fit">
-      <h2 class="text-xl font-black mb-6 flex items-center gap-3 text-emerald-400">
-        📝 Questions (<span id="question-count">0</span>)
-      </h2>
-      <div id="questions-list" class="space-y-2 max-h-96 overflow-y-auto"></div>
+  <section class="grid md:grid-cols-[220px,1fr] gap-4 mt-4">
+    <aside class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs">
+      <h2 class="text-[12px] font-semibold mb-2">Questions (<span id="question-count">5</span>)</h2>
+      <div id="questions-list" class="space-y-1 max-h-96 overflow-y-auto"></div>
     </aside>
 
-    <!-- Main Exam Area -->
-    <section class="bg-slate-900/90 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 flex flex-col">
-      <div class="mb-8 flex items-center justify-between">
+    <section class="bg-slate-900/80 border border-slate-800 rounded-2xl p-3 text-xs flex flex-col">
+      <div class="mb-2 flex items-center justify-between">
         <div>
-          <p id="question-label" class="text-lg text-slate-400 font-medium mb-2">Question 1</p>
-          <h2 id="question-title" class="text-2xl font-black text-slate-100 mb-2">Loading...</h2>
+          <p id="question-label" class="text-[11px] text-slate-400 mb-0.5">Question 1</p>
+          <h2 id="question-title" class="text-sm font-semibold">Loading...</h2>
         </div>
-        <div id="question-tags" class="text-sm text-slate-400 font-medium text-right"></div>
+        <div id="question-tags" class="text-[11px] text-right text-slate-400"></div>
       </div>
 
-      <div id="question-statement" class="text-lg text-slate-200 mb-8 p-8 bg-slate-800/50 rounded-2xl border border-slate-700 min-h-[160px] leading-relaxed"></div>
+      <div id="question-statement" class="text-[12px] text-slate-200 mb-3 min-h-[120px] p-4 bg-slate-800/50 rounded-lg">Loading question...</div>
 
-      <!-- MCQ Options -->
-      <div id="mcq-options" class="space-y-3 mb-8 hidden">
-        <label class="flex items-center p-6 bg-slate-800/50 rounded-2xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-200 group">
-          <input type="radio" name="mcq-answer" value="0" class="w-6 h-6 text-emerald-500 ml-5">
-          <span id="mcq-opt-0" class="ml-5 text-xl font-medium group-hover:text-emerald-400"></span>
+      <div id="mcq-options" class="space-y-2 mb-4 hidden">
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+          <input type="radio" name="mcq-answer" value="0" class="w-4 h-4 text-emerald-500 ml-3">
+          <span id="mcq-opt-0" class="ml-3 text-sm"></span>
         </label>
-        <label class="flex items-center p-6 bg-slate-800/50 rounded-2xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-200 group">
-          <input type="radio" name="mcq-answer" value="1" class="w-6 h-6 text-emerald-500 ml-5">
-          <span id="mcq-opt-1" class="ml-5 text-xl font-medium group-hover:text-emerald-400"></span>
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+          <input type="radio" name="mcq-answer" value="1" class="w-4 h-4 text-emerald-500 ml-3">
+          <span id="mcq-opt-1" class="ml-3 text-sm"></span>
         </label>
-        <label class="flex items-center p-6 bg-slate-800/50 rounded-2xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-200 group">
-          <input type="radio" name="mcq-answer" value="2" class="w-6 h-6 text-emerald-500 ml-5">
-          <span id="mcq-opt-2" class="ml-5 text-xl font-medium group-hover:text-emerald-400"></span>
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+          <input type="radio" name="mcq-answer" value="2" class="w-4 h-4 text-emerald-500 ml-3">
+          <span id="mcq-opt-2" class="ml-3 text-sm"></span>
         </label>
-        <label class="flex items-center p-6 bg-slate-800/50 rounded-2xl border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10 transition-all duration-200 group">
-          <input type="radio" name="mcq-answer" value="3" class="w-6 h-6 text-emerald-500 ml-5">
-          <span id="mcq-opt-3" class="ml-5 text-xl font-medium group-hover:text-emerald-400"></span>
+        <label class="flex items-center p-3 bg-slate-800/50 rounded-lg border-2 border-slate-700 cursor-pointer hover:border-emerald-500 hover:bg-emerald-500/10">
+          <input type="radio" name="mcq-answer" value="3" class="w-4 h-4 text-emerald-500 ml-3">
+          <span id="mcq-opt-3" class="ml-3 text-sm"></span>
         </label>
       </div>
 
-      <label class="text-lg text-slate-300 font-medium mb-4 block">💭 Your Answer</label>
-      <textarea id="answer-input" class="flex-1 min-h-[200px] bg-slate-950/80 border-2 border-slate-800 rounded-2xl px-6 py-5 text-lg text-slate-100 focus:outline-none focus:ring-4 focus:ring-emerald-500/30 focus:border-emerald-500 resize-none placeholder-slate-500" placeholder="Type your solution here..."></textarea>
+      <label class="text-[11px] text-slate-300 mb-1 block">Your answer</label>
+      <textarea id="answer-input" class="flex-1 min-h-[180px] w-full bg-slate-950/70 border border-slate-800 rounded-xl px-3 py-2 text-[12px] text-slate-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-vertical" placeholder="Type your solution here..."></textarea>
 
-      <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-between items-center pt-6 border-t border-slate-800">
-        <div class="flex gap-3">
-          <button id="save-answer-btn" class="px-8 py-4 border-2 border-emerald-500 text-emerald-400 font-bold text-lg rounded-2xl hover:bg-emerald-500/20 hover:scale-105 transition-all duration-200">
-            💾 Save Answer
-          </button>
-          <button id="run-debug-btn" class="px-8 py-4 border-2 border-slate-600 text-slate-400 font-bold text-lg rounded-2xl hover:bg-slate-800 hover:scale-105 transition-all duration-200">
-            ▶️ Test Code
-          </button>
+      <div class="mt-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <button id="save-answer-btn" class="px-4 py-2 rounded-lg border-2 border-emerald-500 text-emerald-300 text-sm font-semibold hover:bg-emerald-500/20">💾 Save</button>
+          <button id="run-debug-btn" class="px-4 py-2 rounded-lg border border-slate-600 text-slate-200 text-sm hover:bg-slate-800">▶️ Run</button>
         </div>
-        <div class="flex gap-3">
-          <button id="prev-btn" class="px-8 py-4 border-2 border-slate-700 text-slate-400 font-bold text-lg rounded-2xl hover:bg-slate-800 hover:scale-105 transition-all duration-200">
-            ← Previous
-          </button>
-          <button id="next-btn" class="px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-slate-900 font-black text-lg rounded-2xl shadow-xl hover:from-emerald-600 hover:to-emerald-700 hover:scale-105 transition-all duration-200">
-            Next →
-          </button>
+        <div class="flex gap-2">
+          <button id="prev-btn" class="px-4 py-2 rounded-lg border border-slate-700 text-sm text-slate-200 hover:bg-slate-800">← Prev</button>
+          <button id="next-btn" class="px-4 py-2 rounded-lg bg-emerald-500 text-slate-900 text-sm font-semibold hover:bg-emerald-600">Next →</button>
         </div>
       </div>
     </section>
-  </div>
+  </section>
 </main>
 
 <script>
-  // ✅ BUILT-IN QUESTIONS (No external file needed)
+  // 🔥 TUMHARE EXACT QUESTIONS - NO FILE DEPENDENCY
   const questions = [
     {"question": "What is 2+2?", "statement": "Basic arithmetic question", "options": ["3", "4", "5", "6"], "answer": 1, "type": "mcq"},
     {"question": "Array length kaise nikale?", "statement": "JavaScript array length property", "options": [".size()", ".length", ".count", ".size"], "answer": 1, "type": "mcq"},
@@ -114,30 +92,23 @@
 
   let currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {};
 
-  // Initialize
-  function initExam() {
-    console.log('🚀 CodeRush PAID-9 Ready! ✅');
-    document.getElementById('question-count').textContent = questions.length;
-    renderQuestionsList();
-    renderCurrentQuestion();
-    startTimer();
-  }
-
+  // Questions list render
   function renderQuestionsList() {
     document.getElementById('questions-list').innerHTML = questions.map((q, i) => {
       const isAnswered = mcqAnswers[i] !== undefined;
-      return `<button class="w-full text-left p-4 rounded-2xl border-2 text-lg font-bold mb-3 transition-all duration-200 ${i===currentIndex ? 'bg-emerald-500/30 border-emerald-500 shadow-xl scale-105' : (isAnswered ? 'bg-blue-500/30 border-blue-500 shadow-lg' : 'border-slate-700/50 bg-slate-800/50 hover:border-emerald-400 hover:bg-emerald-500/20')} hover:scale-102 hover:shadow-xl" onclick="gotoQuestion(${i})">
-        Q${i+1} ${q.type==='coding' ? '💻' : '❓'} ${isAnswered ? '✅' : ''}
+      return `<button class="w-full text-left p-2 rounded-lg border text-xs mb-1 ${i===currentIndex ? 'bg-emerald-500/30 border-emerald-500' : (isAnswered ? 'bg-blue-500/20 border-blue-500' : 'border-slate-700 bg-slate-900/50')} hover:bg-emerald-500/20" onclick="gotoQuestion(${i})">
+        Q${i+1} ${q.type==='coding'?'💻':'❓'} ${isAnswered?'✅':''}
       </button>`;
     }).join('');
   }
 
+  // Current question render
   function renderCurrentQuestion() {
     const q = questions[currentIndex];
-    document.getElementById('question-label').textContent = `Question ${currentIndex+1} of ${questions.length}`;
+    document.getElementById('question-label').textContent = `Question ${currentIndex+1}/${questions.length}`;
     document.getElementById('question-title').textContent = q.question;
     document.getElementById('question-statement').textContent = q.statement;
-    document.getElementById('question-tags').textContent = q.type === 'coding' ? 'CODING 💻' : 'MCQ ❓';
+    document.getElementById('question-tags').textContent = `${q.type?.toUpperCase()||'MCQ'}`;
 
     const mcqDiv = document.getElementById('mcq-options');
     if (q.options && q.options.length === 4) {
@@ -161,14 +132,12 @@
   }
 
   function startTimer() {
-    let timeLeft = 3600; // 60 minutes
+    let timeLeft = 3600;
     timerInterval = setInterval(() => {
       timeLeft--;
       const m = Math.floor(timeLeft / 60);
       const s = timeLeft % 60;
       document.getElementById('timer').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-      
-      if (timeLeft <= 600) document.getElementById('timer').className = 'text-3xl font-black text-red-400 animate-pulse';
       if (timeLeft <= 0) submitExam();
     }, 1000);
   }
@@ -176,26 +145,14 @@
   function saveCurrentAnswer() {
     const selected = document.querySelector('input[name="mcq-answer"]:checked');
     if (selected) mcqAnswers[currentIndex] = parseInt(selected.value);
-    
     localStorage.setItem(`paid9_${currentIndex}`, document.getElementById('answer-input').value);
     renderQuestionsList();
-    
-    // Visual feedback
-    const btn = document.getElementById('save-answer-btn');
-    const original = btn.innerHTML;
-    btn.innerHTML = '✅ SAVED!';
-    btn.classList.add('bg-emerald-500/50', 'text-emerald-900');
-    setTimeout(() => {
-      btn.innerHTML = original;
-      btn.classList.remove('bg-emerald-500/50', 'text-emerald-900');
-    }, 1500);
+    alert('✅ Saved!');
   }
 
-  async function submitExam() {
+  function submitExam() {
     if (examLocked) return;
     examLocked = true;
-    
-    saveCurrentAnswer();
     
     let score = 0, total = 0;
     questions.forEach((q, i) => {
@@ -205,21 +162,22 @@
       }
     });
     
-    const percentage = total > 0 ? Math.round((score / total) * 100) : 0;
-    alert(`🎉 EXAM SUBMITTED!\n\nScore: ${score}/${total}\nPercentage: ${percentage}%\n\nCheck dashboard for RANK! 🏆`);
-    console.log('Final Results:', { score, total, percentage, answers: mcqAnswers });
+    alert(`🎉 SUBMITTED!\nScore: ${score}/${total}`);
+    console.log('Results:', mcqAnswers);
   }
 
-  // Event Listeners
+  // START EVERYTHING
   document.addEventListener('DOMContentLoaded', () => {
-    initExam();
-    
+    console.log('🚀 CodeRush PAID-9 LOADED ✅');
+    renderQuestionsList();
+    renderCurrentQuestion();
+    startTimer();
+
     document.getElementById('save-answer-btn').onclick = saveCurrentAnswer;
     document.getElementById('finish-btn').onclick = submitExam;
-    document.getElementById('prev-btn').onclick = () => gotoQuestion(currentIndex - 1);
-    document.getElementById('next-btn').onclick = () => gotoQuestion(currentIndex + 1);
-    document.getElementById('run-debug-btn').onclick = () => console.log('Debug:', { questions, mcqAnswers, currentIndex });
-
+    document.getElementById('prev-btn').onclick = () => gotoQuestion(currentIndex-1);
+    document.getElementById('next-btn').onclick = () => gotoQuestion(currentIndex+1);
+    
     document.addEventListener('change', (e) => {
       if (e.target.name === 'mcq-answer') {
         mcqAnswers[currentIndex] = parseInt(e.target.value);
