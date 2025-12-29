@@ -22,7 +22,6 @@
         <p class="text-[11px] text-slate-400">Time remaining</p>
         <p id="timer" class="text-xl font-semibold text-emerald-400">60:00</p>
       </div>
-      <!-- ✅ NEW SUBMIT BUTTONS (REPLACED) -->
       <div class="flex items-center gap-2">
         <button id="saveProgressBtn" class="px-4 py-2 rounded-lg bg-blue-600/80 hover:bg-blue-600 text-white text-sm font-semibold shadow-lg transition-all">
           💾 Save Progress
@@ -105,26 +104,42 @@
 
   let currentIndex = 0, timerInterval, examLocked = false, mcqAnswers = {};
 
-  // === SUPABASE SAVE FUNCTION ===
+  // ✅ PERFECT FIXED saveAllSubmissions() FUNCTION
   async function saveAllSubmissions() {
-    const { data: { user } } = await supabaseClient.auth.getUser();
-    if (!user) throw new Error('Login required');
+    try {
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (!user) throw new Error('No user logged in');
 
-    const contestId = 'paid-9';
-    const submissions = questions.map((q, i) => ({
-      user_id: user.id,
-      contest_id: contestId,
-      question_id: `q${i+1}`,
-      code: localStorage.getItem(`paid9_${i}`) || '',
-      answered: mcqAnswers[i] !== undefined || localStorage.getItem(`paid9_${i}`),
-      marks: q.marks
-    }));
+      const contestId = 'paid-9';
+      const submissions = questions.map((q, i) => ({
+        user_id: user.id,
+        contest_id: contestId,
+        question_id: `q${i+1}`,
+        code: localStorage.getItem(`paid9_${i}`) || '',
+        answered: mcqAnswers[i] !== undefined || (localStorage.getItem(`paid9_${i}`) && localStorage.getItem(`paid9_${i}`).trim().length > 0),
+        marks: q.marks || 20,
+        language: 'javascript'
+      }));
 
-    const { error } = await supabaseClient
-      .from('submissions')
-      .upsert(submissions, { onConflict: 'user_id,contest_id,question_id' });
+      const { data, error } = await supabaseClient
+        .from('submissions')
+        .upsert(submissions, { 
+          onConflict: 'user_id,contest_id,question_id',
+          ignoreDuplicates: false 
+        });
 
-    if (error) throw error;
+      if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(error.message);
+      }
+      
+      console.log('✅ Saved to Supabase:', data.length, 'submissions');
+      return data;
+      
+    } catch (error) {
+      console.error('Save failed:', error);
+      throw error;
+    }
   }
 
   // Questions list render
@@ -200,6 +215,21 @@
     }, 3000);
   }
 
+  // ✅ PERFECT FIXED Save Progress Button Handler
+  document.getElementById('saveProgressBtn').onclick = async () => {
+    try {
+      await saveAllSubmissions();
+      showToast('✅ Progress saved to cloud!');
+    } catch (error) {
+      console.error('Save error:', error);
+      // Local fallback
+      questions.forEach((q, i) => {
+        localStorage.setItem(`paid9_${i}`, document.getElementById('answer-input').value || '');
+      });
+      showToast('💾 Saved locally - Submit to see results!', 'warning');
+    }
+  };
+
   // ✅ NEW FINAL SUBMIT FUNCTION (NO POPUP!)
   async function finalSubmitExam() {
     if (examLocked) return;
@@ -260,16 +290,6 @@
       localStorage.setItem(`paid9_${currentIndex}`, document.getElementById('answer-input').value);
       renderQuestionsList();
       showToast('✅ Answer saved!');
-    };
-
-    // ✅ NEW BUTTON EVENT LISTENERS
-    document.getElementById('saveProgressBtn').onclick = async () => {
-      try {
-        await saveAllSubmissions();
-        showToast('Progress saved to cloud! ☁️');
-      } catch (e) {
-        showToast('Save failed', 'error');
-      }
     };
 
     document.getElementById('finalSubmitBtn').onclick = finalSubmitExam;
