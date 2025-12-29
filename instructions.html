@@ -5,190 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contest Instructions – CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    * { font-family: system-ui, sans-serif; }
-  </style>
 </head>
 <body class="min-h-screen text-slate-100 bg-slate-950 p-8">
-  <div class="max-w-4xl mx-auto bg-slate-900/80 border border-slate-800 rounded-2xl p-8 text-sm">
+  <div class="max-w-4xl mx-auto bg-slate-900/80 border border-slate-800 rounded-2xl p-8">
 
     <!-- Header -->
     <div class="text-center mb-8">
-      <h1 class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent mb-4">
+      <h1 class="text-3xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent">
         Contest Instructions
       </h1>
-      <div id="contest-title" class="text-xl font-semibold text-emerald-400 mb-2">Loading...</div>
-      <div class="text-slate-400">Please read carefully before starting</div>
+      <div class="text-xl font-semibold text-emerald-400 mt-2">Paid Mega Contest</div>
     </div>
 
-    <!-- Instructions -->
-    <div class="space-y-6 mb-12">
-      
-      <!-- Timer Breakdown -->
-      <div class="bg-slate-800/50 p-6 rounded-2xl border border-emerald-500/30">
-        <h2 class="text-lg font-bold text-emerald-400 mb-4 flex items-center gap-2">
-          ⏰ Exam Structure
-        </h2>
-        <div class="grid md:grid-cols-2 gap-4 text-slate-200">
-          <div>
-            <div class="font-semibold text-emerald-300 mb-2">🟢 MCQ Phase (60 min)</div>
-            <div class="space-y-1 text-sm">
-              <div>• 30 MCQs • 2 min each (+4/-1 scoring)</div>
-              <div>• Auto-advance after 2 min</div>
-              <div>• Side navigator for jumping</div>
-            </div>
-          </div>
-          <div>
-            <div class="font-semibold text-blue-300 mb-2">🔵 Coding Phase (30 min)</div>
-            <div class="space-y-1 text-sm">
-              <div>• 2 Coding problems</div>
-              <div>• Monaco Editor (Python 3)</div>
-              <div>• Compile & Submit buttons</div>
-            </div>
-          </div>
-        </div>
-        <div class="mt-4 p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-400/30 rounded-xl">
-          <div class="font-bold text-orange-300 mb-1">⚠️ Total: 90 minutes</div>
-          <div class="text-orange-200 text-sm">Time expires → Auto-submit to leaderboard</div>
+    <!-- Instructions (SHORT) -->
+    <div class="grid md:grid-cols-2 gap-6 mb-12 text-sm">
+      <div class="bg-slate-800 p-6 rounded-2xl border border-emerald-500/30">
+        <h2 class="text-lg font-bold text-emerald-400 mb-4">⏰ Format</h2>
+        <div class="space-y-2 text-slate-200">
+          <div>• 30 MCQs (60 min) + 2 Coding (30 min)</div>
+          <div>• +4/-1 MCQ scoring</div>
+          <div>• Auto-submit on time end</div>
         </div>
       </div>
-
-      <!-- Rules -->
       <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
         <h2 class="text-lg font-bold text-slate-200 mb-4">📋 Rules</h2>
-        <ul class="space-y-2 text-slate-300 list-disc list-inside">
-          <li>No copying from outside sources</li>
-          <li>Top 10 players win prizes (min 50 participants)</li>
-          <li>Results live on dashboard immediately</li>
-          <li>One account per person only</li>
-          <li>Prizes distributed within 24-48 hours via UPI</li>
-          <li>Submit early to avoid last-minute issues</li>
+        <ul class="space-y-1 text-slate-300 list-disc list-inside text-sm">
+          <li>No copying</li>
+          <li>Top 10 win prizes</li>
+          <li>Results live immediately</li>
         </ul>
       </div>
-
-      <!-- Eligibility -->
-      <div class="bg-slate-800 p-6 rounded-2xl border border-slate-700">
-        <h2 class="text-lg font-bold text-slate-200 mb-4">✅ Eligibility</h2>
-        <div class="grid md:grid-cols-2 gap-4 text-slate-300">
-          <div>
-            <div class="font-semibold mb-2">Open to:</div>
-            <ul class="space-y-1 list-disc list-inside text-sm">
-              <li>All registered Indian users (18+)</li>
-              <li>College students & working professionals</li>
-            </ul>
-          </div>
-          <div>
-            <div class="font-semibold mb-2">Prizes for:</div>
-            <ul class="space-y-1 list-disc list-inside text-sm">
-              <li>₹9 entry: Top 10 → ₹5000 total pool</li>
-              <li>Winner gets 40% of prize pool</li>
-            </ul>
-          </div>
-        </div>
-      </div>
     </div>
 
-    <!-- START Button -->
+    <!-- MASSIVE START BUTTON -->
     <div class="text-center">
-      <button id="start-exam-btn" class="px-16 py-6 bg-gradient-to-r from-emerald-500 to-emerald-600 
-                                         hover:from-emerald-600 hover:to-emerald-700 text-slate-900 
-                                         text-xl font-bold rounded-2xl shadow-2xl transform hover:scale-105 
-                                         transition-all duration-300 shadow-emerald-500/50 w-full md:w-auto">
-        🚀 START EXAM NOW
+      <button onclick="startExam()" 
+              class="px-20 py-8 bg-gradient-to-r from-emerald-500 to-emerald-600 
+                     hover:from-emerald-600 hover:to-emerald-700 text-slate-900 
+                     text-2xl font-black rounded-3xl shadow-2xl w-full 
+                     transform hover:scale-105 transition-all duration-200 
+                     border-4 border-emerald-400 shadow-emerald-500/50">
+        🚀 START EXAM (90 MIN)
       </button>
     </div>
-
-    <!-- Status Messages -->
-    <div id="status-message" class="mt-6 p-4 rounded-xl hidden border-2"></div>
 
   </div>
 
   <script>
-    // ====== SUPABASE SETUP ======
-    const SUPABASE_URL = "https://tghtgygjawhrcgtwhrej.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRnaHRneWdqYXdocmNndHdocmVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU5OTM0MjksImV4cCI6MjA4MTU2OTQyOX0.Q-Ht_IFcPZPIHO5905o70EDya2yFdVP-9LjDmjkle38";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-    // ====== CONTEST CONFIG (INLINE - NO EXTERNAL FILE) ======
-    const contests = {
-      'paid-9': { title: 'Paid Mega Contest – Top 10 Prizes (₹9)' },
-      'free-200': { title: 'Free Daily Rush – Practice Contest' },
-      'free': { title: 'Free Daily Contest' }
-    };
-
-    // Get contest from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const contestId = urlParams.get('contestId') || 'free';
-    const contestConfig = contests[contestId] || contests['free'];
-    
-    document.getElementById('contest-title').textContent = contestConfig.title;
-    console.log('✅ Contest loaded:', contestId);
-
-    // Status message function
-    function showStatus(message, type = 'info') {
-      const statusEl = document.getElementById('status-message');
-      statusEl.textContent = message;
-      statusEl.className = `mt-6 p-4 rounded-xl border-2 ${type === 'success' ? 'bg-green-500/20 border-green-500 text-green-200' : 'bg-red-500/20 border-red-500 text-red-200'} block`;
+    function startExam() {
+      console.log('🚀 START EXAM - DIRECT!');
+      window.location.href = 'exam.html?contestId=paid-9';
     }
 
-    // 🔥 START EXAM BUTTON - SIMPLIFIED
-    document.getElementById('start-exam-btn').onclick = async () => {
-      console.log('🔥 START EXAM CLICKED for:', contestId);
-      
-      try {
-        const btn = document.getElementById('start-exam-btn');
-        btn.disabled = true;
-        btn.innerHTML = '⏳ Checking...';
-        
-        // 1. Check login
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          showStatus('Please login first!');
-          window.location.href = 'index.html';
-          return;
-        }
-        console.log('✅ User logged in:', user.id);
-
-        // 2. For FREE contests - direct start
-        if (contestId === 'free') {
-          console.log('✅ Free contest - direct start');
-          window.location.href = `exam.html?contestId=free`;
-          return;
-        }
-
-        // 3. Check registration for PAID contests
-        const { data: registration } = await supabase
-          .from('contest_registrations')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('contest_type', contestId)
-          .eq('payment_status', 'success')
-          .single();
-
-        if (!registration) {
-          showStatus('Please pay/register first!');
-          window.location.href = `contest-details.html?type=paid`;
-          return;
-        }
-
-        // ✅ ALL CHECKS PASSED
-        console.log('✅ Starting exam:', contestId);
-        window.location.href = `exam.html?contestId=${contestId}`;
-        
-      } catch (error) {
-        console.error('❌ Error:', error);
-        showStatus('Something went wrong. Check console.');
-        document.getElementById('start-exam-btn').disabled = false;
-        document.getElementById('start-exam-btn').innerHTML = '🚀 START EXAM NOW';
-      }
-    };
-
-    // Page load
-    document.addEventListener('DOMContentLoaded', () => {
-      console.log('✅ Instructions page loaded');
-      document.getElementById('start-exam-btn').focus();
-    });
+    // Auto focus + enter key
+    window.onload = function() {
+      document.querySelector('button').focus();
+    }
+    
+    document.onkeydown = function(e) {
+      if (e.key === 'Enter') startExam();
+    }
   </script>
 </body>
 </html>
