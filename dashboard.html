@@ -371,6 +371,7 @@ async function loadDashboardStats() {
 // 🔥 DYNAMIC COLORED CONTESTS LOADER
 function loadContests() {
   const container = document.getElementById('contests-grid');
+  console.log('Available contests:', CONTESTS.map(c => c.id));
   if (!container || typeof CONTESTS === 'undefined') {
     console.error('CONTESTS not loaded');
     return;
