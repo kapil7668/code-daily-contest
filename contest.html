@@ -108,7 +108,7 @@ function loadContest() {
         name: 'CodeRush Contest',
         description: contest.name,
         handler: function (response) {
-          alert('✅ Payment Success! Contest joined!\nPayment ID: ' + response.razorpay_payment_id);
+          alert('✅ Payment Success! Starting exam...\nPayment ID: ' + response.razorpay_payment_id);
           window.location.href = `exam.html?contest=${globalContestId}`; 
           console.log('Redirecting to exam with contest:', globalContestId);
         },
