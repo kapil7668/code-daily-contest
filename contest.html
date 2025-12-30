@@ -40,7 +40,12 @@
 </main>
 
 <script>
+console.log('URL ID:', contestId);
+console.log('All contests:', CONTESTS.map(c => c.id));
+console.log('Found contest:', CONTESTS.find(c => c.id === contestId));
+
 const CONTESTS = [
+
     // FREE CONTESTS
     { id: 'free-daily', name: 'Free Daily Rush', fee: 0, minEntries: 100, totalPrize: 1000, prizes: [1000], color: 'emerald', description: 'Min 100 participants • 1st wins ₹1000' },
     { id: 'free-mega', name: 'Free Mega Contest', fee: 0, minEntries: 100, totalPrize: 2500, prizes: [2500], color: 'cyan', description: 'Min 100 participants • 1st wins ₹2500' },
