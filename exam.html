@@ -1,135 +1,210 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Daily Contest - Exam</title>
-    <script src="contest-problems.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .header { text-align: center; color: white; margin-bottom: 30px; }
-        .timer { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; text-align: center; color: white; font-size: 24px; font-weight: bold; margin-bottom: 30px; }
-        .problems { display: grid; gap: 20px; }
-        .problem-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .problem-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .problem-title { font-size: 22px; font-weight: bold; color: #333; }
-        .difficulty { padding: 5px 12px; border-radius: 20px; font-weight: bold; }
-        .easy { background: #d4edda; color: #155724; }
-        .medium { background: #fff3cd; color: #856404; }
-        .hard { background: #f8d7da; color: #721c24; }
-        .topics { color: #666; font-size: 14px; margin-bottom: 15px; }
-        .description { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; line-height: 1.6; }
-        .sample { background: #e9ecef; padding: 15px; border-radius: 8px; font-family: monospace; }
-        .editor { width: 100%; height: 300px; border: 2px solid #ddd; border-radius: 8px; padding: 15px; font-family: monospace; font-size: 14px; margin-bottom: 15px; }
-        .submit-btn { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 12px 30px; border: none; border-radius: 25px; font-size: 16px; cursor: pointer; transition: transform 0.2s; }
-        .submit-btn:hover { transform: scale(1.05); }
-        .progress { background: #e9ecef; height: 8px; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
-        .progress-bar { height: 100%; background: linear-gradient(90deg, #4CAF50, #45a049); transition: width 0.3s; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CodeRush Exam</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.7/theme/dracula.min.css">
+  <style>*{font-family:'Segoe UI',sans-serif;}</style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🧠 Code Daily Contest</h1>
-            <p id="contest-name">Loading...</p>
-        </div>
-        
-        <div class="timer" id="timer">⏱️ 60:00</div>
-        
-        <div class="progress">
-            <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
-        </div>
-        
-        <div class="problems" id="problems-container"></div>
+<body class="min-h-screen text-slate-100 bg-slate-950">
+  
+<!-- Header -->
+<header class="border-b border-slate-800/60 bg-slate-950/80 backdrop-blur sticky top-0 z-30">
+  <nav class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="dashboard.html" class="flex items-center gap-2">
+      <div class="h-8 w-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 flex items-center justify-center text-slate-900 font-extrabold">C</div>
+      <span class="font-semibold text-lg tracking-tight">CodeRush</span>
+    </a>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-slate-800 px-4 py-2 rounded-xl">
+        <span class="text-emerald-400 font-bold">Q1/3</span>
+        <span id="timer" class="text-2xl font-black text-orange-400">60:00</span>
+      </div>
+      <button onclick="submitSolution()" class="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold rounded-xl">Submit & Next</button>
     </div>
+  </nav>
+</header>
 
-    <script>
-        // ========== DYNAMIC CONTEST PROBLEMS ==========
-        const urlParams = new URLSearchParams(window.location.search);
-        const contestId = urlParams.get('contest') || 'quick-9';
-        const problems = CONTEST_PROBLEMS[contestId] || CONTEST_PROBLEMS['quick-9'];
-        
-        console.log('Contest ID:', contestId);
-        console.log('Problems:', problems);
-        // ==============================================
+<main class="max-w-7xl mx-auto px-4 py-8 grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+  
+  <!-- Problem Description (Left) -->
+  <div class="lg:col-span-1">
+    <div class="bg-slate-900/75 border border-slate-800 rounded-3xl p-8 h-[70vh] overflow-y-auto">
+      <h1 id="problem-title" class="text-3xl font-black mb-6 bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">Two Sum</h1>
+      <div id="problem-desc" class="space-y-4 text-sm prose prose-invert max-w-none">
+        <p>Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.</p>
+        <p>You may assume that each input would have exactly one solution, and you may not use the same element twice.</p>
+        <div class="bg-slate-800 p-4 rounded-xl">
+          <strong>Example 1:</strong>
+          <pre class="mt-2 text-xs"><code>Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</code></pre>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Test Cases -->
+    <div class="mt-4 bg-slate-900/75 border border-slate-800 rounded-3xl p-6">
+      <h3 class="font-bold mb-4 flex items-center gap-2 text-emerald-400">
+        <svg class="w-5 h-5" fill="currentColor">📋</svg>Test Cases
+      </h3>
+      <div id="test-cases" class="space-y-3 text-xs">
+        <div class="flex gap-2 p-3 bg-slate-800 rounded-xl">
+          <span class="w-20 font-mono text-slate-400">Input:</span>
+          <code class="flex-1 bg-slate-900 px-3 py-1 rounded">nums = [2,7,11,15], target = 9</code>
+        </div>
+        <div class="flex gap-2 p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl">
+          <span class="w-20 font-mono text-slate-400">Output:</span>
+          <code class="flex-1 bg-emerald-500/20 px-3 py-1 rounded font-bold">[0,1]</code>
+        </div>
+      </div>
+    </div>
+  </div>
 
-        let timeLeft = 3600; // 60 minutes
-        let timerInterval;
+  <!-- Code Editor (Center - Full width on mobile) -->
+  <div class="md:col-span-1 lg:col-span-1">
+    <div class="bg-slate-900/75 border border-slate-800 rounded-3xl p-4 h-[75vh]">
+      <div class="flex items-center justify-between mb-4">
+        <select id="language-select" class="bg-slate-800 px-3 py-2 rounded-xl text-sm">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="cpp">C++</option>
+        </select>
+        <div class="text-xs text-slate-400">
+          Line <span id="line-count">1</span> | Col <span id="col-count">1</span>
+        </div>
+      </div>
+      <textarea id="code-editor"></textarea>
+    </div>
+  </div>
 
-        function startTimer() {
-            timerInterval = setInterval(() => {
-                timeLeft--;
-                const minutes = Math.floor(timeLeft / 60);
-                const seconds = timeLeft % 60;
-                document.getElementById('timer').textContent = `⏱️ ${minutes}:${seconds.toString().padStart(2, '0')}`;
-                
-                if (timeLeft <= 0) {
-                    clearInterval(timerInterval);
-                    alert('⏰ Time Up! Submitting...');
-                    submitExam();
-                }
-            }, 1000);
-        }
+  <!-- Leaderboard (Right - Hidden on mobile) -->
+  <div class="hidden lg:block">
+    <div class="bg-slate-900/75 border border-slate-800 rounded-3xl p-6 h-[75vh] sticky top-24">
+      <h3 class="font-bold mb-6 flex items-center gap-2 text-orange-400">
+        <svg class="w-6 h-6" fill="currentColor">🏆</svg>Live Leaderboard
+      </h3>
+      <div id="leaderboard" class="space-y-3">
+        <div class="flex items-center gap-3 p-3 bg-gradient-to-r from-orange-500/20 to-orange-400/20 border border-orange-500/30 rounded-xl">
+          <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center font-bold text-sm">1</div>
+          <div>
+            <div class="font-bold text-orange-400">You</div>
+            <div class="text-xs text-slate-400">120 pts</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-3 hover:bg-slate-800/50 rounded-xl cursor-pointer transition-all">
+          <div class="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center font-bold text-xs text-slate-300">2</div>
+          <div>
+            <div class="font-semibold">user123</div>
+            <div class="text-xs text-slate-400">115 pts</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 p-3 hover:bg-slate-800/50 rounded-xl cursor-pointer transition-all">
+          <div class="w-8 h-8 bg-slate-600 rounded-full flex items-center justify-center font-bold text-xs text-slate-300">3</div>
+          <div>
+            <div class="font-semibold">coder456</div>
+            <div class="text-xs text-slate-400">110 pts</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 
-        function renderProblems() {
-            const container = document.getElementById('problems-container');
-            const contestName = document.getElementById('contest-name');
-            
-            // Set contest name
-            const contestNames = {
-                'free-daily': 'Free Daily Contest',
-                'free-mega': 'Free Mega Contest',
-                'quick-9': 'Quick 9₹ Contest',
-                'pro-49': 'Pro 49₹ Contest',
-                'elite-149': 'Elite 149₹ Contest',
-                'champion-199': 'Champion 199₹ Contest',
-                'mega-99': 'Mega 99₹ Contest'
-            };
-            contestName.textContent = contestNames[contestId] || 'Contest';
+<script>
+  // Contest problems by ID
+  const CONTEST_PROBLEMS = {
+    'free-daily': [
+      {title: 'Two Sum', desc: 'Given an array of integers nums...', id: 'two-sum'},
+      {title: 'Valid Parentheses', desc: 'Given a string s...', id: 'valid-parentheses'},
+      {title: 'Palindrome Number', desc: 'Given an integer x...', id: 'palindrome-number'}
+    ],
+    'quick-9': [
+      {title: 'Contains Duplicate', desc: 'Given an integer array nums...', id: 'contains-duplicate'},
+      {title: 'Roman to Integer', desc: 'Roman numerals are...', id: 'roman-to-integer'},
+      {title: 'Maximum Subarray', desc: 'Given an integer array nums...', id: 'max-subarray'}
+    ]
+  };
 
-            problems.forEach((problem, index) => {
-                const problemCard = document.createElement('div');
-                problemCard.className = 'problem-card';
-                problemCard.innerHTML = `
-                    <div class="problem-header">
-                        <div class="problem-title">Problem ${index + 1}: ${problem.title}</div>
-                        <span class="difficulty ${problem.difficulty.toLowerCase()}">${problem.difficulty}</span>
-                    </div>
-                    <div class="topics">${problem.topics}</div>
-                    <div class="description">${problem.desc}</div>
-                    <div class="sample">${problem.sample}</div>
-                    <textarea class="editor" placeholder="Write your solution here..."></textarea>
-                    <button class="submit-btn" onclick="submitProblem(${index})">Submit Solution</button>
-                `;
-                container.appendChild(problemCard);
-            });
+  let currentProblem = 0;
+  let timeLeft = 3600; // 60 minutes
+  let editor;
 
-            updateProgress();
-        }
+  // Get contest ID from URL
+  const urlParams = new URLSearchParams(window.location.search);
+  const contestId = urlParams.get('id') || 'free-daily';
+  const problems = CONTEST_PROBLEMS[contestId] || CONTEST_PROBLEMS['free-daily'];
 
-        function updateProgress() {
-            const progress = (problems.length / problems.length) * 100;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-        }
+  // Initialize CodeMirror
+  function initEditor() {
+    editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+      mode: 'javascript',
+      theme: 'dracula',
+      lineNumbers: true,
+      styleActiveLine: true,
+      matchBrackets: true,
+      tabSize: 2,
+      viewportMargin: Infinity,
+      lineWrapping: true
+    });
 
-        function submitProblem(index) {
-            alert(`✅ Problem ${index + 1} submitted!`);
-        }
+    editor.on('change', () => {
+      document.getElementById('line-count').textContent = editor.getCursor().line + 1;
+      document.getElementById('col-count').textContent = editor.getCursor().ch + 1;
+    });
+  }
 
-        function submitExam() {
-            const solutions = Array.from(document.querySelectorAll('.editor')).map(textarea => textarea.value);
-            console.log('All Solutions:', solutions);
-            alert('🎉 Exam Submitted! Check Leaderboard soon.');
-            window.location.href = 'leaderboard.html';
-        }
+  // Load current problem
+  function loadProblem() {
+    if (currentProblem >= problems.length) {
+      alert('🎉 Contest Completed!');
+      return;
+    }
 
-        // Start exam
-        document.addEventListener('DOMContentLoaded', function() {
-            renderProblems();
-            startTimer();
-        });
-    </script>
+    const problem = problems[currentProblem];
+    document.getElementById('problem-title').textContent = problem.title;
+    document.getElementById('problem-desc').innerHTML = `
+      <p>${problem.desc}</p>
+      <div class="bg-slate-800 p-4 rounded-xl mt-4">
+        <strong>Example:</strong>
+        <pre class="mt-2 text-xs"><code>Input: nums = [2,7,11,15], target = 9
+Output: [0,1]</code></pre>
+      </div>
+    `;
+  }
+
+  // Timer
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (timeLeft <= 0) {
+      alert('⏰ Time Up!');
+      return;
+    }
+    timeLeft--;
+  }
+
+  // Submit solution
+  function submitSolution() {
+    const code = editor.getValue();
+    alert('✅ Code Submitted! Moving to next problem...');
+    currentProblem++;
+    loadProblem();
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    initEditor();
+    loadProblem();
+    setInterval(updateTimer, 1000);
+    updateTimer();
+  });
+</script>
 </body>
 </html>
