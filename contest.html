@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contest - CodeRush</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>*{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}</style>
 </head>
 <body class="min-h-screen text-slate-100 bg-slate-950 bg-[radial-gradient(circle_at_top,_rgba(45,212,191,0.23),_transparent_52%),radial-gradient(circle_at_bottom,_rgba(37,99,235,0.22),_transparent_55%)]">
@@ -91,16 +92,46 @@ function loadContest() {
   `;
   
   document.getElementById('joinContest').onclick = () => {
-    if (contest.fee === 0) {
-      alert('✅ Free contest joined! Problems loading...');
-    } else {
-      alert('💳 Razorpay Payment - Next Feature!');
-    }
-  };
-}
+  if (contest.fee === 0) {
+    alert('✅ Free contest joined! Problems loading...');
+  } else {
+    // 🔥 RAZORPAY CHECKOUT - WORKING!
+    const options = {
+      key: 'rzp_test_Rxk6YiWLWxsTlb',
+      amount: contest.fee * 100,
+      currency: 'INR',
+      name: 'CodeRush Contest',
+      description: contest.name,
+      handler: function (response) {
+        alert('✅ Payment Success! Contest joined!\nPayment ID: ' + response.razorpay_payment_id);
+        console.log('Payment success:', response);
+      },
+      prefill: {
+        name: 'Test User',
+        email: 'test@example.com',
+        contact: '9999999999'
+      },
+      theme: {
+        color: contest.color === 'orange' ? '#f59e0b' : 
+               contest.color === 'purple' ? '#8b5cf6' : 
+               contest.color === 'pink' ? '#ec4899' : 
+               contest.color === 'indigo' ? '#6366f1' : '#06b6d4'
+      },
+      modal: {
+        ondismiss: function() {
+          alert('Payment cancelled');
+        }
+      }
+    };
+    
+    const rzp = new Razorpay(options);
+    rzp.open();
+  }
+};
 
 // LOAD IMMEDIATELY
 loadContest();
 </script>
 </body>
 </html>
+
