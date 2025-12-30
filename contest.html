@@ -39,17 +39,19 @@
 
 <script>
 const CONTESTS = [
-  {id:1,name:"Free Daily Rush",desc:"3 Easy-Medium problems • 60 mins • Live ranking",fee:0,prize:1000,color:"emerald"},
-  {id:2,name:"Quick Rush ₹9",desc:"5 problems • 45 mins • Top 3 win ₹300",fee:9,prize:1000,color:"cyan"},
-  {id:3,name:"Mega Contest ₹49",desc:"8 problems • 90 mins • Top 10 win ₹5K+",fee:49,prize:2500,color:"amber"},
-  {id:4,name:"Night Battle ₹19",desc:"6 problems • 75 mins • Top 5 win ₹1K+",fee:19,prize:13410,color:"purple"},
-  {id:5,name:"Weekend Grand ₹99",desc:"10 Hard problems • 120 mins • ₹25K prize pool",fee:99,prize:23880,color:"rose"},
-  {id:6,name:"Beginner Special",desc:"4 Easy problems • 40 mins • Certificates",fee:0,prize:0,color:"lime"},
-  {id:7,name:"Pro League ₹29",desc:"7 problems • 80 mins • Top 20 win cash",fee:29,prize:29700,color:"sky"}
+    // FREE CONTESTS
+    { id: 'free-daily', name: 'Free Daily Rush', fee: 0, minEntries: 100, totalPrize: 1000, prizes: [1000], color: 'emerald', description: 'Min 100 participants • 1st wins ₹1000' },
+    { id: 'free-mega', name: 'Free Mega Contest', fee: 0, minEntries: 100, totalPrize: 2500, prizes: [2500], color: 'cyan', description: 'Min 100 participants • 1st wins ₹2500' },
+    { id: 'quick-9', name: '₹9 Quick Rush', fee: 9, minEntries: 100, totalPrize: 540, prizes: [200,175,165], color: 'orange', description: 'Top 3 prizes • Min 100 participants' },
+    { id: 'pro-49', name: '₹49 Pro Rush', fee: 49, minEntries: 100, totalPrize: 2940, prizes: [1500,400,250,200,150,100,100,100,100,100], color: 'amber', description: 'Top 10 prizes • Min 100 participants' },
+    { id: 'elite-149', name: '₹149 Elite Rush', fee: 149, minEntries: 150, totalPrize: 13410, prizes: [4000,2000,1000,700,500,400,350,300,250,200,175,150,150,125,125,100,100,100,100,100], color: 'purple', description: 'Top 20 prizes • Min 150 participants' },
+    { id: 'champion-199', name: '₹199 Champion', fee: 199, minEntries: 200, totalPrize: 23880, prizes: [6000,3000,1500,1000,800,700,600,500,450,400,350,300,250,225,200,175,150,150,125,125], color: 'pink', description: 'Top 20 prizes • Min 200 participants' },
+    { id: 'mega-99', name: '₹99 MEGA (Top 100)', fee: 99, minEntries: 500, totalPrize: 29700, prizes: [10000,5000,800,600,400,400,400,400,400,400,250,250,250,250,250,250,250,250,200,200,200,200,200,200,200,200,200,200,200,200,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100,100], color: 'indigo', description: 'Top 100 prizes • Min 500 participants' }
 ];
 
+// FIXED ID parsing - String support
 const urlParams = new URLSearchParams(window.location.search);
-const contestId = parseInt(urlParams.get('id')) || 1;
+const contestId = urlParams.get('id') || 'free-daily';
 
 function loadContest() {
   const contest = CONTESTS.find(c => c.id === contestId);
@@ -58,7 +60,7 @@ function loadContest() {
     document.getElementById('contest-details').innerHTML = '<h1 class="text-3xl font-bold text-red-400">Contest Not Found!</h1>';
     return;
   }
-
+  
   document.title = contest.name + ' - CodeRush';
   
   document.getElementById('contest-details').innerHTML = `
@@ -68,12 +70,12 @@ function loadContest() {
         <span class="text-sm font-bold text-${contest.color}-400 uppercase tracking-wider">LIVE</span>
       </div>
       <h1 class="text-4xl md:text-5xl font-black bg-gradient-to-r from-${contest.color}-400 to-${contest.color}-200 bg-clip-text text-transparent mb-4">${contest.name}</h1>
-      <p class="text-xl text-slate-300 mb-8">${contest.desc}</p>
+      <p class="text-xl text-slate-300 mb-8">${contest.description}</p>
     </div>
     
     <div class="grid md:grid-cols-3 gap-8">
       <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
-        <div class="text-3xl font-black text-emerald-400 mb-2">₹${contest.prize.toLocaleString()}</div>
+        <div class="text-3xl font-black text-emerald-400 mb-2">₹${contest.totalPrize.toLocaleString()}</div>
         <div class="text-slate-400 text-sm uppercase tracking-wide">Prize Pool</div>
       </div>
       <div class="bg-slate-800/50 border border-slate-700 rounded-2xl p-6">
@@ -97,7 +99,7 @@ function loadContest() {
   };
 }
 
-// LOAD IMMEDIATELY - NO AUTH BLOCK
+// LOAD IMMEDIATELY
 loadContest();
 </script>
 </body>
