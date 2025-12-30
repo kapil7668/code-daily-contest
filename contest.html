@@ -41,7 +41,7 @@
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const contestId = urlParams.get('id') || 'free-daily';
-
+let globalContestId = contestId;
 const CONTESTS = [
   { id: 'free-daily', name: 'Free Daily Rush', fee: 0, totalPrize: 1000, color: 'emerald', description: 'Min 100 participants • 1st wins ₹1000' },
   { id: 'free-mega', name: 'Free Mega Contest', fee: 0, totalPrize: 2500, color: 'cyan', description: 'Min 100 participants • 1st wins ₹2500' },
@@ -98,7 +98,8 @@ function loadContest() {
   
   document.getElementById('joinContest').onclick = () => {
     if (contest.fee === 0) {
-      alert('✅ Free contest joined! Problems loading...');
+      alert('✅ Free contest joined! Starting exam...');
+      window.location.href = `exam.html?contest=${globalContestId}`; 
     } else {
       const options = {
         key: 'rzp_test_Rxk6YiWLWxsTlb',
@@ -108,7 +109,8 @@ function loadContest() {
         description: contest.name,
         handler: function (response) {
           alert('✅ Payment Success! Contest joined!\nPayment ID: ' + response.razorpay_payment_id);
-          console.log('Payment success:', response);
+          window.location.href = `exam.html?contest=${globalContestId}`; 
+          console.log('Redirecting to exam with contest:', globalContestId);
         },
         prefill: {
           name: 'Test User',
