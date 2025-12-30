@@ -396,6 +396,8 @@
                 <button class="submit-btn" onclick="submitSolution()">Submit</button>
             </div>
             <textarea id="code-editor" class="code-editor">// Write your solution here
+            // Clear editor for real contest experience</textarea>
+
 /**
  * @param {number[]} nums
  * @param {number} target
@@ -415,20 +417,7 @@ var twoSum = function(nums, target) {
             
             <div class="test-results">
                 <h3>Test Results</h3>
-                <div id="test-cases">
-                    <div class="test-case">
-                        <span>Case 1: nums = [2,7,11,15], target = 9</span>
-                        <span style="color: #8b949e;">Expected: [0,1]</span>
-                    </div>
-                    <div class="test-case">
-                        <span>Case 2: nums = [3,2,4], target = 6</span>
-                        <span style="color: #8b949e;">Expected: [1,2]</span>
-                    </div>
-                    <div class="test-case">
-                        <span>Case 3: nums = [3,3], target = 6</span>
-                        <span style="color: #8b949e;">Expected: [0,1]</span>
-                    </div>
-                </div>
+                <div id="test-cases"></div>
             </div>
         </div>
     </div>
@@ -441,40 +430,61 @@ var twoSum = function(nums, target) {
         
         // Load current problem
         function loadProblem() {
-            const problem = currentContest[currentQuestion];
-            document.getElementById('problem-title').textContent = problem.title;
-            document.getElementById('difficulty').textContent = problem.difficulty;
-            
-            // Description
-            document.getElementById('problem-description').innerHTML = problem.description;
-            
-            // Examples
-            let examplesHtml = '';
-            problem.examples.forEach((ex, i) => {
-                examplesHtml += `
-                    <h3>Example ${i+1}:</h3>
-                    <pre><strong>Input:</strong> ${ex.input}<br><strong>Output:</strong> ${ex.output}</pre>
-                `;
-            });
-            document.getElementById('examples').innerHTML = examplesHtml;
-            
-            // Update question nav
-            updateQuestionNav();
-            document.getElementById('currentQ').textContent = currentQuestion + 1;
-            updateButtons();
-        }
-        // Update question navigation
-        function updateQuestionNav() {
-            const buttons = document.querySelectorAll('.question-btn');
-            buttons.forEach((btn, i) => {
-                btn.className = 'question-btn';
-                if (i === currentQuestion) {
-                    btn.classList.add('current');
-                } else if (questionStatus[i] === 'read') {
-                    btn.classList.add('read');
-                }
-            });
-        }
+    const problem = currentContest[currentQuestion];
+    document.getElementById('problem-title').textContent = problem.title;
+    document.getElementById('difficulty').textContent = problem.difficulty;
+    
+    // Description
+    document.getElementById('problem-description').innerHTML = problem.description;
+    
+    // Examples
+    let examplesHtml = '';
+    problem.examples.forEach((ex, i) => {
+        examplesHtml += `
+            <h3>Example ${i+1}:</h3>
+            <pre><strong>Input:</strong> ${ex.input}<br><strong>Output:</strong> ${ex.output}</pre>
+        `;
+    });
+    document.getElementById('examples').innerHTML = examplesHtml;
+    
+    // ✅ NEW: Dynamic Test Cases
+    let testCasesHtml = '';
+    problem.examples.forEach((ex, i) => {
+        testCasesHtml += `
+            <div class="test-case">
+                <span>Case ${i+1}: ${ex.input}</span>
+                <span style="color: #8b949e;">Expected: ${ex.output}</span>
+            </div>
+        `;
+    });
+    document.getElementById('test-cases').innerHTML = testCasesHtml;
+    
+    // ✅ NEW: Language Template
+    loadLanguageTemplate(problem.id);
+    
+    // Update question nav
+    updateQuestionNav();
+    document.getElementById('currentQ').textContent = currentQuestion + 1;
+    updateButtons();
+}
+// Language Templates
+function loadLanguageTemplate(problemId) {
+    const lang = document.getElementById('language-select').value;
+    const templates = {
+        'javascript': '// Write your solution here\n// Example for Two Sum:\n// var twoSum = function(nums, target) {\n//     return [];\n// };',
+        'python': '# Write your solution here\ndef solve():\n    pass',
+        'cpp': '// C++ Template\nclass Solution {\npublic:\n    // Write your code here\n};',
+        'java': '// Java Template\nclass Solution {\n    public static void main(String[] args) {\n        // Write your code here\n    }\n}'
+    };
+    document.getElementById('code-editor').value = templates[lang] || '// Write your solution here';
+}
+
+// Language change handler
+function changeLanguage() {
+    if (currentContest && currentContest[currentQuestion]) {
+        loadLanguageTemplate(currentContest[currentQuestion].id);
+    }
+}
         
         // Navigation functions
         function prevQuestion() {
@@ -508,14 +518,31 @@ var twoSum = function(nums, target) {
             console.log('Language changed to:', document.getElementById('language-select').value);
         }
         
-        function runCode() {
-            // Simulate successful test run
-            document.querySelectorAll('.test-case span:last-child').forEach((span, i) => {
-                span.innerHTML = `Expected: ${currentContest[currentQuestion].examples[i % currentContest[currentQuestion].examples.length].output} ✓`;
-                span.style.color = '#56d364';
-                span.parentElement.className = 'test-case status-pass';
-            });
-        }
+       function runCode() {
+    const code = document.getElementById('code-editor').value.trim();
+    if (!code || code.includes('// Write your solution here')) {
+        alert('⚠️ Please write your solution first!');
+        return;
+    }
+    
+    const testCasesDiv = document.getElementById('test-cases');
+    const problem = currentContest[currentQuestion];
+    
+    testCasesDiv.innerHTML = '';
+    problem.examples.forEach((example, i) => {
+        const testCase = document.createElement('div');
+        testCase.className = 'test-case';
+        testCase.innerHTML = `<span>Case ${i+1}: ${example.input}</span><span id="case${i}-result" style="color: #8b949e;">Running...</span>`;
+        testCasesDiv.appendChild(testCase);
+        
+        setTimeout(() => {
+            const resultEl = document.getElementById(`case${i}-result`);
+            resultEl.innerHTML = `Expected: ${example.output} | Got: SIMULATED ✓`;
+            resultEl.style.color = '#56d364';
+            testCase.className = 'test-case status-pass';
+        }, i * 200);
+    });
+}
         
         function submitSolution() {
             alert('✅ Solution Submitted Successfully!');
