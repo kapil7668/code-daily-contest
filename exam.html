@@ -395,10 +395,22 @@
                 <button onclick="runCode()">Run</button>
                 <button class="submit-btn" onclick="submitSolution()">Submit</button>
             </div>
-            <textarea id="code-editor" class="code-editor">// Write your solution here
-            // Clear editor for real contest experience</textarea>
+            <!-- Ace Editor - VS Code जैसा -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.css" type="text/css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.js"></script>
+<div id="editor" style="height: 400px; font-size: 14px; border: 1px solid #30363d; border-radius: 4px; background: #0d1117;"></div>
 
-/**
+<script>
+ace.require("ace/ext/language_tools");
+var editor = ace.edit("editor", {
+    theme: "ace/theme/monokai",
+    mode: "ace/mode/javascript",
+    fontSize: 16,
+    showPrintMargin: false,
+    wrap: true,
+    autoScrollEditorIntoView: true
+});
+editor.session.setValue(`/**
  * @param {number[]} nums
  * @param {number} target
  * @return {number[]}
@@ -413,16 +425,9 @@ var twoSum = function(nums, target) {
         map.set(nums[i], i);
     }
     return [];
-};</textarea>
-            
-            <div class="test-results">
-                <h3>Test Results</h3>
-                <div id="test-cases"></div>
-            </div>
-        </div>
-    </div>
+};`);
+</script>
 
-    <script>
         // GLOBAL STATE
         let currentQuestion = 0;
         let timeLeft = 3600;
