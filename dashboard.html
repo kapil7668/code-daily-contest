@@ -370,30 +370,30 @@ async function loadDashboardStats() {
 // Global Top 10 Leaderboard
 // 🔥 DYNAMIC COLORED CONTESTS LOADER
 function loadContests() {
-    const container = document.getElementById('contests-grid');
-    if (!container || typeof CONTESTS === 'undefined') {
-        console.error('CONTESTS not loaded or container missing');
-        return;
-    }
+  const container = document.getElementById('contests-grid');
+  if (!container || typeof CONTESTS === 'undefined') {
+    console.error('CONTESTS not loaded');
+    return;
+  }
+  
+  container.innerHTML = '';
+  
+  CONTESTS.forEach((contest) => {
+    const card = document.createElement('a');
+    card.href = `contest.html?id=${contest.id}`;  // String ID: 'quick-9'
+    card.className = `group bg-gradient-to-br from-${contest.color}-500/20 to-${contest.color}-400/20 border-2 border-${contest.color}-500/40 backdrop-blur-xl rounded-3xl p-6 hover:shadow-${contest.color}-500/50 transition-all duration-300 hover:-translate-y-2 cursor-pointer h-full flex flex-col`;
     
-    container.innerHTML = '';
-    
-    CONTESTS.forEach((contest, index) => {
-        const card = document.createElement('a');
-        card.href = `contest.html?id=${contest.id}`;
-        card.className = `group bg-gradient-to-br from-${contest.color}-500/20 to-${contest.color}-400/20 border-2 border-${contest.color}-500/40 backdrop-blur-xl rounded-3xl p-6 hover:shadow-${contest.color}-500/50 transition-all duration-300 hover:-translate-y-2 cursor-pointer h-full flex flex-col`;
-        
-        card.innerHTML = `
-            <div class="text-xs uppercase tracking-wider font-bold text-${contest.color}-400 mb-3 flex-shrink-0">${contest.fee === 0 ? 'FREE' : '₹' + contest.fee}</div>
-            <div class="text-4xl lg:text-5xl font-black text-${contest.color}-400 mb-2 drop-shadow-lg flex-shrink-0">₹${contest.totalPrize.toLocaleString()}</div>
-            <h3 class="font-bold text-lg mb-3 text-white flex-shrink-0">${contest.name}</h3>
-            <p class="text-${contest.color}-200 text-sm mb-6 flex-1">${contest.description}</p>
-            <button class="w-full bg-gradient-to-r from-${contest.color}-500 to-${contest.color}-400 text-slate-900 font-bold py-3 px-6 rounded-2xl hover:from-${contest.color}-600 hover:to-${contest.color}-500 transition-all shadow-lg font-black flex-shrink-0 mt-auto">
-                ${contest.fee === 0 ? 'Join Test' : 'Join ₹' + contest.fee}
-            </button>
-        `;
-        container.appendChild(card);
-    });
+    card.innerHTML = `
+      <div class="text-xs uppercase tracking-wider font-bold text-${contest.color}-400 mb-3 flex-shrink-0">${contest.fee === 0 ? 'FREE' : '₹' + contest.fee}</div>
+      <div class="text-4xl lg:text-5xl font-black text-${contest.color}-400 mb-2 drop-shadow-lg flex-shrink-0">₹${contest.totalPrize.toLocaleString()}</div>
+      <h3 class="font-bold text-lg mb-3 text-white flex-shrink-0">${contest.name}</h3>
+      <p class="text-${contest.color}-200 text-sm mb-6 flex-1">${contest.description}</p>
+      <button class="w-full bg-gradient-to-r from-${contest.color}-500 to-${contest.color}-400 text-slate-900 font-bold py-3 px-6 rounded-2xl hover:from-${contest.color}-600 hover:to-${contest.color}-500 transition-all shadow-lg font-black flex-shrink-0 mt-auto">
+        ${contest.fee === 0 ? 'Join Test' : 'Join ₹' + contest.fee}
+      </button>
+    `;
+    container.appendChild(card);
+  });
 }
 
 async function loadContestLeaderboard(contestId) {
