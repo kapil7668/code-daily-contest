@@ -1,0 +1,26 @@
+{
+  "contest1": {
+    "name": "CodeRush Daily ₹10",
+    "entry_fee": 10,
+    "prize_pool": "₹5000",
+    "questions": [1,2,3],  // problem IDs from Supabase
+    "duration": "60 min",
+    "participants": 0
+  },
+  "contest2": {
+    "name": "CodeRush Quick ₹19", 
+    "entry_fee": 19,
+    "prize_pool": "₹10000",
+    "questions": [4,5,6],
+    "duration": "45 min",
+    "participants": 0
+  },
+  "contest3": {
+    "name": "CodeRush Pro ₹49",
+    "entry_fee": 49,
+    "prize_pool": "₹25000",
+    "questions": [7,8,9],
+    "duration": "90 min",
+    "participants": 0
+  }
+}
