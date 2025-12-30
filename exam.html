@@ -529,20 +529,56 @@ function changeLanguage() {
     const problem = currentContest[currentQuestion];
     
     testCasesDiv.innerHTML = '';
+    
     problem.examples.forEach((example, i) => {
         const testCase = document.createElement('div');
         testCase.className = 'test-case';
-        testCase.innerHTML = `<span>Case ${i+1}: ${example.input}</span><span id="case${i}-result" style="color: #8b949e;">Running...</span>`;
+        testCase.innerHTML = `
+            <span>Case ${i+1}: ${example.input}</span>
+            <span id="case${i}-result" style="color: #8b949e;">Running...</span>
+        `;
         testCasesDiv.appendChild(testCase);
         
         setTimeout(() => {
-            const resultEl = document.getElementById(`case${i}-result`);
-            resultEl.innerHTML = `Expected: ${example.output} | Got: SIMULATED ✓`;
-            resultEl.style.color = '#56d364';
-            testCase.className = 'test-case status-pass';
-        }, i * 200);
+            try {
+                // REAL JavaScript EXECUTION
+                const func = new Function('nums', 'target', code);
+                let result;
+                
+                if (problem.id === 'two-sum') {
+                    // Two Sum specific test
+                    const nums = example.input.match(/\[([^\]]+)\]/)[1].split(',').map(Number);
+                    const target = parseInt(example.input.match(/target = (\d+)/)[1]);
+                    result = func(nums, target);
+                } else if (problem.id === 'valid-parentheses') {
+                    result = func(example.input.replace(/s = /, ''));
+                } else if (problem.id === 'reverse-integer') {
+                    result = func(parseInt(example.input.match(/x = ([-]?\d+)/)[1]));
+                } else {
+                    result = 'Test not implemented';
+                }
+                
+                const expected = problem.examples[i].output;
+                const resultEl = document.getElementById(`case${i}-result`);
+                
+                // STRICT comparison
+                if (JSON.stringify(result) === JSON.stringify(expected)) {
+                    resultEl.innerHTML = `Expected: ${expected} | Got: ${result} ✓`;
+                    resultEl.style.color = '#56d364';
+                    testCase.className = 'test-case status-pass';
+                } else {
+                    resultEl.innerHTML = `Expected: ${expected} | Got: ${result} ✗`;
+                    resultEl.style.color = '#f85149';
+                    testCase.className = 'test-case status-fail';
+                }
+            } catch(e) {
+                document.getElementById(`case${i}-result`).innerHTML = `Runtime Error: ${e.message}`;
+                testCase.className = 'test-case status-fail';
+            }
+        }, i * 300);
     });
 }
+
         
         function submitSolution() {
             alert('✅ Solution Submitted Successfully!');
