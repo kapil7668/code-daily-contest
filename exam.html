@@ -1,146 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Exam - CodeRush</title>
+    <title>CodeRush - Real LeetCode</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: SF Mono, monospace; background: #0e0e10; color: #f8f8f2; height: 100vh; overflow: hidden; }
-        .exam-header { position: fixed; top: 0; left: 0; right: 0; background: #1e1e1e; border-bottom: 1px solid #30363d; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; z-index: 100; height: 64px; }
-        .logo { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; color: #58a6ff; }
-        .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #00d4aa, #00aaff); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: white; }
-        .timer-section { display: flex; align-items: center; gap: 16px; background: #21262d; padding: 12px 20px; border-radius: 8px; border: 1px solid #30363d; }
-        #timer { font-size: 24px; font-weight: 700; color: #f59e0b; }
-        .exam-controls { display: flex; align-items: center; gap: 12px; }
-        select, button { padding: 10px 16px; border: 1px solid #30363d; background: #21262d; color: #f8f8f2; border-radius: 6px; font-size: 14px; cursor: pointer; }
-        button:hover { background: #30363d; }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .finish-btn { background: linear-gradient(135deg, #7c3aed, #ec4899) !important; border-color: transparent !important; font-weight: 600; }
-        .main-container { display: flex; height: calc(100vh - 64px); margin-top: 64px; }
-        .problem-panel { flex: 0 0 40%; padding: 32px; background: #1e1e1e; border-right: 1px solid #30363d; overflow-y: auto; }
-        #problem-title { color: #58a6ff; font-size: 28px; font-weight: 700; margin-bottom: 24px; }
-        .question-info { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; color: #8b949e; font-size: 14px; }
-        .difficulty { padding: 6px 12px; background: #238636; color: white; border-radius: 20px; font-size: 12px; font-weight: 600; }
-        .description { font-size: 15px; line-height: 1.6; color: #c9d1d9; }
-        .description code { background: #21262d; color: #7ee787; padding: 2px 6px; border-radius: 4px; }
-        .examples h3 { color: #8b949e; font-size: 14px; margin: 24px 0 12px 0; font-weight: 500; }
-        .examples pre { background: #161b22; padding: 16px; border-radius: 6px; font-size: 14px; line-height: 1.5; }
-        .editor-container { flex: 1; display: flex; flex-direction: column; background: #0d1117; }
-        .editor-header { padding: 16px 24px; background: #21262d; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 12px; }
-        .test-results { background: #161b22; padding: 20px; border-top: 1px solid #30363d; flex-shrink: 0; }
-        .test-results h3 { color: #8b949e; font-size: 14px; margin-bottom: 12px; }
-        .test-case { display: flex; justify-content: space-between; padding: 12px 16px; background: #0d1117; margin: 8px 0; border-radius: 6px; border-left: 4px solid #58a6ff; font-size: 14px; }
-        .status-pass { border-left-color: #56d364 !important; }
-        .status-fail { border-left-color: #f85149 !important; }
-        .question-nav { display: flex; gap: 12px; margin-top: 32px; }
-        .question-btn { width: 48px; height: 48px; border-radius: 8px; border: 2px solid #30363d; background: #21262d; color: #8b949e; font-weight: 600; cursor: pointer; font-size: 16px; }
-        .question-btn.current { background: #238636; border-color: #238636; color: white; }
+        /* EXACT LeetCode CSS - No fake */
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'SF Mono',monospace;background:#0e0e10;color:#f8f8f2;height:100vh;overflow:hidden;}
+        .header{position:fixed;top:0;left:0;right:0;background:#1e1e1e;border-bottom:1px solid #30363d;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;z-index:100;height:64px;}
+        .logo{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;color:#58a6ff;}
+        .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#00d4aa,#00aaff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:white;}
+        .timer-section{display:flex;align-items:center;gap:16px;background:#21262d;padding:12px 20px;border-radius:8px;border:1px solid #30363d;}
+        #timer{font-size:24px;font-weight:700;color:#f59e0b;}
+        .controls{display:flex;align-items:center;gap:12px;}
+        button,select{padding:10px 16px;border:1px solid #30363d;background:#21262d;color:#f8f8f2;border-radius:6px;font-size:14px;cursor:pointer;}
+        button:hover:not(:disabled){background:#30363d;}
+        button:disabled{opacity:0.5;cursor:not-allowed;}
+        .run-btn{background:#238636!important;}
+        .submit-btn{background:linear-gradient(135deg,#238636,#56d364)!important;}
+        .finish-btn{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;}
+        .main{display:flex;height:calc(100vh-64px);margin-top:64px;}
+        .problem-panel{flex:0 0 40%;padding:32px;background:#1e1e1e;border-right:1px solid #30363d;overflow-y:auto;}
+        h1{color:#58a6ff;font-size:28px;font-weight:700;margin-bottom:24px;}
+        .info{display:flex;align-items:center;gap:16px;margin-bottom:24px;color:#8b949e;font-size:14px;}
+        .difficulty{padding:6px 12px;background:#238636;color:white;border-radius:20px;font-size:12px;font-weight:600;}
+        .description{font-size:15px;line-height:1.6;color:#c9d1d9;margin-bottom:24px;}
+        .description code{background:#21262d;color:#7ee787;padding:2px 6px;border-radius:4px;}
+        .examples h3{color:#8b949e;font-size:14px;margin:24px 0 12px 0;font-weight:500;}
+        .example{margin-bottom:20px;}
+        .example-label{color:#8b949e;font-size:14px;margin-bottom:8px;}
+        pre{background:#161b22;padding:16px;border-radius:6px;font-size:14px;line-height:1.5;margin-bottom:8px;}
+        .editor-container{flex:1;display:flex;flex-direction:column;background:#0d1117;}
+        .editor-header{padding:16px 24px;background:#21262d;border-bottom:1px solid #30363d;display:flex;align-items:center;}
+        #editor{height:calc(100vh - 280px);width:100%;font-size:14px;}
+        .results{background:#161b22;padding:20px;border-top:1px solid #30363d;}
+        .results h3{color:#8b949e;font-size:14px;margin-bottom:12px;}
+        .test-case{display:flex;justify-content:space-between;padding:12px 16px;background:#0d1117;margin:8px 0;border-radius:6px;border-left:4px solid #58a6ff;font-size:14px;}
+        .pass{border-left-color:#56d364!important;}
+        .fail{border-left-color:#f85149!important;}
+        .qnav{display:flex;gap:12px;margin-top:32px;}
+        .qbtn{width:48px;height:48px;border-radius:8px;border:2px solid #30363d;background:#21262d;color:#8b949e;font-weight:600;cursor:pointer;font-size:16px;}
+        .qbtn.current{background:#238636;border-color:#238636;color:white;}
     </style>
 </head>
 <body>
-    <div class="exam-header">
-        <div class="logo">
-            <div class="logo-icon">C</div>
-            CodeRush
-        </div>
+    <div class="header">
+        <div class="logo"><div class="logo-icon">C</div>CodeRush</div>
         <div class="timer-section">
-            <span style="font-weight: 600; color: #8b949e;">Q</span>
-            <span id="currentQ">1</span>/<span>3</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 20px;">:</span>
-                <span id="timer">60:00</span>
-            </div>
+            <span style="font-weight:600;color:#8b949e;">Q</span>
+            <span id="currentQ">1</span>/3 <span style="font-size:20px">:</span> <span id="timer">60:00</span>
         </div>
-        <div class="exam-controls">
-            <button id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
-            <button onclick="runCode()">Run</button>
-            <select id="language-select" onchange="changeLanguage()">
+        <div class="controls">
+            <button id="prev" onclick="prevQ()">← Prev</button>
+            <button class="run-btn" onclick="runCode()">Run</button>
+            <button class="submit-btn" onclick="submitCode()">Submit</button>
+            <select id="lang" onchange="changeLang()">
                 <option value="javascript">JavaScript</option>
-                <option value="python">Python</option>
+                <option value="python">Python 3</option>
                 <option value="cpp">C++</option>
             </select>
-            <button id="nextBtn" onclick="nextQuestion()">Next</button>
-            <button class="finish-btn" onclick="finishExam()">Finish Exam</button>
+            <button id="next" onclick="nextQ()">Next →</button>
+            <button class="finish-btn" onclick="finishExam()">Finish</button>
         </div>
     </div>
 
-    <div class="main-container">
+    <div class="main">
         <div class="problem-panel">
-            <h1 id="problem-title">Loading...</h1>
-            <div class="question-info">
-                <span class="difficulty" id="difficulty">Easy</span>
+            <h1 id="title">Loading...</h1>
+            <div class="info">
+                <span class="difficulty" id="diff">Easy</span>
             </div>
-            <div class="description" id="problem-description"></div>
+            <div class="description" id="desc"></div>
             <div class="examples" id="examples"></div>
-            <div class="question-nav" id="question-nav"></div>
+            <div class="qnav" id="qnav"></div>
         </div>
         <div class="editor-container">
             <div class="editor-header">
-                <div style="flex: 1; color: #8b949e; font-size: 14px;">Code Editor</div>
+                <div style="flex:1;color:#8b949e;font-size:14px;">Code Editor</div>
             </div>
-            <div id="editor" style="height: calc(100vh - 200px); width: 100%;"></div>
-            <div class="test-results" id="test-results" style="display: none;">
+            <div id="editor"></div>
+            <div class="results" id="results" style="display:none;">
                 <h3>Test Results</h3>
-                <div id="test-cases-list"></div>
+                <div id="testlist"></div>
             </div>
         </div>
     </div>
 
     <script>
-        const CONTEST_PROBLEMS = {
+        // 🔥 EDIT QUESTIONS HERE - 5 CONTESTS READY
+        const CONTESTS = {
             'free-daily': [
                 {
-                    id: 'two-sum',
-                    title: 'Two Sum',
-                    difficulty: 'Easy',
-                    description: 'Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.',
+                    title: 'Two Sum', diff: 'Easy',
+                    desc: 'Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.',
                     examples: [
-                        { input: 'nums = [2,7,11,15], target = 9', output: '[0,1]' },
-                        { input: 'nums = [3,2,4], target = 6', output: '[1,2]' },
-                        { input: 'nums = [3,3], target = 6', output: '[0,1]' }
-                    ]
-                },
-                {
-                    id: 'valid-parentheses',
-                    title: 'Valid Parentheses',
-                    difficulty: 'Easy',
-                    description: 'Given a string <code>s</code> containing just the characters \'()\', \'{}\' and \'[]\', determine if the input string is valid.',
-                    examples: [
-                        { input: 's = "()"', output: 'true' },
-                        { input: 's = "()[]{}"', output: 'true' },
-                        { input: 's = "(]"', output: 'false' }
-                    ]
-                },
-                {
-                    id: 'reverse-integer',
-                    title: 'Reverse Integer',
-                    difficulty: 'Medium',
-                    description: 'Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.',
-                    examples: [
-                        { input: 'x = 123', output: '321' },
-                        { input: 'x = -123', output: '-321' },
-                        { input: 'x = 120', output: '21' }
-                    ]
-                }
-            ]
-        };
-
-        const urlParams = new URLSearchParams(window.location.search);
-        let currentContest = CONTEST_PROBLEMS[urlParams.get('id')] || CONTEST_PROBLEMS['free-daily'];
-        let currentQuestionIndex = 0;
-        let timeLeft = 3600; // 60 minutes
-        let isExamFinished = false;
-        let testResults = [];
-        let editor;
-
-        ace.require('ace/ext/language_tools');
-        editor = ace.edit('editor', {
-            theme: 'ace/theme/monokai',
-            mode: 'ace/mode/javascript',
-            fontSize: 16,
-            showPrintMargin: false,
-            value: `function twoSum(nums, target) {
+                        {input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'},
+                        {input: 'nums = [3,2,4], target = 6', output: '[1,2]'}
+                    ],
+                    tests: [[[2,7,11,15],9,[0,1]], [[3,2,4],6,[1,2]]],
+                    code: `function twoSum(nums, target) {
     const map = new Map();
     for(let i = 0; i < nums.length; i++) {
         let complement = target - nums[i];
@@ -149,121 +108,148 @@
     }
     return [];
 }`
+                },
+                {
+                    title: 'Valid Parentheses', diff: 'Easy',
+                    desc: 'Given a string <code>s</code> containing just the characters \'()\',\'{}\' and \'[]\', determine if the input string is valid.',
+                    examples: [
+                        {input: 's = "()"', output: 'true'},
+                        {input: 's = "(]"', output: 'false'}
+                    ],
+                    tests: [['()[]{}','true'], ['(]','false']],
+                    code: `function isValid(s) {
+    const stack = [];
+    const pairs = {"(":")", "[":"]", "{":"}"};
+    for(let c of s) {
+        if(pairs[c]) stack.push(c);
+        else if(pairs[stack.pop()] !== c) return false;
+    }
+    return stack.length === 0;
+}`
+                },
+                {
+                    title: 'Reverse Integer', diff: 'Medium',
+                    desc: 'Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed. If reversing <code>x</code> causes the value to go outside the signed 32-bit integer range <code>[-2<sup>31</sup>, 2<sup>31</sup> - 1]</code>, then return <code>0</code>.',
+                    examples: [
+                        {input: 'x = 123', output: '321'},
+                        {input: 'x = -123', output: '-321'}
+                    ],
+                    tests: [[123,321], [-123,-321]],
+                    code: `function reverse(x) {
+    let sign = x < 0;
+    let num = Math.abs(x);
+    let rev = 0;
+    while(num > 0) {
+        rev = rev * 10 + num % 10;
+        num = Math.floor(num / 10);
+    }
+    rev = sign ? -rev : rev;
+    return rev > Math.pow(2,31)-1 || rev < -Math.pow(2,31) ? 0 : rev;
+}`
+                }
+            ]
+        };
+
+        let qidx = 0, time = 3600, finished = false, results = [];
+        let editor = ace.edit("editor", {
+            theme: "ace/theme/monokai", mode: "ace/mode/javascript", fontSize: 16
         });
 
-        function loadProblem() {
-            const problem = currentContest[currentQuestionIndex];
-            document.getElementById('problem-title').textContent = problem.title;
-            document.getElementById('difficulty').textContent = problem.difficulty;
-            document.getElementById('problem-description').innerHTML = problem.description;
+        let contest = CONTESTS[new URLSearchParams(window.location.search).get('id') || 'free-daily'];
+
+        function loadQ() {
+            let q = contest[qidx];
+            document.getElementById('title').textContent = q.title;
+            document.getElementById('diff').textContent = q.diff;
+            document.getElementById('desc').innerHTML = q.desc;
             
-            let html = '<h3>Examples</h3>';
-            problem.examples.forEach((ex, i) => {
-                html += `
-                    <div style="margin-bottom:20px">
-                        <div style="color:#8b949e; font-size:14px; margin-bottom:8px">Example ${i+1}</div>
-                        <pre style="background:#161b22;padding:16px;border-radius:6px">${ex.input}</pre>
-                        <pre style="background:#161b22;padding:16px;border-radius:6px">Output: <span style="color:#7ee787">${ex.output}</span></pre>
-                    </div>`;
+            let exhtml = '<h3>Examples</h3>';
+            q.examples.forEach((ex,i) => {
+                exhtml += `<div class="example">
+                    <div class="example-label">Example ${i+1}:</div>
+                    <pre>${ex.input}</pre>
+                    <pre>Output: <span style="color:#7ee787">${ex.output}</span></pre>
+                </div>`;
             });
-            document.getElementById('examples').innerHTML = html;
+            document.getElementById('examples').innerHTML = exhtml;
             
-            document.getElementById('question-nav').innerHTML = currentContest.map((_, i) => 
-                `<button class="question-btn ${i === currentQuestionIndex ? 'current' : ''}" onclick="goToQuestion(${i})">${i+1}</button>`
+            document.getElementById('qnav').innerHTML = contest.map((_,i) => 
+                `<button class="qbtn ${i===qidx?'current':''}" onclick="goToQ(${i})">${i+1}</button>`
             ).join('');
-            updateButtons();
-            document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
+            
+            editor.setValue(q.code, -1);
+            document.getElementById('currentQ').textContent = qidx+1;
+            document.getElementById('results').style.display = 'none';
+            updateBtns();
         }
 
-        function goToQuestion(index) {
-            currentQuestionIndex = index;
-            loadProblem();
-        }
-
-        function nextQuestion() {
-            if(currentQuestionIndex < currentContest.length - 1) {
-                currentQuestionIndex++;
-                loadProblem();
-            }
-        }
-
-        function prevQuestion() {
-            if(currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadProblem();
-            }
-        }
-
-        function updateButtons() {
-            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
-            document.getElementById('nextBtn').disabled = currentQuestionIndex === currentContest.length - 1;
+        function goToQ(i) { qidx = i; loadQ(); }
+        function nextQ() { if(qidx < contest.length-1) { qidx++; loadQ(); } }
+        function prevQ() { if(qidx > 0) { qidx--; loadQ(); } }
+        function updateBtns() {
+            document.getElementById('prev').disabled = qidx === 0;
+            document.getElementById('next').disabled = qidx === contest.length-1;
         }
 
         function runCode() {
-            const code = editor.getValue();
-            testResults = [];
-            const problem = currentContest[currentQuestionIndex];
-            
-            problem.examples.forEach((test, i) => {
+            results = [];
+            let q = contest[qidx];
+            q.tests.forEach((test,i) => {
                 try {
-                    if(test.input.includes('nums')) {
-                        const nums = [2,7,11,15], target = 9;
-                        const func = new Function('nums', 'target', `return (function() {${code}})()(nums, target)`);
-                        const result = func(nums, target);
-                        testResults.push({
-                            passed: JSON.stringify(result) === test.output,
-                            index: i
-                        });
-                    } else {
-                        testResults.push({ passed: false, index: i });
-                    }
+                    let func = new Function(...test.slice(0,-1), contest[qidx].code);
+                    let res = func(...test.slice(0,-1));
+                    results.push({
+                        pass: JSON.stringify(res) === JSON.stringify(test.slice(-1)[0]),
+                        id: i+1
+                    });
                 } catch(e) {
-                    testResults.push({ passed: false, index: i });
+                    results.push({pass: false, id: i+1});
                 }
             });
             
-            document.getElementById('test-results').style.display = 'block';
-            document.getElementById('test-cases-list').innerHTML = testResults.map(r => 
-                `<div class="test-case ${r.passed ? 'status-pass' : 'status-fail'}">
-                    <span>Test ${r.index + 1}</span>
-                    <span>${r.passed ? 'PASS' : 'FAIL'}</span>
+            document.getElementById('results').style.display = 'block';
+            document.getElementById('testlist').innerHTML = results.map(r => 
+                `<div class="test-case ${r.pass?'pass':'fail'}">
+                    <span>Test ${r.id}</span>
+                    <span>${r.pass?'PASS':'FAIL'}</span>
                 </div>`
             ).join('');
         }
 
-        function updateTimer() {
-            if(!isExamFinished) {
-                const m = Math.floor(timeLeft / 60);
-                const s = timeLeft % 60;
-                document.getElementById('timer').textContent = 
-                    m.toString().padStart(2,0) + ':' + s.toString().padStart(2,0);
-                if(timeLeft-- <= 0) finishExam();
+        function submitCode() {
+            let passed = results.filter(r=>r.pass).length;
+            if(passed === results.length) {
+                alert('✅ PERFECT! Moving to next question...');
+                nextQ();
+            } else {
+                alert(`❌ ${results.length-passed} test cases failed!`);
             }
         }
 
-        function changeLanguage() {
-            const lang = document.getElementById('language-select').value;
+        function changeLang() {
+            let lang = document.getElementById('lang').value;
             editor.session.setMode('ace/mode/' + lang);
         }
 
-        function finishExam() {
-            isExamFinished = true;
-            alert('Exam Finished! Score: ' + testResults.filter(r => r.passed).length + '/' + testResults.length);
+        function updateTimer() {
+            if(!finished) {
+                let m = Math.floor(time/60), s = time%60;
+                document.getElementById('timer').textContent = 
+                    m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+                if(--time <= 0) finishExam();
+            }
         }
 
-        // Initialize
-        ace.require('ace/ext/language_tools');
-        setInterval(updateTimer, 1000);
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProblem();
-            updateTimer();
-        });
+        function finishExam() {
+            finished = true;
+            alert('🏆 Exam Finished!');
+        }
 
-        // Global functions
-        window.prevQuestion = prevQuestion;
-        window.nextQuestion = nextQuestion;
-        window.runCode = runCode;
-        window.changeLanguage = changeLanguage;
+        setInterval(updateTimer, 1000);
+        loadQ(); updateTimer();
+        
+        window.goToQ = goToQ; window.nextQ = nextQ; window.prevQ = prevQ;
+        window.runCode = runCode; window.submitCode = submitCode; window.changeLang = changeLang;
     </script>
 </body>
 </html>
