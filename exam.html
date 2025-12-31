@@ -5,66 +5,69 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.js"></script>
     <style>
-        /* EXACT LeetCode CSS */
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'SF Mono',monospace;background:#0e0e10;color:#f8f8f2;height:100vh;overflow:hidden;}
-        .header{position:fixed;top:0;left:0;right:0;background:#1e1e1e;border-bottom:1px solid #30363d;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;z-index:100;height:64px;}
-        .logo{display:flex;align-items:center;gap:12px;font-size:20px;font-weight:700;color:#58a6ff;}
-        .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,#00d4aa,#00aaff);border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;color:white;}
-        .timer-section{display:flex;align-items:center;gap:16px;background:#21262d;padding:12px 20px;border-radius:8px;border:1px solid #30363d;}
-        #timer{font-size:24px;font-weight:700;color:#f59e0b;}
-        .controls{display:flex;align-items:center;gap:12px;}
-        button,select{padding:10px 16px;border:1px solid #30363d;background:#21262d;color:#f8f8f2;border-radius:6px;font-size:14px;cursor:pointer;}
-        button:hover:not(:disabled){background:#30363d;}
-        button:disabled{opacity:0.5;cursor:not-allowed;}
-        .run-btn{background:#238636!important;}
-        .submit-btn{background:linear-gradient(135deg,#238636,#56d364)!important;}
-        .finish-btn{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;}
-        .main{display:flex;height:calc(100vh-64px);margin-top:64px;}
-        .problem-panel{flex:0 0 40%;padding:32px;background:#1e1e1e;border-right:1px solid #30363d;overflow-y:auto;}
-        h1{color:#58a6ff;font-size:28px;font-weight:700;margin-bottom:24px;}
-        .info{display:flex;align-items:center;gap:16px;margin-bottom:24px;color:#8b949e;font-size:14px;}
-        .difficulty{padding:6px 12px;background:#238636;color:white;border-radius:20px;font-size:12px;font-weight:600;}
-        .description{font-size:15px;line-height:1.6;color:#c9d1d9;margin-bottom:24px;}
-        .description code{background:#21262d;color:#7ee787;padding:2px 6px;border-radius:4px;}
-        .examples h3{color:#8b949e;font-size:14px;margin:24px 0 12px 0;font-weight:500;}
-        .example{margin-bottom:20px;}
-        .example-label{color:#8b949e;font-size:14px;margin-bottom:8px;}
-        pre{background:#161b22;padding:16px;border-radius:6px;font-size:14px;line-height:1.5;margin-bottom:8px;}
-        .editor-container{flex:1;display:flex;flex-direction:column;background:#0d1117;}
-        .editor-header{padding:16px 24px;background:#21262d;border-bottom:1px solid #30363d;display:flex;align-items:center;}
-        #editor{height:calc(100vh - 280px);width:100%;font-size:14px;}
-        .results{background:#161b22;padding:20px;border-top:1px solid #30363d;}
-        .results h3{color:#8b949e;font-size:14px;margin-bottom:12px;}
-        .test-case{display:flex;justify-content:space-between;padding:12px 16px;background:#0d1117;margin:8px 0;border-radius:6px;border-left:4px solid #58a6ff;font-size:14px;}
-        .pass{border-left-color:#56d364!important;}
-        .fail{border-left-color:#f85149!important;}
-        .qnav{display:flex;gap:12px;margin-top:32px;}
-        .qbtn{width:48px;height:48px;border-radius:8px;border:2px solid #30363d;background:#21262d;color:#8b949e;font-weight:600;cursor:pointer;font-size:16px;}
-        .qbtn.current{background:#238636;border-color:#238636;color:white;}
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family: 'SF Mono', monospace; background:#0e0e10; color:#f8f8f2; height:100vh; overflow:hidden; }
+        .header { position:fixed; top:0; left:0; right:0; background:#1e1e1e; border-bottom:1px solid #30363d; padding:16px 32px; display:flex; align-items:center; justify-content:space-between; z-index:100; height:64px; }
+        .logo { display:flex; align-items:center; gap:12px; font-size:20px; font-weight:700; color:#58a6ff; }
+        .logo-icon { width:32px; height:32px; background:linear-gradient(135deg, #00d4aa, #00aaff); border-radius:8px; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:18px; color:white; }
+        .timer-section { display:flex; align-items:center; gap:16px; background:#21262d; padding:12px 20px; border-radius:8px; border:1px solid #30363d; }
+        #timer { font-size:24px; font-weight:700; color:#f59e0b; }
+        .controls { display:flex; align-items:center; gap:12px; }
+        button, select { padding:10px 16px; border:1px solid #30363d; background:#21262d; color:#f8f8f2; border-radius:6px; font-size:14px; cursor:pointer; }
+        button:hover:not(:disabled) { background:#30363d; }
+        button:disabled { opacity:0.5; cursor:not-allowed; }
+        .run-btn { background:#238636 !important; }
+        .submit-btn { background:linear-gradient(135deg, #238636, #56d364) !important; }
+        .finish-btn { background:linear-gradient(135deg, #7c3aed, #ec4899) !important; }
+        .main { display:flex; height:calc(100vh - 64px); margin-top:64px; }
+        .problem-panel { flex:0 0 40%; padding:32px; background:#1e1e1e; border-right:1px solid #30363d; overflow-y:auto; }
+        h1 { color:#58a6ff; font-size:28px; font-weight:700; margin-bottom:24px; }
+        .info { display:flex; align-items:center; gap:16px; margin-bottom:24px; color:#8b949e; font-size:14px; }
+        .difficulty { padding:6px 12px; background:#238636; color:white; border-radius:20px; font-size:12px; font-weight:600; }
+        .description { font-size:15px; line-height:1.6; color:#c9d1d9; margin-bottom:24px; }
+        .description code { background:#21262d; color:#7ee787; padding:2px 6px; border-radius:4px; }
+        .examples h3 { color:#8b949e; font-size:14px; margin:24px 0 12px 0; font-weight:500; }
+        .example { margin-bottom:20px; }
+        .example-label { color:#8b949e; font-size:14px; margin-bottom:8px; }
+        pre { background:#161b22; padding:16px; border-radius:6px; font-size:14px; line-height:1.5; margin-bottom:8px; }
+        .editor-container { flex:1; display:flex; flex-direction:column; background:#0d1117; }
+        .editor-header { padding:16px 24px; background:#21262d; border-bottom:1px solid #30363d; display:flex; align-items:center; gap:12px; }
+        #editor { height:calc(100vh - 280px); width:100%; font-size:14px; }
+        .results { background:#161b22; padding:20px; border-top:1px solid #30363d; }
+        .results h3 { color:#8b949e; font-size:14px; margin-bottom:12px; }
+        .test-case { display:flex; justify-content:space-between; padding:12px 16px; background:#0d1117; margin:8px 0; border-radius:6px; border-left:4px solid #58a6ff; font-size:14px; }
+        .pass { border-left-color:#56d364 !important; }
+        .fail { border-left-color:#f85149 !important; }
+        .qnav { display:flex; gap:12px; margin-top:32px; }
+        .qbtn { width:48px; height:48px; border-radius:8px; border:2px solid #30363d; background:#21262d; color:#8b949e; font-weight:600; cursor:pointer; font-size:16px; }
+        .qbtn.current { background:#238636; border-color:#238636; color:white; }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo"><div class="logo-icon">C</div>CodeRush</div>
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            CodeRush
+        </div>
         <div class="timer-section">
-            <span style="font-weight:600;color:#8b949e;">Q</span>
-            <span id="currentQ">1</span>/3 <span style="font-size:20px">:</span> <span id="timer">60:00</span>
+            <span style="font-weight:600;color:#8b949e">Q</span>
+            <span id="currentQ">1</span>/<span id="totalQ">3</span>
+            <span style="font-size:20px">:</span>
+            <span id="timer">60:00</span>
         </div>
         <div class="controls">
-            <button id="prev" onclick="prevQ()">← Prev</button>
+            <button id="prev" onclick="prevQ()" disabled>Prev</button>
             <button class="run-btn" onclick="runCode()">Run</button>
             <button class="submit-btn" onclick="submitCode()">Submit</button>
             <select id="lang" onchange="changeLang()">
                 <option value="javascript">JavaScript</option>
-                <option value="python">Python 3</option>
+                <option value="python">Python</option>
                 <option value="cpp">C++</option>
             </select>
-            <button id="next" onclick="nextQ()">Next →</button>
+            <button id="next" onclick="nextQ()">Next</button>
             <button class="finish-btn" onclick="finishExam()">Finish</button>
         </div>
     </div>
-
     <div class="main">
         <div class="problem-panel">
             <h1 id="title">Loading...</h1>
@@ -77,10 +80,10 @@
         </div>
         <div class="editor-container">
             <div class="editor-header">
-                <div style="flex:1;color:#8b949e;font-size:14px;">Code Editor</div>
+                <div style="flex:1;color:#8b949e;font-size:14px">Code Editor</div>
             </div>
             <div id="editor"></div>
-            <div class="results" id="results" style="display:none;">
+            <div class="results" id="results" style="display:none">
                 <h3>Test Results</h3>
                 <div id="testlist"></div>
             </div>
@@ -88,127 +91,77 @@
     </div>
 
     <script>
-        // 🔥 EDIT QUESTIONS HERE - 5 CONTESTS READY
-        const CONTESTS = {
-            'free-daily': [
-                {
-                    title: 'Two Sum', diff: 'Easy',
-                    desc: 'Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.',
-                    examples: [
-                        {input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'},
-                        {input: 'nums = [3,2,4], target = 6', output: '[1,2]'}
-                    ],
-                    tests: [[[2,7,11,15],9,[0,1]], [[3,2,4],6,[1,2]]],
-                    code: `function twoSum(nums, target) {
-    const map = new Map();
-    for(let i = 0; i < nums.length; i++) {
-        let complement = target - nums[i];
-        if(map.has(complement)) return [map.get(complement), i];
-        map.set(nums[i], i);
-    }
-    return [];
-}`
-                },
-                {
-                    title: 'Valid Parentheses', diff: 'Easy',
-                    desc: 'Given a string <code>s</code> containing just the characters \'()\',\'{}\' and \'[]\', determine if the input string is valid.',
-                    examples: [
-                        {input: 's = "()"', output: 'true'},
-                        {input: 's = "(]"', output: 'false'}
-                    ],
-                    tests: [['()[]{}','true'], ['(]','false']],
-                    code: `function isValid(s) {
-    const stack = [];
-    const pairs = {"(":")", "[":"]", "{":"}"};
-    for(let c of s) {
-        if(pairs[c]) stack.push(c);
-        else if(pairs[stack.pop()] !== c) return false;
-    }
-    return stack.length === 0;
-}`
-                },
-                {
-                    title: 'Reverse Integer', diff: 'Medium',
-                    desc: 'Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.',
-                    examples: [
-                        {input: 'x = 123', output: '321'},
-                        {input: 'x = -123', output: '-321'}
-                    ],
-                    tests: [[123,321], [-123,-321]],
-                    code: `function reverse(x) {
-    let sign = x < 0;
-    let num = Math.abs(x);
-    let rev = 0;
-    while(num > 0) {
-        rev = rev * 10 + num % 10;
-        num = Math.floor(num / 10);
-    }
-    rev = sign ? -rev : rev;
-    return rev > Math.pow(2,31)-1 || rev < -Math.pow(2,31) ? 0 : rev;
-}`
-                }
-            ]
-        };
+        let qidx=0, time=3600, finished=false, results=[], editor;
+        let contestId = new URLSearchParams(window.location.search).get('id') || 'free-daily';
 
-        let qidx = 0, time = 3600, finished = false, results = [];
-        let editor = ace.edit("editor", {
-            theme: "ace/theme/monokai", mode: "ace/mode/javascript", fontSize: 16
+        // LOAD 7 CONTESTS FROM JSON
+        fetch('questions.json').then(r=>r.json()).then(questions=>{
+            const contest = questions[contestId];
+            if(!contest) { alert('Contest not found!'); return; }
+            
+            window.questions = questions;
+            window.currentContest = contest;
+            loadQ(); updateTimer(); updateBtns();
         });
 
-        let contest = CONTESTS[new URLSearchParams(window.location.search).get('id') || 'free-daily'];
+        editor = ace.edit("editor", {
+            theme: "ace/theme/monokai", mode: "ace/mode/javascript", fontSize: 16,
+            showPrintMargin: false, wrap: true
+        });
 
         function loadQ() {
-            let q = contest[qidx];
+            const q = window.currentContest[qidx];
             document.getElementById('title').textContent = q.title;
-            document.getElementById('diff').textContent = q.diff;
-            document.getElementById('desc').innerHTML = q.desc;
+            document.getElementById('diff').textContent = q.difficulty;
+            document.getElementById('desc').innerHTML = q.desc || `${q.title} - Solve this problem.`;
             
             let exhtml = '<h3>Examples</h3>';
-            q.examples.forEach((ex,i) => {
+            q.examples?.forEach((ex,i)=>{
                 exhtml += `<div class="example">
-                    <div class="example-label">Example ${i+1}:</div>
+                    <div class="example-label">Example ${i+1}</div>
                     <pre>${ex.input}</pre>
                     <pre>Output: <span style="color:#7ee787">${ex.output}</span></pre>
                 </div>`;
             });
             document.getElementById('examples').innerHTML = exhtml;
             
-            document.getElementById('qnav').innerHTML = contest.map((_,i) => 
-                `<button class="qbtn ${i===qidx?'current':''}" onclick="goToQ(${i})">${i+1}</button>`
-            );
+            document.getElementById('qnav').innerHTML = 
+                window.currentContest.map((_,i)=> 
+                    `<button class="qbtn ${i===qidx?'current':''}" onclick="goToQ(${i})">${i+1}</button>`
+                ).join('');
             
-            editor.setValue(q.code, -1);
+            editor.setValue(q.template || '// Write your solution here', -1);
             document.getElementById('currentQ').textContent = qidx+1;
+            document.getElementById('totalQ').textContent = window.currentContest.length;
             document.getElementById('results').style.display = 'none';
             updateBtns();
         }
 
-        function goToQ(i) { qidx = i; loadQ(); }
-        function nextQ() { if(qidx < contest.length-1) { qidx++; loadQ(); } }
+        function goToQ(i) { qidx=i; loadQ(); }
+        function nextQ() { if(qidx < window.currentContest.length-1) { qidx++; loadQ(); } }
         function prevQ() { if(qidx > 0) { qidx--; loadQ(); } }
         function updateBtns() {
             document.getElementById('prev').disabled = qidx === 0;
-            document.getElementById('next').disabled = qidx === contest.length-1;
+            document.getElementById('next').disabled = qidx === window.currentContest.length-1;
         }
 
         function runCode() {
             results = [];
-            let q = contest[qidx];
-            q.tests.forEach((test,i) => {
+            const q = window.currentContest[qidx];
+            q.tests.forEach((test,i)=>{
                 try {
-                    let func = new Function(...test.slice(0,-1), contest[qidx].code);
-                    let res = func(...test.slice(0,-1));
-                    results.push({
-                        pass: JSON.stringify(res) === JSON.stringify(test.slice(-1)[0]),
-                        id: i+1
-                    });
+                    const params = test.slice(0,-1).map(JSON.stringify).join(',');
+                    const expected = test[test.length-1];
+                    const func = new Function(params, `return (${editor.getValue()})(...arguments)`);
+                    const res = func(...test.slice(0,-1));
+                    results.push({ pass: JSON.stringify(res)===JSON.stringify(expected), id: i+1 });
                 } catch(e) {
-                    results.push({pass: false, id: i+1});
+                    results.push({ pass: false, id: i+1 });
                 }
             });
             
             document.getElementById('results').style.display = 'block';
-            document.getElementById('testlist').innerHTML = results.map(r => 
+            document.getElementById('testlist').innerHTML = results.map(r=>
                 `<div class="test-case ${r.pass?'pass':'fail'}">
                     <span>Test ${r.id}</span>
                     <span>${r.pass?'PASS':'FAIL'}</span>
@@ -217,23 +170,23 @@
         }
 
         function submitCode() {
-            let passed = results.filter(r=>r.pass).length;
+            const passed = results.filter(r=>r.pass).length;
             if(passed === results.length) {
                 alert('✅ PERFECT! Moving to next question...');
                 nextQ();
             } else {
-                alert(`❌ ${results.length-passed} test cases failed!`);
+                alert(`${results.length-passed} test cases failed!`);
             }
         }
 
         function changeLang() {
-            let lang = document.getElementById('lang').value;
-            editor.session.setMode('ace/mode/' + lang);
+            const lang = document.getElementById('lang').value;
+            editor.session.setMode(`ace/mode/${lang}`);
         }
 
         function updateTimer() {
             if(!finished) {
-                let m = Math.floor(time/60), s = time%60;
+                const m = Math.floor(time/60), s = time%60;
                 document.getElementById('timer').textContent = 
                     m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
                 if(--time <= 0) finishExam();
@@ -242,14 +195,12 @@
 
         function finishExam() {
             finished = true;
-            alert('🏆 Exam Finished!');
+            alert(`Exam Finished! Score: ${results.filter(r=>r.pass).length}/${results.length}`);
         }
 
         setInterval(updateTimer, 1000);
-        loadQ(); updateTimer();
-        
-        window.goToQ = goToQ; window.nextQ = nextQ; window.prevQ = prevQ;
-        window.runCode = runCode; window.submitCode = submitCode; window.changeLang = changeLang;
+        window.goToQ=goToQ; window.nextQ=nextQ; window.prevQ=prevQ; 
+        window.runCode=runCode; window.submitCode=submitCode; window.changeLang=changeLang;
     </script>
 </body>
 </html>
