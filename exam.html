@@ -6,7 +6,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'SF Mono', monospace; background: #0e0e10; color: #f8f8f2; height: 100vh; overflow: hidden; }
+        body { font-family: SF Mono, monospace; background: #0e0e10; color: #f8f8f2; height: 100vh; overflow: hidden; }
         .exam-header { position: fixed; top: 0; left: 0; right: 0; background: #1e1e1e; border-bottom: 1px solid #30363d; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; z-index: 100; height: 64px; }
         .logo { display: flex; align-items: center; gap: 12px; font-size: 20px; font-weight: 700; color: #58a6ff; }
         .logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #00d4aa, #00aaff); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: white; }
@@ -14,7 +14,8 @@
         #timer { font-size: 24px; font-weight: 700; color: #f59e0b; }
         .exam-controls { display: flex; align-items: center; gap: 12px; }
         select, button { padding: 10px 16px; border: 1px solid #30363d; background: #21262d; color: #f8f8f2; border-radius: 6px; font-size: 14px; cursor: pointer; }
-        button:hover { background: #30363d; } button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:hover { background: #30363d; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
         .finish-btn { background: linear-gradient(135deg, #7c3aed, #ec4899) !important; border-color: transparent !important; font-weight: 600; }
         .main-container { display: flex; height: calc(100vh - 64px); margin-top: 64px; }
         .problem-panel { flex: 0 0 40%; padding: 32px; background: #1e1e1e; border-right: 1px solid #30363d; overflow-y: auto; }
@@ -30,25 +31,116 @@
         .test-results { background: #161b22; padding: 20px; border-top: 1px solid #30363d; flex-shrink: 0; }
         .test-results h3 { color: #8b949e; font-size: 14px; margin-bottom: 12px; }
         .test-case { display: flex; justify-content: space-between; padding: 12px 16px; background: #0d1117; margin: 8px 0; border-radius: 6px; border-left: 4px solid #58a6ff; font-size: 14px; }
-        .status-pass { border-left-color: #56d364 !important; } .status-fail { border-left-color: #f85149 !important; }
+        .status-pass { border-left-color: #56d364 !important; }
+        .status-fail { border-left-color: #f85149 !important; }
         .question-nav { display: flex; gap: 12px; margin-top: 32px; }
         .question-btn { width: 48px; height: 48px; border-radius: 8px; border: 2px solid #30363d; background: #21262d; color: #8b949e; font-weight: 600; cursor: pointer; font-size: 16px; }
         .question-btn.current { background: #238636; border-color: #238636; color: white; }
     </style>
 </head>
 <body>
-<script>
-const CONTEST_PROBLEMS = {
-    'free-daily': [
-        {id: 'two-sum', title: 'Two Sum', difficulty: 'Easy', description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.`, examples: [{input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'}, {input: 'nums = [3,2,4], target = 6', output: '[1,2]'}]},
-        {id: 'valid-parentheses', title: 'Valid Parentheses', difficulty: 'Easy', description: `Given a string <code>s</code> containing just brackets, determine if it is valid.`, examples: [{input: 's = "()"', output: 'true'}, {input: 's = "(]"', output: 'false'}]},
-        {id: 'reverse-integer', title: 'Reverse Integer', difficulty: 'Medium', description: `Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.`, examples: [{input: 'x = 123', output: '321'}, {input: 'x = -123', output: '-321'}]}
-    ]
-};
-const urlParams = new URLSearchParams(window.location.search);
-let currentContest = CONTEST_PROBLEMS[urlParams.get('id') || 'free-daily'];
-let currentQuestionIndex = 0, timeLeft = 3600, isExamFinished = false;
-let editor = ace.edit("editor", {theme: "ace/theme/monokai", mode: "ace/mode/javascript", fontSize: 16, showPrintMargin: false, value: `function twoSum(nums, target) {
+    <div class="exam-header">
+        <div class="logo">
+            <div class="logo-icon">C</div>
+            CodeRush
+        </div>
+        <div class="timer-section">
+            <span style="font-weight: 600; color: #8b949e;">Q</span>
+            <span id="currentQ">1</span>/<span>3</span>
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 20px;">:</span>
+                <span id="timer">60:00</span>
+            </div>
+        </div>
+        <div class="exam-controls">
+            <button id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
+            <button onclick="runCode()">Run</button>
+            <select id="language-select" onchange="changeLanguage()">
+                <option value="javascript">JavaScript</option>
+                <option value="python">Python</option>
+                <option value="cpp">C++</option>
+            </select>
+            <button id="nextBtn" onclick="nextQuestion()">Next</button>
+            <button class="finish-btn" onclick="finishExam()">Finish Exam</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="problem-panel">
+            <h1 id="problem-title">Loading...</h1>
+            <div class="question-info">
+                <span class="difficulty" id="difficulty">Easy</span>
+            </div>
+            <div class="description" id="problem-description"></div>
+            <div class="examples" id="examples"></div>
+            <div class="question-nav" id="question-nav"></div>
+        </div>
+        <div class="editor-container">
+            <div class="editor-header">
+                <div style="flex: 1; color: #8b949e; font-size: 14px;">Code Editor</div>
+            </div>
+            <div id="editor" style="height: calc(100vh - 200px); width: 100%;"></div>
+            <div class="test-results" id="test-results" style="display: none;">
+                <h3>Test Results</h3>
+                <div id="test-cases-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CONTEST_PROBLEMS = {
+            'free-daily': [
+                {
+                    id: 'two-sum',
+                    title: 'Two Sum',
+                    difficulty: 'Easy',
+                    description: 'Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.',
+                    examples: [
+                        { input: 'nums = [2,7,11,15], target = 9', output: '[0,1]' },
+                        { input: 'nums = [3,2,4], target = 6', output: '[1,2]' },
+                        { input: 'nums = [3,3], target = 6', output: '[0,1]' }
+                    ]
+                },
+                {
+                    id: 'valid-parentheses',
+                    title: 'Valid Parentheses',
+                    difficulty: 'Easy',
+                    description: 'Given a string <code>s</code> containing just the characters \'()\', \'{}\' and \'[]\', determine if the input string is valid.',
+                    examples: [
+                        { input: 's = "()"', output: 'true' },
+                        { input: 's = "()[]{}"', output: 'true' },
+                        { input: 's = "(]"', output: 'false' }
+                    ]
+                },
+                {
+                    id: 'reverse-integer',
+                    title: 'Reverse Integer',
+                    difficulty: 'Medium',
+                    description: 'Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.',
+                    examples: [
+                        { input: 'x = 123', output: '321' },
+                        { input: 'x = -123', output: '-321' },
+                        { input: 'x = 120', output: '21' }
+                    ]
+                }
+            ]
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let currentContest = CONTEST_PROBLEMS[urlParams.get('id')] || CONTEST_PROBLEMS['free-daily'];
+        let currentQuestionIndex = 0;
+        let timeLeft = 3600; // 60 minutes
+        let isExamFinished = false;
+        let testResults = [];
+        let editor;
+
+        ace.require('ace/ext/language_tools');
+        editor = ace.edit('editor', {
+            theme: 'ace/theme/monokai',
+            mode: 'ace/mode/javascript',
+            fontSize: 16,
+            showPrintMargin: false,
+            value: `function twoSum(nums, target) {
     const map = new Map();
     for(let i = 0; i < nums.length; i++) {
         let complement = target - nums[i];
@@ -56,78 +148,122 @@ let editor = ace.edit("editor", {theme: "ace/theme/monokai", mode: "ace/mode/jav
         map.set(nums[i], i);
     }
     return [];
-}`});
-</script>
+}`
+        });
 
-<div class="exam-header">
-    <div class="logo"><div class="logo-icon">C</div>CodeRush</div>
-    <div class="timer-section">
-        <span style="font-weight: 600; color: #8b949e;">Q <span id="currentQ">1</span>/3</span>
-        <div style="display: flex; align-items: center; gap: 8px;"><span style="font-size: 20px;">⏰</span><span id="timer">60:00</span></div>
-    </div>
-    <div class="exam-controls">
-        <button id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
-        <button onclick="runCode()">Run</button>
-        <select id="language-select" onchange="changeLanguage()"><option value="javascript">JavaScript</option><option value="python">Python</option></select>
-        <button id="nextBtn" onclick="nextQuestion()">Next</button>
-        <button class="finish-btn" onclick="finishExam()">Finish</button>
-    </div>
-</div>
+        function loadProblem() {
+            const problem = currentContest[currentQuestionIndex];
+            document.getElementById('problem-title').textContent = problem.title;
+            document.getElementById('difficulty').textContent = problem.difficulty;
+            document.getElementById('problem-description').innerHTML = problem.description;
+            
+            let html = '<h3>Examples</h3>';
+            problem.examples.forEach((ex, i) => {
+                html += `
+                    <div style="margin-bottom:20px">
+                        <div style="color:#8b949e; font-size:14px; margin-bottom:8px">Example ${i+1}</div>
+                        <pre style="background:#161b22;padding:16px;border-radius:6px">${ex.input}</pre>
+                        <pre style="background:#161b22;padding:16px;border-radius:6px">Output: <span style="color:#7ee787">${ex.output}</span></pre>
+                    </div>`;
+            });
+            document.getElementById('examples').innerHTML = html;
+            
+            document.getElementById('question-nav').innerHTML = currentContest.map((_, i) => 
+                `<button class="question-btn ${i === currentQuestionIndex ? 'current' : ''}" onclick="goToQuestion(${i})">${i+1}</button>`
+            ).join('');
+            updateButtons();
+            document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
+        }
 
-<div class="main-container">
-    <div class="problem-panel">
-        <h1 id="problem-title">Loading...</h1>
-        <div class="question-info"><span class="difficulty" id="difficulty">Easy</span></div>
-        <div class="description" id="problem-description"></div>
-        <div class="examples" id="examples"></div>
-        <div class="question-nav" id="question-nav"></div>
-    </div>
-    <div class="editor-container">
-        <div class="editor-header"><div style="flex: 1; color: #8b949e; font-size: 14px;">Code Editor</div></div>
-        <div id="editor" style="height: calc(100vh - 200px); width: 100%;"></div>
-        <div class="test-results" id="test-results" style="display: none;"><h3>🧪 Test Results</h3><div id="test-cases-list"></div></div>
-    </div>
-</div>
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            loadProblem();
+        }
 
-<script>
-let testResults = [];
-function loadProblem() {
-    const problem = currentContest[currentQuestionIndex];
-    document.getElementById('problem-title').textContent = problem.title;
-    document.getElementById('difficulty').textContent = problem.difficulty;
-    document.getElementById('problem-description').innerHTML = problem.description;
-    let html = '<h3>Examples</h3>'; 
-    problem.examples.forEach((ex, i) => html += `<div style="margin-bottom:20px;"><div style="color:#8b949e;">Example ${i+1}:</div><pre style="background:#161b22;padding:16px;border-radius:6px;">${ex.input}</pre><pre style="background:#161b22;padding:16px;border-radius:6px;">Output: <span style="color:#7ee787;">${ex.output}</span></pre></div>`);
-    document.getElementById('examples').innerHTML = html;
-    document.getElementById('question-nav').innerHTML = currentContest.map((_, i) => `<button class="question-btn ${i===currentQuestionIndex?'current':''}" onclick="goToQuestion(${i})">${i+1}</button>`).join('');
-    updateButtons();
-}
-function goToQuestion(index) { currentQuestionIndex = index; loadProblem(); document.getElementById('currentQ').textContent = index+1; }
-function nextQuestion() { if(currentQuestionIndex < currentContest.length-1) { currentQuestionIndex++; loadProblem(); document.getElementById('currentQ').textContent = currentQuestionIndex+1; } }
-function prevQuestion() { if(currentQuestionIndex > 0) { currentQuestionIndex--; loadProblem(); document.getElementById('currentQ').textContent = currentQuestionIndex+1; } }
-function updateButtons() { document.getElementById('prevBtn').disabled = currentQuestionIndex === 0; document.getElementById('nextBtn').disabled = currentQuestionIndex === currentContest.length-1; }
-function runCode() {
-    const code = editor.getValue();
-    testResults = [];
-    currentContest[currentQuestionIndex].examples.forEach((test, i) => {
-        try {
-            if(test.input.includes('nums')) {
-                const nums = [2,7,11,15], target = 9;
-                const func = new Function('nums', 'target', code + '\nreturn twoSum(nums, target);');
-                const result = func(nums, target);
-                testResults.push({passed: JSON.stringify(result)==='[0,1]', index: i});
+        function nextQuestion() {
+            if(currentQuestionIndex < currentContest.length - 1) {
+                currentQuestionIndex++;
+                loadProblem();
             }
-        } catch(e) { testResults.push({passed: false, index: i}); }
-    });
-    document.getElementById('test-results').style.display = 'block';
-    document.getElementById('test-cases-list').innerHTML = testResults.map(r => `<div class="test-case ${r.passed?'status-pass':'status-fail'}"><span>Test ${r.index+1}</span><span>${r.passed?'✅ PASS':'❌ FAIL'}</span></div>`).join('');
-}
-function updateTimer() { if(!isExamFinished) { const m = Math.floor(timeLeft/60), s = timeLeft%60; document.getElementById('timer').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; if(timeLeft-- <= 0) finishExam(); } }
-function changeLanguage() { editor.session.setMode('ace/mode/javascript'); }
-function finishExam() { isExamFinished = true; alert('Exam Finished!'); }
-ace.require("ace/ext/language_tools");
-setInterval(updateTimer, 1000);
-document.addEventListener('DOMContentLoaded', () => { loadProblem(); updateTimer(); window.prevQuestion = prevQuestion; window.nextQuestion = nextQuestion; window.runCode = runCode; window.changeLanguage = changeLanguage; });
-</script>
+        }
+
+        function prevQuestion() {
+            if(currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                loadProblem();
+            }
+        }
+
+        function updateButtons() {
+            document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+            document.getElementById('nextBtn').disabled = currentQuestionIndex === currentContest.length - 1;
+        }
+
+        function runCode() {
+            const code = editor.getValue();
+            testResults = [];
+            const problem = currentContest[currentQuestionIndex];
+            
+            problem.examples.forEach((test, i) => {
+                try {
+                    if(test.input.includes('nums')) {
+                        const nums = [2,7,11,15], target = 9;
+                        const func = new Function('nums', 'target', `return (function() {${code}})()(nums, target)`);
+                        const result = func(nums, target);
+                        testResults.push({
+                            passed: JSON.stringify(result) === test.output,
+                            index: i
+                        });
+                    } else {
+                        testResults.push({ passed: false, index: i });
+                    }
+                } catch(e) {
+                    testResults.push({ passed: false, index: i });
+                }
+            });
+            
+            document.getElementById('test-results').style.display = 'block';
+            document.getElementById('test-cases-list').innerHTML = testResults.map(r => 
+                `<div class="test-case ${r.passed ? 'status-pass' : 'status-fail'}">
+                    <span>Test ${r.index + 1}</span>
+                    <span>${r.passed ? 'PASS' : 'FAIL'}</span>
+                </div>`
+            ).join('');
+        }
+
+        function updateTimer() {
+            if(!isExamFinished) {
+                const m = Math.floor(timeLeft / 60);
+                const s = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    m.toString().padStart(2,0) + ':' + s.toString().padStart(2,0);
+                if(timeLeft-- <= 0) finishExam();
+            }
+        }
+
+        function changeLanguage() {
+            const lang = document.getElementById('language-select').value;
+            editor.session.setMode('ace/mode/' + lang);
+        }
+
+        function finishExam() {
+            isExamFinished = true;
+            alert('Exam Finished! Score: ' + testResults.filter(r => r.passed).length + '/' + testResults.length);
+        }
+
+        // Initialize
+        ace.require('ace/ext/language_tools');
+        setInterval(updateTimer, 1000);
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProblem();
+            updateTimer();
+        });
+
+        // Global functions
+        window.prevQuestion = prevQuestion;
+        window.nextQuestion = nextQuestion;
+        window.runCode = runCode;
+        window.changeLanguage = changeLanguage;
+    </script>
 </body>
 </html>
