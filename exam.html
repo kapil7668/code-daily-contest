@@ -2,6 +2,11 @@
 <html>
 <head>
     <title>Exam - CodeRush</title>
+
+    <!-- Ace Editor CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.js"></script>
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -12,7 +17,6 @@
             overflow: hidden;
         }
         
-        /* HEADER */
         .exam-header {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -47,13 +51,11 @@
         }
         #timer { font-size: 24px; font-weight: 700; color: #f59e0b; }
         
-        /* BUTTONS */
         .exam-controls { display: flex; align-items: center; gap: 12px; }
         select, button {
             padding: 10px 16px; border: 1px solid #30363d;
             background: #21262d; color: #f8f8f2;
             border-radius: 6px; font-size: 14px; cursor: pointer;
-            transition: all 0.2s;
         }
         button:hover { background: #30363d; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -62,7 +64,6 @@
             border-color: transparent !important; font-weight: 600;
         }
         
-        /* MAIN LAYOUT */
         .main-container {
             display: flex; height: calc(100vh - 64px); margin-top: 64px;
         }
@@ -82,12 +83,10 @@
             padding: 6px 12px; background: #238636; color: white;
             border-radius: 20px; font-size: 12px; font-weight: 600;
         }
-        .description { 
-            font-size: 15px; line-height: 1.6; color: #c9d1d9;
-        }
+        .description { font-size: 15px; line-height: 1.6; color: #c9d1d9; }
         .description code {
-            background: #21262d !important; color: #7ee787 !important;
-            padding: 2px 6px !important; border-radius: 4px !important;
+            background: #21262d; color: #7ee787;
+            padding: 2px 6px; border-radius: 4px;
         }
         .examples h3 {
             color: #8b949e; font-size: 14px; margin: 24px 0 12px 0;
@@ -98,16 +97,10 @@
             font-size: 14px; line-height: 1.5;
         }
         
-        /* EDITOR */
         .editor-container { flex: 1; display: flex; flex-direction: column; background: #0d1117; }
         .editor-header {
             padding: 16px 24px; background: #21262d; border-bottom: 1px solid #30363d;
             display: flex; align-items: center; gap: 12px;
-        }
-        .code-editor {
-            flex: 1; background: #0d1117; color: #f8f8f2; border: none;
-            padding: 24px; font-size: 14px; font-family: 'SF Mono', monospace;
-            resize: none; outline: none; line-height: 1.5;
         }
         .test-results {
             background: #161b22; padding: 20px; border-top: 1px solid #30363d;
@@ -122,509 +115,359 @@
         .status-pass { border-left-color: #56d364 !important; }
         .status-fail { border-left-color: #f85149 !important; }
         
-        /* QUESTION NAV */
-        .question-nav {
-            display: flex; gap: 12px; margin-top: 32px;
-        }
+        .question-nav { display: flex; gap: 12px; margin-top: 32px; }
         .question-btn {
             width: 48px; height: 48px; border-radius: 8px;
             border: 2px solid #30363d; background: #21262d;
             color: #8b949e; font-weight: 600; cursor: pointer;
-            transition: all 0.2s; font-size: 16px;
+            font-size: 16px;
         }
         .question-btn.current { background: #238636; border-color: #238636; color: white; }
         .question-btn.read { background: #1f6feb; border-color: #1f6feb; color: white; }
     </style>
 </head>
 <body>
-    <!-- 21 QUESTIONS FROM contest-problems.js -->
-    <script>
-    const CONTEST_PROBLEMS = {
-        'free-daily': [  // Contest 1 - 3 Easy
-            {
-                id: 'two-sum', title: 'Two Sum', difficulty: 'Easy',
-                description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.`,
-                examples: [
-                    {input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'},
-                    {input: 'nums = [3,2,4], target = 6', output: '[1,2]'},
-                    {input: 'nums = [3,3], target = 6', output: '[0,1]'}
-                ]
-            },
-            {
-                id: 'valid-parentheses', title: 'Valid Parentheses', difficulty: 'Easy',
-                description: `Given a string <code>s</code> containing just the characters <code>'('</code>, <code>')'</code>, <code>'{'</code>, <code>'}'</code>, <code>'['</code> and <code>']'</code>, determine if the input string is valid.`,
-                examples: [
-                    {input: 's = "()"', output: 'true'},
-                    {input: 's = "()[]{}"', output: 'true'},
-                    {input: 's = "(]"', output: 'false'}
-                ]
-            },
-            {
-                id: 'reverse-integer', title: 'Reverse Integer', difficulty: 'Medium',
-                description: `Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.`,
-                examples: [
-                    {input: 'x = 123', output: '321'},
-                    {input: 'x = -123', output: '-321'},
-                    {input: 'x = 120', output: '21'}
-                ]
-            }
-        ],
-
-        'quick-9': [  // Contest 2 - 3 Easy
-            {
-                id: 'contains-duplicate', title: 'Contains Duplicate', difficulty: 'Easy',
-                description: `Given an integer array <code>nums</code>, return <code>true</code> if any value appears at least twice.`,
-                examples: [
-                    {input: 'nums = [1,2,3,1]', output: 'true'},
-                    {input: 'nums = [1,2,3,4]', output: 'false'},
-                    {input: 'nums = [1,1,1,3,3,4,3,2,4,2]', output: 'true'}
-                ]
-            },
-            {
-                id: 'roman-to-integer', title: 'Roman to Integer', difficulty: 'Easy',
-                description: `Roman numerals are represented by seven different symbols: <code>I</code>, <code>V</code>, <code>X</code>, <code>L</code>, <code>C</code>, <code>D</code> and <code>M</code>.`,
-                examples: [
-                    {input: 's = "III"', output: '3'},
-                    {input: 's = "LVIII"', output: '58'},
-                    {input: 's = "MCMXCIV"', output: '1994'}
-                ]
-            },
-            {
-                id: 'palindrome-number', title: 'Palindrome Number', difficulty: 'Easy',
-                description: `Given an integer <code>x</code>, return <code>true</code> if <code>x</code> is a palindrome.`,
-                examples: [
-                    {input: 'x = 121', output: 'true'},
-                    {input: 'x = -121', output: 'false'},
-                    {input: 'x = 10', output: 'false'}
-                ]
-            }
-        ],
-
-        'pro-19': [  // Contest 3 - 3 Easy-Medium
-            {
-                id: 'longest-common-prefix', title: 'Longest Common Prefix', difficulty: 'Easy',
-                description: `Write a function to find the longest common prefix string amongst an array of strings.`,
-                examples: [
-                    {input: 'strs = ["flower","flow","flight"]', output: '"fl"'},
-                    {input: 'strs = ["dog","racecar","car"]', output: '""'}
-                ]
-            },
-            {
-                id: 'climbing-stairs', title: 'Climbing Stairs', difficulty: 'Easy',
-                description: `You are climbing a staircase. It takes <code>n</code> steps to reach the top. In how many distinct ways can you climb?`,
-                examples: [
-                    {input: 'n = 2', output: '2'},
-                    {input: 'n = 3', output: '3'}
-                ]
-            },
-            {
-                id: 'merge-two-sorted-lists', title: 'Merge Two Sorted Lists', difficulty: 'Easy',
-                description: `Merge two sorted linked lists <code>list1</code> and <code>list2</code> into one sorted list.`,
-                examples: [
-                    {input: 'list1 = [1,2,4], list2 = [1,3,4]', output: '[1,1,2,3,4,4]'}
-                ]
-            }
-        ],
-
-        'weekly': [  // Contest 4 - 3 Medium
-            {
-                id: 'best-time-to-buy-and-sell-stock', title: 'Best Time to Buy and Sell Stock', difficulty: 'Easy',
-                description: `Given an array <code>prices</code> where <code>prices[i]</code> is the price of a stock on day <code>i</code>, find maximum profit.`,
-                examples: [
-                    {input: 'prices = [7,1,5,3,6,4]', output: '5'},
-                    {input: 'prices = [7,6,4,3,1]', output: '0'}
-                ]
-            },
-            {
-                id: 'valid-anagram', title: 'Valid Anagram', difficulty: 'Easy',
-                description: `Given two strings <code>s</code> and <code>t</code>, return <code>true</code> if <code>t</code> is an anagram of <code>s</code>.`,
-                examples: [
-                    {input: 's = "anagram", t = "nagaram"', output: 'true'},
-                    {input: 's = "rat", t = "car"', output: 'false'}
-                ]
-            },
-            {
-                id: 'rotate-array', title: 'Rotate Array', difficulty: 'Medium',
-                description: `Rotate array <code>nums</code> to the right by <code>k</code> steps.`,
-                examples: [
-                    {input: 'nums = [1,2,3,4,5,6,7], k = 3', output: '[5,6,7,1,2,3,4]'}
-                ]
-            }
-        ],
-
-        'bi-weekly': [  // Contest 5 - 3 Easy
-            {
-                id: 'move-zeroes', title: 'Move Zeroes', difficulty: 'Easy',
-                description: `Move all <code>0</code>'s to the end while maintaining relative order of non-zero elements.`,
-                examples: [
-                    {input: 'nums = [0,1,0,3,12]', output: '[1,3,12,0,0]'},
-                    {input: 'nums = [0]', output: '[0]'}
-                ]
-            },
-            {
-                id: 'single-number', title: 'Single Number', difficulty: 'Easy',
-                description: `Every element appears twice except one. Find that single one.`,
-                examples: [
-                    {input: 'nums = [2,2,1]', output: '1'},
-                    {input: 'nums = [4,1,2,1,2]', output: '4'}
-                ]
-            },
-            {
-                id: 'majority-element', title: 'Majority Element', difficulty: 'Easy',
-                description: `Return the majority element that appears more than <code>⌊n / 2⌋</code> times.`,
-                examples: [
-                    {input: 'nums = [3,2,3]', output: '3'},
-                    {input: 'nums = [2,2,1,1,1,2,2]', output: '2'}
-                ]
-            }
-        ],
-
-        'flash': [  // Contest 6 - 3 Easy
-            {
-                id: 'first-unique-character', title: 'First Unique Character', difficulty: 'Easy',
-                description: `Find the first non-repeating character in string <code>s</code> and return its index.`,
-                examples: [
-                    {input: 's = "leetcode"', output: '0'},
-                    {input: 's = "loveleetcode"', output: '2'}
-                ]
-            },
-            {
-                id: 'intersection-of-two-arrays', title: 'Intersection of Two Arrays', difficulty: 'Easy',
-                description: `Return array of intersection between <code>nums1</code> and <code>nums2</code>.`,
-                examples: [
-                    {input: 'nums1 = [1,2,2,1], nums2 = [2,2]', output: '[2,2]'},
-                    {input: 'nums1 = [4,9,5], nums2 = [9,4,9,8,4]', output: '[4,9]'}
-                ]
-            },
-            {
-                id: 'plus-one', title: 'Plus One', difficulty: 'Easy',
-                description: `Add one to large integer represented as array <code>digits</code>.`,
-                examples: [
-                    {input: 'digits = [1,2,3]', output: '[1,2,4]'},
-                    {input: 'digits = [9,9,9]', output: '[1,0,0,0]'}
-                ]
-            }
-        ],
-
-        'ultimate': [  // Contest 7 - 3 Hardest
-            {
-                id: 'container-with-most-water', title: 'Container With Most Water', difficulty: 'Medium',
-                description: `Find two lines that form container holding most water with x-axis.`,
-                examples: [
-                    {input: 'height = [1,8,6,2,5,4,8,3,7]', output: '49'}
-                ]
-            },
-            {
-                id: '3sum', title: '3Sum', difficulty: 'Medium',
-                description: `Return all triplets <code>[nums[i], nums[j], nums[k]]</code> that sum to 0.`,
-                examples: [
-                    {input: 'nums = [-1,0,1,2,-1,-4]', output: '[[-1,-1,2],[-1,0,1]]'}
-                ]
-            },
-            {
-                id: 'longest-substring-without-repeating', title: 'Longest Substring Without Repeating', difficulty: 'Medium',
-                description: `Find length of longest substring without repeating characters.`,
-                examples: [
-                    {input: 's = "abcabcbb"', output: '3'},
-                    {input: 's = "bbbbb"', output: '1'}
-                ]
-            }
-        ]
-    };
-
-    // Get contest from URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const contestId = urlParams.get('id') || 'free-daily';
-    const currentContest = CONTEST_PROBLEMS[contestId] || CONTEST_PROBLEMS['free-daily'];
-</script>
-
-    <!-- EXAM HEADER -->
-    <div class="exam-header">
-        <div class="logo">
-            <div class="logo-icon">C</div>
-            CodeRush
-        </div>
-        
-        <div class="timer-section">
-            <span style="font-weight: 600; color: #8b949e;">Q <span id="currentQ">1</span>/3</span>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 20px;">⏰</span>
-                <span id="timer">60:00</span>
-            </div>
-        </div>
-        
-        <div class="exam-controls">
-            <button id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
-            <button onclick="markRead()">Mark as Read</button>
-            <button onclick="runCode()">Run</button>
-            <select id="language-select" onchange="changeLanguage()">
-                <option value="javascript">JavaScript</option>
-                <option value="python">Python 3</option>
-                <option value="cpp">C++</option>
-            </select>
-            <button id="nextBtn" onclick="nextQuestion()">Next</button>
-            <button class="finish-btn" onclick="finishExam()">Finish Exam</button>
-        </div>
-    </div>
-
-    <div class="main-container">
-        <!-- LEFT: Problem Description -->
-        <div class="problem-panel">
-            <div class="question-info">
-                <span id="difficulty" class="difficulty">Easy</span>
-                <span id="acRate" style="color: #8b949e;">AC Rate: 85.3%</span>
-            </div>
-            <h1 id="problem-title">Two Sum</h1>
-            <div class="description" id="problem-description">
-                Loading problem...
-            </div>
-            <div class="examples" id="examples">
-                Loading examples...
-            </div>
-            
-            <!-- Question Navigation -->
-            <div class="question-nav" id="question-nav">
-                <button class="question-btn current" onclick="goToQuestion(0)">1</button>
-                <button class="question-btn" onclick="goToQuestion(1)">2</button>
-                <button class="question-btn" onclick="goToQuestion(2)">3</button>
-            </div>
-        </div>
-        <!-- RIGHT: Code Editor -->
-        <div class="editor-container">
-            <div class="editor-header">
-                <button onclick="runCode()">Run</button>
-                <button class="submit-btn" onclick="submitSolution()">Submit</button>
-            </div>
-            <!-- Ace Editor - VS Code जैसा -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.css" type="text/css" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.js"></script>
-<div id="editor" style="height: 400px; font-size: 14px; border: 1px solid #30363d; border-radius: 4px; background: #0d1117;"></div>
-
 <script>
+const CONTEST_PROBLEMS = {
+    'free-daily': [
+        {
+            id: 'two-sum', title: 'Two Sum', difficulty: 'Easy',
+            description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.`,
+            examples: [
+                {input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'},
+                {input: 'nums = [3,2,4], target = 6', output: '[1,2]'},
+                {input: 'nums = [3,3], target = 6', output: '[0,1]'}
+            ]
+        },
+        {
+            id: 'valid-parentheses', title: 'Valid Parentheses', difficulty: 'Easy',
+            description: `Given a string <code>s</code> containing just brackets, determine if it is valid.`,
+            examples: [
+                {input: 's = "()"', output: 'true'},
+                {input: 's = "()[]{}"', output: 'true'},
+                {input: 's = "(]"', output: 'false'}
+            ]
+        },
+        {
+            id: 'reverse-integer', title: 'Reverse Integer', difficulty: 'Medium',
+            description: `Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.`,
+            examples: [
+                {input: 'x = 123', output: '321'},
+                {input: 'x = -123', output: '-321'},
+                {input: 'x = 120', output: '21'}
+            ]
+        }
+    ],
+    'quick-9': [
+        {
+            id: 'contains-duplicate', title: 'Contains Duplicate', difficulty: 'Easy',
+            description: `Given an integer array <code>nums</code>, return <code>true</code> if any value appears at least twice.`,
+            examples: [
+                {input: 'nums = [1,2,3,1]', output: 'true'},
+                {input: 'nums = [1,2,3,4]', output: 'false'}
+            ]
+        }
+    ]
+};
+
+const urlParams = new URLSearchParams(window.location.search);
+const contestId = urlParams.get('id') || 'free-daily';
+let currentContest = CONTEST_PROBLEMS[contestId] || CONTEST_PROBLEMS['free-daily'];
+
+let currentQuestionIndex = 0;
+let timeLeft = 60 * 60;
+let isExamFinished = false;
+let testResults = [];
+
+// Ace Editor
 ace.require("ace/ext/language_tools");
-var editor = ace.edit("editor", {
+let editor = ace.edit("editor", {
     theme: "ace/theme/monokai",
     mode: "ace/mode/javascript",
     fontSize: 16,
     showPrintMargin: false,
-    wrap: true,
-    autoScrollEditorIntoView: true
-});
-editor.session.setValue(`/**
- * @param {number[]} nums
- * @param {number} target
- * @return {number[]}
- */
-var twoSum = function(nums, target) {
+    showGutter: true,
+    useWorker: false,
+    value: `function twoSum(nums, target) {
     const map = new Map();
-    for (let i = 0; i < nums.length; i++) {
-        const complement = target - nums[i];
-        if (map.has(complement)) {
+    for(let i = 0; i < nums.length; i++) {
+        let complement = target - nums[i];
+        if(map.has(complement)) {
             return [map.get(complement), i];
         }
         map.set(nums[i], i);
     }
     return [];
-};`);
-</script>
+}`
+});
 
-        // GLOBAL STATE
-        let currentQuestion = 0;
-        let timeLeft = 3600;
-        let questionStatus = {0: 'current', 1: 'unread', 2: 'unread'};
-        
-        // Load current problem
-        function loadProblem() {
-    const problem = currentContest[currentQuestion];
+const LANGUAGE_TEMPLATES = {
+    javascript: `function twoSum(nums, target) {
+    const map = new Map();
+    for(let i = 0; i < nums.length; i++) {
+        let complement = target - nums[i];
+        if(map.has(complement)) {
+            return [map.get(complement), i];
+        }
+        map.set(nums[i], i);
+    }
+    return [];
+}`,
+    python: `def twoSum(nums, target):
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+    return []`,
+    cpp: `#include <vector>
+#include <unordered_map>
+using namespace std;
+
+vector<int> twoSum(vector<int>& nums, int target) {
+    unordered_map<int, int> map;
+    for (int i = 0; i < nums.size(); i++) {
+        int complement = target - nums[i];
+        if (map.count(complement)) {
+            return {map[complement], i};
+        }
+        map[nums[i]] = i;
+    }
+    return {};
+}`
+};
+
+function loadProblem() {
+    const problem = currentContest[currentQuestionIndex];
+    if (!problem) return;
+    
     document.getElementById('problem-title').textContent = problem.title;
     document.getElementById('difficulty').textContent = problem.difficulty;
-    
-    // Description
     document.getElementById('problem-description').innerHTML = problem.description;
     
-    // Examples
-    let examplesHtml = '';
+    let examplesHtml = '<h3>Examples</h3>';
     problem.examples.forEach((ex, i) => {
         examplesHtml += `
-            <h3>Example ${i+1}:</h3>
-            <pre><strong>Input:</strong> ${ex.input}<br><strong>Output:</strong> ${ex.output}</pre>
+            <div style="margin-bottom: 20px;">
+                <div style="color: #8b949e; font-size: 14px; margin-bottom: 8px;">Example ${i+1}:</div>
+                <pre style="background: #161b22; padding: 16px; border-radius: 6px;">Input: ${ex.input}</pre>
+                <pre style="background: #161b22; padding: 16px; border-radius: 6px;">Output: <span style="color: #7ee787;">${ex.output}</span></pre>
+            </div>
         `;
     });
     document.getElementById('examples').innerHTML = examplesHtml;
     
-    // ✅ NEW: Dynamic Test Cases
-    let testCasesHtml = '';
-    problem.examples.forEach((ex, i) => {
-        testCasesHtml += `
-            <div class="test-case">
-                <span>Case ${i+1}: ${ex.input}</span>
-                <span style="color: #8b949e;">Expected: ${ex.output}</span>
+    updateQuestionNav();
+    updateButtons();
+}
+
+function runCode() {
+    const userCode = editor.getValue();
+    const problem = currentContest[currentQuestionIndex];
+    const testCases = problem.examples;
+    testResults = [];
+    
+    testCases.forEach((test, index) => {
+        try {
+            const inputMatch = test.input.match(/nums\s*=\s*\[([^\]]+)\],\s*target\s*=\s*(\d+)/);
+            if (inputMatch) {
+                const numsStr = inputMatch[1];
+                const nums = numsStr.split(',').map(n => parseInt(n.trim()));
+                const target = parseInt(inputMatch[2]);
+                
+                const func = new Function('nums', 'target', userCode + '\nreturn twoSum(nums, target);');
+                const result = func(nums, target);
+                
+                const expected = JSON.parse(test.output);
+                const isPass = JSON.stringify(result) === JSON.stringify(expected);
+                
+                testResults.push({
+                    index: index,
+                    input: test.input,
+                    expected: test.output,
+                    got: JSON.stringify(result),
+                    passed: isPass
+                });
+            }
+        } catch (e) {
+            testResults.push({
+                index: index,
+                input: test.input,
+                expected: test.output,
+                got: 'Error: ' + e.message,
+                passed: false
+            });
+        }
+    });
+    
+    displayTestResults();
+}
+
+function displayTestResults() {
+    let html = '';
+    testResults.forEach(result => {
+        const statusClass = result.passed ? 'status-pass' : 'status-fail';
+        html += `
+            <div class="test-case ${statusClass}">
+                <span>Test ${result.index + 1}</span>
+                <span>${result.passed ? '✅ PASS' : '❌ FAIL'}</span>
             </div>
         `;
     });
-    document.getElementById('test-cases').innerHTML = testCasesHtml;
-    
-    // ✅ NEW: Language Template
-    loadLanguageTemplate(problem.id);
-    
-    // Update question nav
-    updateQuestionNav();
-    document.getElementById('currentQ').textContent = currentQuestion + 1;
-    updateButtons();
-}
-// Language Templates
-function loadLanguageTemplate(problemId) {
-    const lang = document.getElementById('language-select').value;
-    const templates = {
-        'javascript': '// Write your solution here\n// Example for Two Sum:\n// var twoSum = function(nums, target) {\n//     return [];\n// };',
-        'python': '# Write your solution here\ndef solve():\n    pass',
-        'cpp': '// C++ Template\nclass Solution {\npublic:\n    // Write your code here\n};',
-        'java': '// Java Template\nclass Solution {\n    public static void main(String[] args) {\n        // Write your code here\n    }\n}'
-    };
-    document.getElementById('code-editor').value = templates[lang] || '// Write your solution here';
+    document.getElementById('test-cases-list').innerHTML = html;
 }
 
-// Language change handler
-function changeLanguage() {
-    if (currentContest && currentContest[currentQuestion]) {
-        loadLanguageTemplate(currentContest[currentQuestion].id);
+function updateTimer() {
+    if (isExamFinished) return;
+    
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    document.getElementById('timer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (timeLeft > 0) {
+        timeLeft--;
+    } else {
+        finishExam();
     }
 }
-        
-        // Navigation functions
-        function prevQuestion() {
-            if (currentQuestion > 0) {
-                questionStatus[currentQuestion] = 'read';
-                currentQuestion--;
-                loadProblem();
-            }
-        }
-        
-        function nextQuestion() {
-            if (currentQuestion < currentContest.length - 1) {
-                questionStatus[currentQuestion] = 'read';
-                currentQuestion++;
-                loadProblem();
-            }
-        }
-        
-        function goToQuestion(index) {
-            questionStatus[currentQuestion] = 'read';
-            currentQuestion = index;
-            loadProblem();
-        }
-        
-        function markRead() {
-            questionStatus[currentQuestion] = 'read';
-            updateQuestionNav();
-        }
-        
-        function changeLanguage() {
-            console.log('Language changed to:', document.getElementById('language-select').value);
-        }
-        
-       function runCode() {
-    const code = document.getElementById('code-editor').value.trim();
-    if (!code || code.includes('// Write your solution here')) {
-        alert('⚠️ Please write your solution first!');
-        return;
+
+function nextQuestion() {
+    if (currentQuestionIndex < currentContest.length - 1) {
+        currentQuestionIndex++;
+        loadProblem();
+        document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
     }
-    
-    const testCasesDiv = document.getElementById('test-cases');
-    const problem = currentContest[currentQuestion];
-    
-    testCasesDiv.innerHTML = '';
-    
-    problem.examples.forEach((example, i) => {
-        const testCase = document.createElement('div');
-        testCase.className = 'test-case';
-        testCase.innerHTML = `
-            <span>Case ${i+1}: ${example.input}</span>
-            <span id="case${i}-result" style="color: #8b949e;">Running...</span>
-        `;
-        testCasesDiv.appendChild(testCase);
-        
-        setTimeout(() => {
-            try {
-                // REAL JavaScript EXECUTION
-                const func = new Function('nums', 'target', code);
-                let result;
-                
-                if (problem.id === 'two-sum') {
-                    // Two Sum specific test
-                    const nums = example.input.match(/\[([^\]]+)\]/)[1].split(',').map(Number);
-                    const target = parseInt(example.input.match(/target = (\d+)/)[1]);
-                    result = func(nums, target);
-                } else if (problem.id === 'valid-parentheses') {
-                    result = func(example.input.replace(/s = /, ''));
-                } else if (problem.id === 'reverse-integer') {
-                    result = func(parseInt(example.input.match(/x = ([-]?\d+)/)[1]));
-                } else {
-                    result = 'Test not implemented';
-                }
-                
-                const expected = problem.examples[i].output;
-                const resultEl = document.getElementById(`case${i}-result`);
-                
-                // STRICT comparison
-                if (JSON.stringify(result) === JSON.stringify(expected)) {
-                    resultEl.innerHTML = `Expected: ${expected} | Got: ${result} ✓`;
-                    resultEl.style.color = '#56d364';
-                    testCase.className = 'test-case status-pass';
-                } else {
-                    resultEl.innerHTML = `Expected: ${expected} | Got: ${result} ✗`;
-                    resultEl.style.color = '#f85149';
-                    testCase.className = 'test-case status-fail';
-                }
-            } catch(e) {
-                document.getElementById(`case${i}-result`).innerHTML = `Runtime Error: ${e.message}`;
-                testCase.className = 'test-case status-fail';
-            }
-        }, i * 300);
+}
+
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        loadProblem();
+        document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
+    }
+}
+
+function markRead() {
+    const btn = event.target;
+    btn.textContent = 'Marked!';
+    btn.style.background = '#238636';
+    setTimeout(() => {
+        btn.textContent = 'Mark as Read';
+        btn.style.background = '';
+    }, 2000);
+}
+
+function updateQuestionNav() {
+    const nav = document.getElementById('question-nav');
+    let navHtml = '';
+    currentContest.forEach((_, i) => {
+        const isCurrent = i === currentQuestionIndex;
+        navHtml += `<button class="question-btn ${isCurrent ? 'current' : ''}" onclick="currentQuestionIndex=${i}; loadProblem(); updateButtons();">${i+1}</button>`;
     });
+    nav.innerHTML = navHtml;
 }
 
-        
-        function submitSolution() {
-            alert('✅ Solution Submitted Successfully!');
-        }
-        
-        function finishExam() {
-            if (confirm('🎉 Finish Exam? Your progress will be saved.')) {
-                alert('✅ Exam Completed Successfully!\nRedirecting to dashboard...');
-                window.location.href = 'dashboard.html';
-            }
-        }
-        
-        function updateButtons() {
-            document.getElementById('prevBtn').disabled = currentQuestion === 0;
-            document.getElementById('nextBtn').disabled = currentQuestion === currentContest.length - 1;
-        }
-        
-        // Timer
-        function updateTimer() {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            
-            if (timeLeft <= 300) { // Last 5 minutes - Red
-                document.getElementById('timer').style.color = '#f85149';
-            }
-            
-            if (timeLeft <= 0) {
-                alert('⏰ Time Up! Exam submitted automatically.');
-                finishExam();
-                return;
-            }
-            timeLeft--;
-        }
-        
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            loadProblem();
-            updateTimer();
-            setInterval(updateTimer, 1000);
-        });
-    </script>
+function updateButtons() {
+    document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+    document.getElementById('nextBtn').disabled = currentQuestionIndex === currentContest.length - 1;
+    document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
+}
+
+function changeLanguage() {
+    const lang = document.getElementById('language-select').value;
+    let template = LANGUAGE_TEMPLATES[lang] || LANGUAGE_TEMPLATES.javascript;
+    editor.session.setMode(`ace/mode/${lang === 'cpp' ? 'c_cpp' : lang}`);
+    editor.setValue(template);
+}
+
+function submitCode() {
+    const passedTests = testResults.filter(r => r.passed).length;
+    if (passedTests === testResults.length) {
+        alert('✅ PERFECT! Question Submitted Successfully! 🎉');
+        nextQuestion();
+    } else {
+        alert(`❌ Fix ${testResults.length - passedTests} more test cases!`);
+    }
+}
+
+function finishExam() {
+    isExamFinished = true;
+    alert(`Exam Finished! Score: ${testResults.filter(r => r.passed).length}/${testResults.length}`);
+}
+
+// HTML Structure
+</script>
+
+<div class="exam-header">
+    <div class="logo">
+        <div class="logo-icon">C</div>
+        CodeRush
+    </div>
+    <div class="timer-section">
+        <span style="font-weight: 600; color: #8b949e;">Q <span id="currentQ">1</span>/3</span>
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 20px;">⏰</span>
+            <span id="timer">60:00</span>
+        </div>
+    </div>
+    <div class="exam-controls">
+        <button id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
+        <button onclick="markRead()">Mark as Read</button>
+        <button onclick="runCode()">Run</button>
+        <select id="language-select" onchange="changeLanguage()">
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python 3</option>
+            <option value="cpp">C++</option>
+        </select>
+        <button id="nextBtn" onclick="nextQuestion()">Next</button>
+        <button class="finish-btn" onclick="finishExam()">Finish Exam</button>
+    </div>
+</div>
+
+<div class="main-container">
+    <div class="problem-panel">
+        <h1 id="problem-title">Two Sum</h1>
+        <div class="question-info">
+            <span class="difficulty" id="difficulty">Easy</span>
+            <span>9 solves</span>
+        </div>
+        <div class="description" id="problem-description"></div>
+        <div class="examples" id="examples"></div>
+        <div class="question-nav" id="question-nav"></div>
+    </div>
+
+    <div class="editor-container">
+        <div class="editor-header">
+            <div style="flex: 1;">
+                <span style="color: #8b949e; font-size: 14px;">editor.getValue()</span>
+            </div>
+            <button onclick="runCode()" style="padding: 8px 16px; background: #238636; color: white; border: none; border-radius: 6px; cursor: pointer;">Run</button>
+            <button onclick="submitCode()" style="padding: 8px 16px; background: #1f6feb; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 8px;">Submit</button>
+        </div>
+        <div id="editor" style="height: calc(100vh - 200px); width: 100%; font-size: 14px;"></div>
+        <div class="test-results" id="test-results">
+            <h3>🧪 Test Results</h3>
+            <div id="test-cases-list"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+window.nextQuestion = nextQuestion;
+window.prevQuestion = prevQuestion;
+window.markRead = markRead;
+window.runCode = runCode;
+window.finishExam = finishExam;
+window.changeLanguage = changeLanguage;
+window.submitCode = submitCode;
+
+document.addEventListener('DOMContentLoaded', function() {
+    loadProblem();
+    updateTimer();
+    setInterval(updateTimer, 1000);
+});
+</script>
 </body>
 </html>
