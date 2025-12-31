@@ -91,32 +91,42 @@
     </div>
 
     <script>
+        // 7 CONTESTS - BUILT IN (NO JSON NEEDED)
+        const CONTESTS = {
+            'free-daily': [
+                { title: 'Two Sum', difficulty: 'Easy', desc: 'Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.', examples: [{input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'}, {input: 'nums = [3,2,4], target = 6', output: '[1,2]'}], tests: [[[2,7,11,15],9,[0,1]], [[3,2,4],6,[1,2]]], template: 'function twoSum(nums, target) {\n  // Write your code here\n}' },
+                { title: 'Valid Parentheses', difficulty: 'Easy', desc: 'Given a string <code>s</code> containing just the characters \'()\', \'[]\' and \'{}\', determine if the input string is valid.', examples: [{input: 's = "()[]{}"', output: 'true'}, {input: 's = "(]"', output: 'false'}], tests: [['()[]{}',true], ['(]',false]], template: 'function isValid(s) {\n  // Write your code here\n}' },
+                { title: 'Reverse Integer', difficulty: 'Medium', desc: 'Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.', examples: [{input: 'x = 123', output: '321'}, {input: 'x = -123', output: '-321'}], tests: [[123,321], [-123,-321]], template: 'function reverse(x) {\n  // Write your code here\n}' }
+            ],
+            'free-mega': [
+                { title: 'Longest Common Prefix', difficulty: 'Easy', desc: 'Write a function to find the longest common prefix string amongst an array of strings.', examples: [{input: '["flower","flow","flight"]', output: '"fl"'}], tests: [['flower,flow,flight','fl']], template: 'function longestCommonPrefix(strs) {\n  // Write your code here\n}' },
+                { title: 'Contains Duplicate', difficulty: 'Easy', desc: 'Given an integer array <code>nums</code>, return <code>true</code> if any value appears at least twice.', examples: [{input: 'nums = [1,2,3,1]', output: 'true'}], tests: [[[1,2,3,1],true], [[1,2,3,4],false]], template: 'function containsDuplicate(nums) {\n  // Write your code here\n}' },
+                { title: 'Move Zeroes', difficulty: 'Easy', desc: 'Given an integer array <code>nums</code>, move all <code>0</code>\'s to the end while maintaining relative order.', examples: [{input: 'nums = [0,1,0,3,12]', output: '[1,3,12,0,0]'}], tests: [[0,1,0,3,12],[1,3,12,0,0]], template: 'function moveZeroes(nums) {\n  // Write your code here\n}' }
+            ],
+            'quick-9': [
+                { title: 'First Unique Character', difficulty: 'Easy', desc: 'Given a string <code>s</code>, find the first non-repeating character and return its index.', examples: [{input: 's = "leetcode"', output: '0'}], tests: [['leetcode',0], ['loveleetcode',2]], template: 'function firstUniqChar(s) {\n  // Write your code here\n}' },
+                { title: 'Palindrome Number', difficulty: 'Easy', desc: 'Given an integer <code>x</code>, return <code>true</code> if <code>x</code> is a palindrome.', examples: [{input: 'x = 121', output: 'true'}], tests: [[121,true], [10,false]], template: 'function isPalindrome(x) {\n  // Write your code here\n}' },
+                { title: 'Climbing Stairs', difficulty: 'Easy', desc: 'You can climb 1 or 2 steps at a time. Return ways to reach top of <code>n</code> stairs.', examples: [{input: 'n = 2', output: '2'}], tests: [[2,2], [3,3]], template: 'function climbStairs(n) {\n  // Write your code here\n}' }
+            ]
+        };
+
         let qidx=0, time=3600, finished=false, results=[], editor;
         let contestId = new URLSearchParams(window.location.search).get('id') || 'free-daily';
-
-        // LOAD 7 CONTESTS FROM JSON
-        fetch('questions.json').then(r=>r.json()).then(questions=>{
-            const contest = questions[contestId];
-            if(!contest) { alert('Contest not found!'); return; }
-            
-            window.questions = questions;
-            window.currentContest = contest;
-            loadQ(); updateTimer(); updateBtns();
-        });
+        let currentContest = CONTESTS[contestId] || CONTESTS['free-daily'];
 
         editor = ace.edit("editor", {
             theme: "ace/theme/monokai", mode: "ace/mode/javascript", fontSize: 16,
-            showPrintMargin: false, wrap: true
+            showPrintMargin: false
         });
 
         function loadQ() {
-            const q = window.currentContest[qidx];
+            const q = currentContest[qidx];
             document.getElementById('title').textContent = q.title;
             document.getElementById('diff').textContent = q.difficulty;
-            document.getElementById('desc').innerHTML = q.desc || `${q.title} - Solve this problem.`;
+            document.getElementById('desc').innerHTML = q.desc;
             
             let exhtml = '<h3>Examples</h3>';
-            q.examples?.forEach((ex,i)=>{
+            q.examples.forEach((ex,i)=>{
                 exhtml += `<div class="example">
                     <div class="example-label">Example ${i+1}</div>
                     <pre>${ex.input}</pre>
@@ -126,28 +136,28 @@
             document.getElementById('examples').innerHTML = exhtml;
             
             document.getElementById('qnav').innerHTML = 
-                window.currentContest.map((_,i)=> 
+                currentContest.map((_,i)=> 
                     `<button class="qbtn ${i===qidx?'current':''}" onclick="goToQ(${i})">${i+1}</button>`
                 ).join('');
             
-            editor.setValue(q.template || '// Write your solution here', -1);
+            editor.setValue(q.template, -1);
             document.getElementById('currentQ').textContent = qidx+1;
-            document.getElementById('totalQ').textContent = window.currentContest.length;
+            document.getElementById('totalQ').textContent = currentContest.length;
             document.getElementById('results').style.display = 'none';
             updateBtns();
         }
 
         function goToQ(i) { qidx=i; loadQ(); }
-        function nextQ() { if(qidx < window.currentContest.length-1) { qidx++; loadQ(); } }
+        function nextQ() { if(qidx < currentContest.length-1) { qidx++; loadQ(); } }
         function prevQ() { if(qidx > 0) { qidx--; loadQ(); } }
         function updateBtns() {
             document.getElementById('prev').disabled = qidx === 0;
-            document.getElementById('next').disabled = qidx === window.currentContest.length-1;
+            document.getElementById('next').disabled = qidx === currentContest.length-1;
         }
 
         function runCode() {
             results = [];
-            const q = window.currentContest[qidx];
+            const q = currentContest[qidx];
             q.tests.forEach((test,i)=>{
                 try {
                     const params = test.slice(0,-1).map(JSON.stringify).join(',');
@@ -198,6 +208,8 @@
             alert(`Exam Finished! Score: ${results.filter(r=>r.pass).length}/${results.length}`);
         }
 
+        // START
+        loadQ();
         setInterval(updateTimer, 1000);
         window.goToQ=goToQ; window.nextQ=nextQ; window.prevQ=prevQ; 
         window.runCode=runCode; window.submitCode=submitCode; window.changeLang=changeLang;
