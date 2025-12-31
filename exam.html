@@ -2,11 +2,8 @@
 <html>
 <head>
     <title>Exam - CodeRush</title>
-
-    <!-- Ace Editor CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.35.0/ace.js"></script>
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -16,32 +13,18 @@
             height: 100vh;
             overflow: hidden;
         }
-        
         .exam-header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            background: #1e1e1e;
-            border-bottom: 1px solid #30363d;
-            padding: 16px 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 100;
-            height: 64px;
+            position: fixed; top: 0; left: 0; right: 0;
+            background: #1e1e1e; border-bottom: 1px solid #30363d;
+            padding: 16px 32px; display: flex; align-items: center;
+            justify-content: space-between; z-index: 100; height: 64px;
         }
-        .logo { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px;
-            font-size: 20px;
-            font-weight: 700;
-            color: #58a6ff;
+        .logo { display: flex; align-items: center; gap: 12px;
+            font-size: 20px; font-weight: 700; color: #58a6ff;
         }
         .logo-icon {
-            width: 32px; height: 32px;
-            background: linear-gradient(135deg, #00d4aa, #00aaff);
-            border-radius: 8px;
-            display: flex; align-items: center; justify-content: center;
+            width: 32px; height: 32px; background: linear-gradient(135deg, #00d4aa, #00aaff);
+            border-radius: 8px; display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: 18px; color: white;
         }
         .timer-section {
@@ -50,404 +33,109 @@
             border: 1px solid #30363d;
         }
         #timer { font-size: 24px; font-weight: 700; color: #f59e0b; }
-        
         .exam-controls { display: flex; align-items: center; gap: 12px; }
         select, button {
             padding: 10px 16px; border: 1px solid #30363d;
-            background: #21262d; color: #f8f8f2;
-            border-radius: 6px; font-size: 14px; cursor: pointer;
+            background: #21262d; color: #f8f8f2; border-radius: 6px;
+            font-size: 14px; cursor: pointer;
         }
         button:hover { background: #30363d; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .finish-btn { 
-            background: linear-gradient(135deg, #7c3aed, #ec4899) !important;
+        .finish-btn { background: linear-gradient(135deg, #7c3aed, #ec4899) !important;
             border-color: transparent !important; font-weight: 600;
         }
-        
-        .main-container {
-            display: flex; height: calc(100vh - 64px); margin-top: 64px;
-        }
+        .main-container { display: flex; height: calc(100vh - 64px); margin-top: 64px; }
         .problem-panel {
             flex: 0 0 40%; padding: 32px; background: #1e1e1e;
             border-right: 1px solid #30363d; overflow-y: auto;
         }
-        #problem-title { 
-            color: #58a6ff; font-size: 28px; font-weight: 700;
-            margin-bottom: 24px;
-        }
-        .question-info {
-            display: flex; align-items: center; gap: 16px;
-            margin-bottom: 24px; color: #8b949e; font-size: 14px;
-        }
-        .difficulty { 
-            padding: 6px 12px; background: #238636; color: white;
-            border-radius: 20px; font-size: 12px; font-weight: 600;
-        }
+        #problem-title { color: #58a6ff; font-size: 28px; font-weight: 700; margin-bottom: 24px; }
+        .question-info { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; color: #8b949e; font-size: 14px; }
+        .difficulty { padding: 6px 12px; background: #238636; color: white; border-radius: 20px; font-size: 12px; font-weight: 600; }
         .description { font-size: 15px; line-height: 1.6; color: #c9d1d9; }
-        .description code {
-            background: #21262d; color: #7ee787;
-            padding: 2px 6px; border-radius: 4px;
-        }
-        .examples h3 {
-            color: #8b949e; font-size: 14px; margin: 24px 0 12px 0;
-            font-weight: 500;
-        }
-        .examples pre {
-            background: #161b22; padding: 16px; border-radius: 6px;
-            font-size: 14px; line-height: 1.5;
-        }
-        
+        .description code { background: #21262d; color: #7ee787; padding: 2px 6px; border-radius: 4px; }
+        .examples h3 { color: #8b949e; font-size: 14px; margin: 24px 0 12px 0; font-weight: 500; }
+        .examples pre { background: #161b22; padding: 16px; border-radius: 6px; font-size: 14px; line-height: 1.5; }
         .editor-container { flex: 1; display: flex; flex-direction: column; background: #0d1117; }
-        .editor-header {
-            padding: 16px 24px; background: #21262d; border-bottom: 1px solid #30363d;
-            display: flex; align-items: center; gap: 12px;
-        }
-        .test-results {
-            background: #161b22; padding: 20px; border-top: 1px solid #30363d;
-            flex-shrink: 0;
-        }
+        .editor-header { padding: 16px 24px; background: #21262d; border-bottom: 1px solid #30363d; display: flex; align-items: center; gap: 12px; }
+        .test-results { background: #161b22; padding: 20px; border-top: 1px solid #30363d; flex-shrink: 0; }
         .test-results h3 { color: #8b949e; font-size: 14px; margin-bottom: 12px; }
-        .test-case {
-            display: flex; justify-content: space-between; padding: 12px 16px;
-            background: #0d1117; margin: 8px 0; border-radius: 6px;
-            border-left: 4px solid #58a6ff; font-size: 14px;
-        }
+        .test-case { display: flex; justify-content: space-between; padding: 12px 16px; background: #0d1117; margin: 8px 0; border-radius: 6px; border-left: 4px solid #58a6ff; font-size: 14px; }
         .status-pass { border-left-color: #56d364 !important; }
         .status-fail { border-left-color: #f85149 !important; }
-        
         .question-nav { display: flex; gap: 12px; margin-top: 32px; }
-        .question-btn {
-            width: 48px; height: 48px; border-radius: 8px;
-            border: 2px solid #30363d; background: #21262d;
-            color: #8b949e; font-weight: 600; cursor: pointer;
-            font-size: 16px;
-        }
+        .question-btn { width: 48px; height: 48px; border-radius: 8px; border: 2px solid #30363d; background: #21262d; color: #8b949e; font-weight: 600; cursor: pointer; font-size: 16px; }
         .question-btn.current { background: #238636; border-color: #238636; color: white; }
-        .question-btn.read { background: #1f6feb; border-color: #1f6feb; color: white; }
     </style>
 </head>
 <body>
 <script>
 const CONTEST_PROBLEMS = {
     'free-daily': [
-        {
-            id: 'two-sum', title: 'Two Sum', difficulty: 'Easy',
-            description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.`,
-            examples: [
-                {input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'},
-                {input: 'nums = [3,2,4], target = 6', output: '[1,2]'},
-                {input: 'nums = [3,3], target = 6', output: '[0,1]'}
-            ]
-        },
-        {
-            id: 'valid-parentheses', title: 'Valid Parentheses', difficulty: 'Easy',
-            description: `Given a string <code>s</code> containing just brackets, determine if it is valid.`,
-            examples: [
-                {input: 's = "()"', output: 'true'},
-                {input: 's = "()[]{}"', output: 'true'},
-                {input: 's = "(]"', output: 'false'}
-            ]
-        },
-        {
-            id: 'reverse-integer', title: 'Reverse Integer', difficulty: 'Medium',
-            description: `Given a signed 32-bit integer <code>x</code>, return <code>x</code> with its digits reversed.`,
-            examples: [
-                {input: 'x = 123', output: '321'},
-                {input: 'x = -123', output: '-321'},
-                {input: 'x = 120', output: '21'}
-            ]
-        }
-    ],
-    'quick-9': [
-        {
-            id: 'contains-duplicate', title: 'Contains Duplicate', difficulty: 'Easy',
-            description: `Given an integer array <code>nums</code>, return <code>true</code> if any value appears at least twice.`,
-            examples: [
-                {input: 'nums = [1,2,3,1]', output: 'true'},
-                {input: 'nums = [1,2,3,4]', output: 'false'}
-            ]
+        {id: 'two-sum', title: 'Two Sum', difficulty: 'Easy',
+         description: `Given an array of integers <code>nums</code> and an integer <code>target</code>, return indices of the two numbers such that they add up to <code>target</code>.`,
+         examples: [
+            {input: 'nums = [2,7,11,15], target = 9', output: '[0,1]'},
+            {input: 'nums = [3,2,4], target = 6', output: '[1,2]'},
+            {input: 'nums = [3,3], target = 6', output: '[0,1]'}
+         ]
         }
     ]
 };
-
 const urlParams = new URLSearchParams(window.location.search);
 const contestId = urlParams.get('id') || 'free-daily';
 let currentContest = CONTEST_PROBLEMS[contestId] || CONTEST_PROBLEMS['free-daily'];
-
-let currentQuestionIndex = 0;
-let timeLeft = 60 * 60;
-let isExamFinished = false;
-let testResults = [];
-
-// Ace Editor
-ace.require("ace/ext/language_tools");
+let currentQuestionIndex = 0, timeLeft = 3600, isExamFinished = false, testResults = [];
 let editor = ace.edit("editor", {
-    theme: "ace/theme/monokai",
-    mode: "ace/mode/javascript",
-    fontSize: 16,
-    showPrintMargin: false,
-    showGutter: true,
-    useWorker: false,
+    theme: "ace/theme/monokai", mode: "ace/mode/javascript", fontSize: 16,
+    showPrintMargin: false, showGutter: true, useWorker: false,
     value: `function twoSum(nums, target) {
     const map = new Map();
     for(let i = 0; i < nums.length; i++) {
         let complement = target - nums[i];
-        if(map.has(complement)) {
-            return [map.get(complement), i];
-        }
+        if(map.has(complement)) return [map.get(complement), i];
         map.set(nums[i], i);
     }
     return [];
 }`
 });
-
-const LANGUAGE_TEMPLATES = {
-    javascript: `function twoSum(nums, target) {
-    const map = new Map();
-    for(let i = 0; i < nums.length; i++) {
-        let complement = target - nums[i];
-        if(map.has(complement)) {
-            return [map.get(complement), i];
-        }
-        map.set(nums[i], i);
-    }
-    return [];
-}`,
-    python: `def twoSum(nums, target):
-    seen = {}
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in seen:
-            return [seen[complement], i]
-        seen[num] = i
-    return []`,
-    cpp: `#include <vector>
-#include <unordered_map>
-using namespace std;
-
-vector<int> twoSum(vector<int>& nums, int target) {
-    unordered_map<int, int> map;
-    for (int i = 0; i < nums.size(); i++) {
-        int complement = target - nums[i];
-        if (map.count(complement)) {
-            return {map[complement], i};
-        }
-        map[nums[i]] = i;
-    }
-    return {};
-}`
-};
-
-function loadProblem() {
-    const problem = currentContest[currentQuestionIndex];
-    if (!problem) return;
-    
-    document.getElementById('problem-title').textContent = problem.title;
-    document.getElementById('difficulty').textContent = problem.difficulty;
-    document.getElementById('problem-description').innerHTML = problem.description;
-    
-    let examplesHtml = '<h3>Examples</h3>';
-    problem.examples.forEach((ex, i) => {
-        examplesHtml += `
-            <div style="margin-bottom: 20px;">
-                <div style="color: #8b949e; font-size: 14px; margin-bottom: 8px;">Example ${i+1}:</div>
-                <pre style="background: #161b22; padding: 16px; border-radius: 6px;">Input: ${ex.input}</pre>
-                <pre style="background: #161b22; padding: 16px; border-radius: 6px;">Output: <span style="color: #7ee787;">${ex.output}</span></pre>
-            </div>
-        `;
-    });
-    document.getElementById('examples').innerHTML = examplesHtml;
-    
-    updateQuestionNav();
-    updateButtons();
-}
-
-function runCode() {
-    const userCode = editor.getValue();
-    const problem = currentContest[currentQuestionIndex];
-    const testCases = problem.examples;
-    testResults = [];
-    
-    testCases.forEach((test, index) => {
-        try {
-            const inputMatch = test.input.match(/nums\s*=\s*\[([^\]]+)\],\s*target\s*=\s*(\d+)/);
-            if (inputMatch) {
-                const numsStr = inputMatch[1];
-                const nums = numsStr.split(',').map(n => parseInt(n.trim()));
-                const target = parseInt(inputMatch[2]);
-                
-                const func = new Function('nums', 'target', userCode + '\nreturn twoSum(nums, target);');
-                const result = func(nums, target);
-                
-                const expected = JSON.parse(test.output);
-                const isPass = JSON.stringify(result) === JSON.stringify(expected);
-                
-                testResults.push({
-                    index: index,
-                    input: test.input,
-                    expected: test.output,
-                    got: JSON.stringify(result),
-                    passed: isPass
-                });
-            }
-        } catch (e) {
-            testResults.push({
-                index: index,
-                input: test.input,
-                expected: test.output,
-                got: 'Error: ' + e.message,
-                passed: false
-            });
-        }
-    });
-    
-    displayTestResults();
-}
-
-function displayTestResults() {
-    let html = '';
-    testResults.forEach(result => {
-        const statusClass = result.passed ? 'status-pass' : 'status-fail';
-        html += `
-            <div class="test-case ${statusClass}">
-                <span>Test ${result.index + 1}</span>
-                <span>${result.passed ? '✅ PASS' : '❌ FAIL'}</span>
-            </div>
-        `;
-    });
-    document.getElementById('test-cases-list').innerHTML = html;
-}
-
-function updateTimer() {
-    if (isExamFinished) return;
-    
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    document.getElementById('timer').textContent = 
-        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    
-    if (timeLeft > 0) {
-        timeLeft--;
-    } else {
-        finishExam();
-    }
-}
-
-function nextQuestion() {
-    if (currentQuestionIndex < currentContest.length - 1) {
-        currentQuestionIndex++;
-        loadProblem();
-        document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
-    }
-}
-
-function prevQuestion() {
-    if (currentQuestionIndex > 0) {
-        currentQuestionIndex--;
-        loadProblem();
-        document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
-    }
-}
-
-function markRead() {
-    const btn = event.target;
-    btn.textContent = 'Marked!';
-    btn.style.background = '#238636';
-    setTimeout(() => {
-        btn.textContent = 'Mark as Read';
-        btn.style.background = '';
-    }, 2000);
-}
-
-function updateQuestionNav() {
-    const nav = document.getElementById('question-nav');
-    let navHtml = '';
-    currentContest.forEach((_, i) => {
-        const isCurrent = i === currentQuestionIndex;
-        navHtml += `<button class="question-btn ${isCurrent ? 'current' : ''}" onclick="currentQuestionIndex=${i}; loadProblem(); updateButtons();">${i+1}</button>`;
-    });
-    nav.innerHTML = navHtml;
-}
-
-function updateButtons() {
-    document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
-    document.getElementById('nextBtn').disabled = currentQuestionIndex === currentContest.length - 1;
-    document.getElementById('currentQ').textContent = currentQuestionIndex + 1;
-}
-
-function changeLanguage() {
-    const lang = document.getElementById('language-select').value;
-    let template = LANGUAGE_TEMPLATES[lang] || LANGUAGE_TEMPLATES.javascript;
-    editor.session.setMode(`ace/mode/${lang === 'cpp' ? 'c_cpp' : lang}`);
-    editor.setValue(template);
-}
-
-function submitCode() {
-    const passedTests = testResults.filter(r => r.passed).length;
-    if (passedTests === testResults.length) {
-        alert('✅ PERFECT! Question Submitted Successfully! 🎉');
-        nextQuestion();
-    } else {
-        alert(`❌ Fix ${testResults.length - passedTests} more test cases!`);
-    }
-}
-
-function finishExam() {
-    isExamFinished = true;
-    alert(`Exam Finished! Score: ${testResults.filter(r => r.passed).length}/${testResults.length}`);
-}
-
-// HTML Structure
 </script>
 
 <div class="exam-header">
-    <div class="logo">
-        <div class="logo-icon">C</div>
-        CodeRush
-    </div>
+    <div class="logo"><div class="logo-icon">C</div>CodeRush</div>
     <div class="timer-section">
-        <span style="font-weight: 600; color: #8b949e;">Q <span id="currentQ">1</span>/3</span>
+        <span style="font-weight: 600; color: #8b949e;">Q <span id="currentQ">1</span>/1</span>
         <div style="display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 20px;">⏰</span>
-            <span id="timer">60:00</span>
+            <span style="font-size: 20px;">⏰</span><span id="timer">60:00</span>
         </div>
     </div>
     <div class="exam-controls">
-        <button id="prevBtn" onclick="prevQuestion()" disabled>Previous</button>
-        <button onclick="markRead()">Mark as Read</button>
-        <button onclick="runCode()">Run</button>
+        <button onclick="runCode()" style="padding: 8px 16px; background: #238636; color: white; border: none; border-radius: 6px;">Run</button>
         <select id="language-select" onchange="changeLanguage()">
             <option value="javascript">JavaScript</option>
-            <option value="python">Python 3</option>
+            <option value="python">Python</option>
             <option value="cpp">C++</option>
         </select>
-        <button id="nextBtn" onclick="nextQuestion()">Next</button>
-        <button class="finish-btn" onclick="finishExam()">Finish Exam</button>
+        <button class="finish-btn" onclick="finishExam()">Finish</button>
     </div>
 </div>
 
 <div class="main-container">
     <div class="problem-panel">
-        <h1 id="problem-title">Two Sum</h1>
+        <h1 id="problem-title">Loading...</h1>
         <div class="question-info">
             <span class="difficulty" id="difficulty">Easy</span>
-            <span>9 solves</span>
+            <span id="question-timer"></span>
         </div>
         <div class="description" id="problem-description"></div>
         <div class="examples" id="examples"></div>
-        <div class="question-nav" id="question-nav"></div>
     </div>
-
     <div class="editor-container">
         <div class="editor-header">
-            <div style="flex: 1;">
-                <span style="color: #8b949e; font-size: 14px;">editor.getValue()</span>
-            </div>
-            <button onclick="runCode()" style="padding: 8px 16px; background: #238636; color: white; border: none; border-radius: 6px; cursor: pointer;">Run</button>
-            <button onclick="submitCode()" style="padding: 8px 16px; background: #1f6feb; color: white; border: none; border-radius: 6px; cursor: pointer; margin-left: 8px;">Submit</button>
+            <div style="flex: 1; color: #8b949e; font-size: 14px;">Code Editor</div>
         </div>
-        <div id="editor" style="height: calc(100vh - 200px); width: 100%; font-size: 14px;"></div>
-        <div class="test-results" id="test-results">
+        <div id="editor" style="height: calc(100vh - 200px); width: 100%;"></div>
+        <div class="test-results" id="test-results" style="display: none;">
             <h3>🧪 Test Results</h3>
             <div id="test-cases-list"></div>
         </div>
@@ -455,18 +143,54 @@ function finishExam() {
 </div>
 
 <script>
-window.nextQuestion = nextQuestion;
-window.prevQuestion = prevQuestion;
-window.markRead = markRead;
-window.runCode = runCode;
-window.finishExam = finishExam;
-window.changeLanguage = changeLanguage;
-window.submitCode = submitCode;
-
-document.addEventListener('DOMContentLoaded', function() {
-    loadProblem();
-    updateTimer();
-    setInterval(updateTimer, 1000);
+function loadProblem() {
+    const problem = currentContest[currentQuestionIndex];
+    document.getElementById('problem-title').textContent = problem.title;
+    document.getElementById('difficulty').textContent = problem.difficulty;
+    document.getElementById('problem-description').innerHTML = problem.description;
+    let html = '<h3>Examples</h3>';
+    problem.examples.forEach((ex, i) => {
+        html += `<div style="margin-bottom: 20px;">
+            <div style="color: #8b949e;">Example ${i+1}:</div>
+            <pre style="background: #161b22;padding:16px;border-radius:6px;">${ex.input}</pre>
+            <pre style="background: #161b22;padding:16px;border-radius:6px;">Output: <span style="color:#7ee787;">${ex.output}</span></pre>
+        </div>`;
+    });
+    document.getElementById('examples').innerHTML = html;
+}
+function runCode() {
+    const code = editor.getValue();
+    const test = currentContest[currentQuestionIndex].examples[0];
+    try {
+        const nums = [2,7,11,15], target = 9;
+        const func = new Function('nums', 'target', code + '\nreturn twoSum(nums, target);');
+        const result = func(nums, target);
+        const expected = [0,1];
+        const passed = JSON.stringify(result) === JSON.stringify(expected);
+        document.getElementById('test-results').style.display = 'block';
+        document.getElementById('test-cases-list').innerHTML = 
+            `<div class="test-case ${passed ? 'status-pass' : 'status-fail'}">
+                <span>Test 1</span><span>${passed ? '✅ PASS' : '❌ FAIL'}</span>
+            </div>`;
+        alert(passed ? '✅ PERFECT!' : '❌ Fix code!');
+    } catch(e) { alert('Error: ' + e.message); }
+}
+function updateTimer() {
+    if (isExamFinished) return;
+    const m = Math.floor(timeLeft/60), s = timeLeft%60;
+    document.getElementById('timer').textContent = `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    if (timeLeft-- <= 0) finishExam();
+}
+function changeLanguage() {
+    const lang = document.getElementById('language-select').value;
+    editor.session.setMode(`ace/mode/${lang}`);
+}
+function finishExam() { isExamFinished = true; alert('Exam Finished!'); }
+setInterval(updateTimer, 1000);
+document.addEventListener('DOMContentLoaded', () => {
+    ace.require("ace/ext/language_tools");
+    loadProblem(); updateTimer();
+    window.runCode = runCode; window.changeLanguage = changeLanguage;
 });
 </script>
 </body>
